@@ -25,4 +25,18 @@ PIE GRAPH: NOT UPLOADED SCRIPT
 r code for pie graphs and other graphs that don´t seem useful for now
 
 - R FOR FISH BASE REVIEW
+Analysis done after the integration of our database with Fish Base data
+
+SPECIES CODE:
+r code for the price category, vulnerability and commercial importance at species level. It contains:
+1. Exploratory analysis of price category per distributional impact
+2. Exploratory analysis of vulnerability per distributional impact
+3. Exploratory analysis of commercial importance per distributional impact
+4. Pie charts and ggplots on aquaculture, habitat, gears, anad/catad, years of study and commercial importance.
+5. Analysis for ICES poster:
+Number of Pelagic vs. demersal (Figure 2E in our poster). To produce this figure is needed the CVS "Stalked_Bar_Chart_demers_pelag1"
+Number of commercial important species. To produce this figure is needed the CVS "Stalked_Bar_Chart_impor"
+Number of different price category species (Figure 2F in our poster). To produce this figure is needed the CVS "Stalked_Bar_Chart_price"
+6. Exploratory analysis on "Do species that have a greater range shift more or less?" and "Do species that live longer shift more?"
+
 
