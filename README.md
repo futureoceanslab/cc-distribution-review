@@ -11,7 +11,7 @@ This repository contains:
 <strong>Biomass vs distribution:</strong>
 r code for the exploration of center of biomass vs center of gravity observations. Is it possible to combine them? It contains:
 
-1. Center of biomass combined with center of gravity (We concluded this is the best option). Input:biblio_database.csv
+1. Center of biomass combined with center of gravity (We concluded this is the best option). Input: biblio_database.csv
 
 2. Just center of gravity observations. Input: biblio_database.csv
 
