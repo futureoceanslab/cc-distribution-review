@@ -4,7 +4,7 @@ Climate change distributional impacts in marine commercial species Review Databa
 
 This repository contains:
  
-<strong>-ECOLOGICAL ANALYSIS</strong>
+<strong>-1. ECOLOGICAL ANALYSIS</strong>
 
 <strong>Biomass vs distribution:</strong>
 r code for the exploration of center of biomass vs center of gravity observations. Is it possible to combine them? It contains:
@@ -35,12 +35,7 @@ r code for the analysis of climate variables related to the distributional impac
 
 r code for pie graphs and other graphs that don´t seem useful for now
 
-
-
-
-
-
-<strong>-R FOR FISH BASE REVIEW</strong>
+<strong>-2. R FOR FISH BASE REVIEW</strong>
 
 Analysis done after the integration of our database with Fish Base data
 
