@@ -36,6 +36,8 @@ r code for the analysis of climate variables related to the distributional impac
 r code for pie graphs and other graphs that don´t seem useful for now
 
 
+
+
 <strong>-R FOR FISH BASE REVIEW</strong>
 
 Analysis done after the integration of our database with Fish Base data
@@ -53,11 +55,11 @@ r code for the price category, vulnerability and commercial importance at specie
 
 5. Analysis for ICES poster:
 
-  5.1. Number of Pelagic vs. demersal (Figure 2E in our poster). To produce this figure is needed the CVS "Stalked_Bar_Chart_demers_pelag1"
+     5.1. Number of Pelagic vs. demersal (Figure 2E in our poster). To produce this figure is needed the CVS "Stalked_Bar_Chart_demers_pelag1"
 
-  5.2. Number of commercial important species. To produce this figure is needed the CVS "Stalked_Bar_Chart_impor"
+     5.2. Number of commercial important species. To produce this figure is needed the CVS "Stalked_Bar_Chart_impor"
 
-  5.3. Number of different price category species (Figure 2F in our poster). To produce this figure is needed the CVS "Stalked_Bar_Chart_price"
+     5.3. Number of different price category species (Figure 2F in our poster). To produce this figure is needed the CVS "Stalked_Bar_Chart_price"
 
 6. Exploratory analysis on "Do species that have a greater range shift more or less?" and "Do species that live longer shift more?"
 
