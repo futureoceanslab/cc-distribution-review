@@ -9,11 +9,11 @@ This repository contains:
 <strong>Biomass vs distribution:</strong>
 r code for the exploration of center of biomass vs center of gravity observations. Is it possible to combine them? It contains:
 
-Analysis 1. Center of biomass combined with center of gravity (We concluded this is the best option)
+1. Center of biomass combined with center of gravity (We concluded this is the best option)
 
-Analysis 2. Just center of gravity observations 
+2. Just center of gravity observations 
 
-Analysis 3. Just center of biomass observations
+3. Just center of biomass observations
 
 <strong>Distributional impacts:</strong> 
 r code for the analysis of climate variables related to the distributional impacts and their magnitude. It contains:
@@ -29,6 +29,7 @@ r code for the analysis of climate variables related to the distributional impac
 5. Magnitude of the area shift: boxplot, geom_bar and histograms of different types
 
 6. Histograms Multiplot for latitude, depth, boundary and area magnitude shifts
+
 
 <strong>Pie graph: NOT UPLOADED SCRIPT!</strong>
 
@@ -52,11 +53,11 @@ r code for the price category, vulnerability and commercial importance at specie
 
 5. Analysis for ICES poster:
 
-Number of Pelagic vs. demersal (Figure 2E in our poster). To produce this figure is needed the CVS "Stalked_Bar_Chart_demers_pelag1"
+5.1. Number of Pelagic vs. demersal (Figure 2E in our poster). To produce this figure is needed the CVS "Stalked_Bar_Chart_demers_pelag1"
 
-Number of commercial important species. To produce this figure is needed the CVS "Stalked_Bar_Chart_impor"
+5.2. Number of commercial important species. To produce this figure is needed the CVS "Stalked_Bar_Chart_impor"
 
-Number of different price category species (Figure 2F in our poster). To produce this figure is needed the CVS "Stalked_Bar_Chart_price"
+5.3. Number of different price category species (Figure 2F in our poster). To produce this figure is needed the CVS "Stalked_Bar_Chart_price"
 
 6. Exploratory analysis on "Do species that have a greater range shift more or less?" and "Do species that live longer shift more?"
 
