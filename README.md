@@ -4,12 +4,15 @@ Climate change distributional impacts in marine commercial species Review Databa
 
 This repository contains:
 
-<strong>ECOLOGICAL ANALYSIS</strong>
+<strong>-ECOLOGICAL ANALYSIS</strong>
 
 <strong>Biomass vs distribution:</strong>
 r code for the exploration of center of biomass vs center of gravity observations. Is it possible to combine them? It contains:
+
 Analysis 1. Center of biomass combined with center of gravity (We concluded this is the best option)
+
 Analysis 2. Just center of gravity observations 
+
 Analysis 3. Just center of biomass observations
 
 <strong>Distributional impacts:</strong> 
@@ -21,14 +24,14 @@ r code for the analysis of climate variables related to the distributional impac
 5. Magnitude of the area shift: boxplot, geom_bar and histograms of different types
 6. Histograms Multiplot for latitude, depth, boundary and area magnitude shifts
 
-PIE GRAPH: NOT UPLOADED SCRIPT 
+<strong>Pie graph: NOT UPLOADED SCRIPT!</strong>
 r code for pie graphs and other graphs that don´t seem useful for now
 
 
-- R FOR FISH BASE REVIEW
+<strong>-R FOR FISH BASE REVIEW</strong>
 Analysis done after the integration of our database with Fish Base data
 
-SPECIES CODE:
+<strong>Species code:</strong>
 r code for the price category, vulnerability and commercial importance at species level. It contains:
 1. Exploratory analysis of price category per distributional impact
 2. Exploratory analysis of vulnerability per distributional impact
