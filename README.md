@@ -70,6 +70,7 @@ r code for the analysis of the resilience and environment/habitat at stock level
 2. Exploratory analysis of environment/habitat per distributional impact
 
 <strong>-3. SEA AROUND US</strong>
+
 Graphs on fish dependency (EEZ, fishing country and per species). Figure 3 in our poster.
 It contents three R code files (.R) for creating the data on catches (total), per EEZ and per EEZ sp from the SAU data original
 
