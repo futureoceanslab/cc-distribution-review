@@ -37,7 +37,7 @@ r code for pie graphs and other graphs that don´t seem useful for now
 
 <strong>-2. R FOR FISH BASE REVIEW</strong>
 
-<strong>EO code:</strong>
+<strong>integration fishbase:</strong>
 r code for the integration of our review database and Fish Base information
 
 <strong>Species code:</strong>
