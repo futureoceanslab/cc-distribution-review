@@ -37,7 +37,8 @@ r code for pie graphs and other graphs that don´t seem useful for now
 
 <strong>-2. R FOR FISH BASE REVIEW</strong>
 
-Analysis done after the integration of our database with Fish Base data
+<strong>EO code:</strong>
+r code for the integration of our review database and Fish Base information
 
 <strong>Species code:</strong>
 r code for the price category, vulnerability and commercial importance at species level. It contains:
@@ -60,4 +61,5 @@ r code for the price category, vulnerability and commercial importance at specie
 
 6. Exploratory analysis on "Do species that have a greater range shift more or less?" and "Do species that live longer shift more?"
 
+<strong>stock code:</strong>
 
