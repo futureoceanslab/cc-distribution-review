@@ -3,8 +3,6 @@
 Climate change distributional impacts in marine commercial species Review Database Repository.
 
 This repository contains:
-
-&#160
  
 <strong>-ECOLOGICAL ANALYSIS</strong>
 
