@@ -33,7 +33,7 @@ r code for the analysis of climate variables related to the distributional impac
 6. Histograms Multiplot for latitude, depth, boundary and area magnitude shifts
 
 
-<strong>Pie graph: NOT UPLOADED SCRIPT!</strong>
+<strong>Pie graph: NOT UPLOADED SCRIPT TO THE LASTEST biblio_database.csv!</strong>
 
 r code for pie graphs and other graphs that don´t seem useful for now
 
