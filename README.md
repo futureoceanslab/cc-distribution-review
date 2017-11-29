@@ -62,4 +62,7 @@ r code for the price category, vulnerability and commercial importance at specie
 6. Exploratory analysis on "Do species that have a greater range shift more or less?" and "Do species that live longer shift more?"
 
 <strong>stock code:</strong>
+r code for the analysis of the resilience and environment/habitat at stock level. It contains:
 
+1. Exploratory analysis of resilience per distributional impact
+2. Exploratory analysis of environment/habitat per distributional impact
