@@ -4,6 +4,8 @@ Climate change distributional impacts in marine commercial species Review Databa
 
 This repository contains:
 
+
+
 <strong>-ECOLOGICAL ANALYSIS</strong>
 
 <strong>Biomass vs distribution:</strong>
@@ -34,6 +36,8 @@ r code for the analysis of climate variables related to the distributional impac
 <strong>Pie graph: NOT UPLOADED SCRIPT!</strong>
 
 r code for pie graphs and other graphs that don´t seem useful for now
+
+
 
 
 
