@@ -13,7 +13,6 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Preliminary plots
 
 ```{r,include=F, echo=F,  message=FALSE}
-setwd("~/OneDrive/CLOCK_TEAM/03_FUTURE OCEANS/FO_BIBLIO/FO_DATA_ANALYSIS/R for Sea Around Us Data catches")
 library("dplyr")
 library(tidyr)
 library(ggplot2)
