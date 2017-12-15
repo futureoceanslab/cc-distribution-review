@@ -3,23 +3,20 @@
 ##Date: April 20th 2017
 
 #Directory: /OneDrive/CLOCK_TEAM/03_FUTURE OCEANS/FO_BIBLIO/FO_DATABASES
-setwd("~/OneDrive/CLOCK_TEAM/03_FUTURE OCEANS/FO_BIBLIO/FO_DATA_ANALYSIS/R for Sea Around Us Data catches")
-
 library(dplyr)
 library(tidyr)
 
 #info for Denmark (North Sea), Germany (North Sea), Netherlands, Norway, UK, Belgium, Sweden (West Coast), Japan (Main islands), Korea (South) and Spain (Northwest)
-data.1<-read.csv("Final SAU EEZ.csv", header=T, sep = ";")
+data.1<-read.csv("data/Final SAU EEZ.csv", header=T, sep = ";")
 data.1<-tbl_df(data.1)
 
 #select data from 2010 to 2014
-data.2 <- filter(data.1, data.1$year > 2009)  ##NOTE THAT USA EAST COAST IS OUT SINCE THERE IS ONLY DATA UNTIL 1973 - this affects Depth catches
-dat <- filter(data.2, data.2$catch_type=="Landings")
+data.2 <- filter(data.1, year > 2009)  ##NOTE THAT USA EAST COAST IS OUT SINCE THERE IS ONLY DATA UNTIL 1973 - this affects Depth catches
+dat <- filter(data.2, catch_type=="Landings")
 dat[rowSums(is.na(dat)) != ncol(dat),]
 
-
 #select the list of species from the review database
-ReviewDat <- read.csv("~/OneDrive/CLOCK_TEAM/03_FUTURE OCEANS/FO_BIBLIO/FO_DATA_ANALYSIS/R for Sea Around Us Data catches/biblio_database.csv", stringsAsFactors=FALSE)
+ReviewDat <- read.csv("data/biblio_database.csv", stringsAsFactors=FALSE)
 SpReview<-as.character(unique(ReviewDat$b_scientific_name))
 
 ReviewDat$eez_countries[ReviewDat$eez_countries == "USA (Alaska, Arctic)"] <- "USA (Alaska-Subarctic)"
