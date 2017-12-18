@@ -1,11 +1,11 @@
 ##R code for the ecological analysis of our review
-## Analysis of climate variables related to the distributional impacts and impacts´magnitudes
+## Analysis of climate variables related to the distributional impacts and impacts?magnitudes
 ##Author: Alba 
 ##Date: August 20th 2017
 
 #libraries
 library(rockchalk)
-library(ggplot2)
+library(ggplot2)  
 library(dplyr)
 library(Hmisc)
 
