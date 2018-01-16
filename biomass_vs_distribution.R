@@ -9,9 +9,6 @@ library(ggplot2)
 library(dplyr)
 library(Hmisc)
 
-#setwd("~/OneDrive/CLOCK_TEAM/03_FUTURE OCEANS/FO_BIBLIO") 
-setwd("C:/Users/alba.aguion/OneDrive/CLOCK_TEAM/03_FUTURE OCEANS/FO_BIBLIO")
-
 #open dataset
 table1<-read.table("biblio_database.csv", header= T, sep= ",")
 table<-table1[,1:68]    #delete columns 
