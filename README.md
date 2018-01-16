@@ -77,7 +77,7 @@ Graphs on fish dependency  and pressure per species.
 It contents one R code file (.R) for merging original SAU data of countries into one .csv, R code (.R) to merge the database from the review (biblio_database) and the SAu data, and  R code file (.R) for the graphs on latitude, and one .Rmd file for exporting these graphs to PDF/htlm. 
 
 
-<strong>1. Data_Merge_SAU.R</strong>
+<strong>1. Data_SAU.R</strong>
 r code for creating a .csv file with data on fishing entity total per species (FE_EEZ.csv.csv)
 Use: only needed if adding new observations to the biblio_database.
 input: .csv per country on SAU data (in /Data SAU)
