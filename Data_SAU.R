@@ -5,8 +5,8 @@
 
 ##I download each Fishing entity country from SAU and merge them in one database
 path <- "data SAU/"
-l0 <- list.files(path, pattern = ".csv")
-l <- l0[-c(7, 24)] # to delete certain files. E.g. 7(France)
+l <- list.files(path, pattern = ".csv")
+#l <- l0[-c(7, 24)] # to delete certain files. E.g. column 7(France) and 24
 
 # below func does importing and creation of new columns
 func <- function(i){
