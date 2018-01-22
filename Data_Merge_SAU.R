@@ -14,7 +14,7 @@ library(ggplot2)
 ##OPEN DATASETS
 
 #Read input file: our review database
-ReviewDat <- read.csv("data/biblio_database.csv", stringsAsFactors=FALSE)
+ReviewDat <- read.csv("data/biblio_database1.csv", stringsAsFactors=FALSE,  header=T, sep = ";")
 colnames(ReviewDat)
 ReviewDat <- ReviewDat[, 1:68] #to erase empty columns
 
@@ -31,7 +31,7 @@ Final_SAU_EEZ <- filter(Final_SAU_EEZ, year > 2009, catch_type=="Landings")
 Final_SAU_EEZ[rowSums(is.na(Final_SAU_EEZ)) != ncol(Final_SAU_EEZ),]
 
 Final_SAU_FE <- filter(Final_SAU_FE, year > 2009, catch_type=="Landings")
-Final_SAU_FE[rowSums(is.na(Final_SAU_FE)) != ncol(Final_SAU_FE),]
+#Final_SAU_FE[rowSums(is.na(Final_SAU_FE)) != ncol(Final_SAU_FE),]
 
 
 ## 1. MATCH SPECIES NAMES IN REVIEW AND SAU
@@ -161,7 +161,6 @@ colnames(ReviewDat)[12] <- "scientific_name"
 colnames(ReviewDat)[68] <- "area_name"
 
 #remove blank spaces from eez variable names in Review
-trim <- function (x) gsub("^\\s+|\\s+$", "", x)
 ReviewDat$area_name <- trim(ReviewDat$area_name)
 
 ##Check list of un-matchig EEZs
