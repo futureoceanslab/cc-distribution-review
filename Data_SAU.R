@@ -3,7 +3,16 @@
 #source catch data: Sea Around Us
 #Elena Ojea, december 17
 
-##I download each Fishing entity country from SAU and merge them in one database
+
+#to select the fishing entities I use the list_FE.csv, obtained from Data_Merge_SAu.csv 
+
+list_FE <- read.csv("data/list_FE.csv")
+
+
+##then, I manually  download each Fishing entity country from SAU webpage and save them in data/SAU-
+
+#the downloaded files are merged in one database with this code:
+
 path <- "data SAU/"
 l <- list.files(path, pattern = ".csv")
 #l <- l0[-c(7, 24)] # to delete certain files. E.g. column 7(France) and 24

@@ -11,27 +11,21 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 
-##OPEN DATASETS
+##OPEN DATASETS EEZ and Review
 
 #Read input file: our review database
-ReviewDat <- read.csv("data/biblio_database1.csv", stringsAsFactors=FALSE,  header=T, sep = ";")
+ReviewDat <- read.csv("data/biblio_database.csv", stringsAsFactors=FALSE)
 colnames(ReviewDat)
 ReviewDat <- ReviewDat[, 1:68] #to erase empty columns
 
 #Read input file: the EEZ species catched
 Final_SAU_EEZ <- read.csv("data/Final SAU EEZ.csv", stringsAsFactors=FALSE, header=T, sep = ";")
 
-#Read input file: the FE species catched
-Final_SAU_FE <- read.csv("data/Final SAU FE.csv", stringsAsFactors=FALSE)
-
-
 ##FILTER SAU DATASETS: 5 last years, landings, NAs
 
 Final_SAU_EEZ <- filter(Final_SAU_EEZ, year > 2009, catch_type=="Landings")
 Final_SAU_EEZ[rowSums(is.na(Final_SAU_EEZ)) != ncol(Final_SAU_EEZ),]
 
-Final_SAU_FE <- filter(Final_SAU_FE, year > 2009, catch_type=="Landings")
-#Final_SAU_FE[rowSums(is.na(Final_SAU_FE)) != ncol(Final_SAU_FE),]
 
 
 ## 1. MATCH SPECIES NAMES IN REVIEW AND SAU
@@ -127,7 +121,7 @@ table2  #list of unmatching species (should be 3 when including genrus updates, 
 #Final list of matching species in ReviewDAt
 Sp_ReviewDat <- as.character(subset(table1, table1$matchsp==TRUE)[,2]) 
 
-#write.csv(Sp_ReviewDat, "data/Sp_ReviewDat.csv")
+write.csv(Sp_ReviewDat, "data/Sp_ReviewDat.csv")
 
 
 
@@ -170,15 +164,17 @@ EEZ_SAU <- unique(Final_SAU_EEZ$area_name)
 
 EEZ_ReviewDat %in% EEZ_SAU  
 
-
 #write.csv(EEZ_ReviewDat, "data/EEZ_ReviewDat")
+
+
+list_FE <- unique(Final_SAU_EEZ$fishing_entity)
+write.csv(list_FE, "data/list_FE.csv")
 
 
 ##ADD TOTAL CATCH AND LANDINGS BY EEZ
 #select the EEZs of the review in the SAU database:
 
 Final_SAU_EEZ <- subset(Final_SAU_EEZ, Final_SAU_EEZ$area_name %in% EEZ_ReviewDat)
-#dataEEZ$area_name %in% EEZ_ReviewDat
 
 #check observations for EEZ data
 counts <- Final_SAU_EEZ %>%
@@ -196,6 +192,22 @@ colnames(landedvalueEEZ) <- c("area_name", "landedvalueEEZ")
 
 ReviewDat <- merge(ReviewDat, tonnesEEZ, by=c("area_name"), all.x=TRUE)
 ReviewDat <- merge(ReviewDat, landedvalueEEZ, by=c("area_name"), all.x=TRUE)
+
+
+
+##Run Data SAU if needed to upload Final_SAU_FE
+##OPEN FE DATA (from Data_SAU.R using list_FE.csv)
+#Read input file: the FE species catched
+Final_SAU_FE <- read.csv("data/Final SAU FE.csv", stringsAsFactors=FALSE)
+
+
+##FILTER SAU DATASETS: 5 last years, landings, NAs
+
+Final_SAU_FE <- filter(Final_SAU_FE, year > 2009, catch_type=="Landings")
+#Final_SAU_FE[rowSums(is.na(Final_SAU_FE)) != ncol(Final_SAU_FE),]
+
+
+
 
 ##ADD TOTAL CATCH AND LANDINGS BY EEZ AND SP
 
