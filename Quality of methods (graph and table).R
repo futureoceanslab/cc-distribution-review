@@ -15,7 +15,7 @@ library(gridExtra)
 library(data.table)
 library(grid)
 
-##Makeing a specific subset to plot the specific varibales
+##Making a specific subset to plot the specific variables
 mybiblio_database<-biblio_database[,c(2, 3,4, 6, 8,32,33,59, 63)]
 str(mybiblio_database)
 mybiblio_database<- as.data.frame(mybiblio_database)
