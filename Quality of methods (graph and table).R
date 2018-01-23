@@ -1,7 +1,7 @@
 
 ##Author: Diego Salgueiro Otero
 ##Data: 15/01/2017
-##Title: Script for methods quality for the review paper
+##Title: The quality of methods for the review-paper
 
 #Installing packages
 install.packages("gridExtra")
