@@ -14,16 +14,16 @@ library(ggplot2)
 ##OPEN DATASETS EEZ and Review
 
 #Read input file: our review database
-ReviewDat <- read.csv("data/biblio_database.csv", stringsAsFactors=FALSE)
-colnames(ReviewDat)
-ReviewDat <- ReviewDat[, 1:68] #to erase empty columns
+ReviewDat.raw <- read.csv("data/biblio_database.csv", stringsAsFactors=FALSE)
+colnames(ReviewDat.raw)
+ReviewDat <- ReviewDat.raw[, 1:68] #to erase empty columns
 
 #Read input file: the EEZ species catched
-Final_SAU_EEZ <- read.csv("data/Final SAU EEZ.csv", stringsAsFactors=FALSE, header=T, sep = ";")
+Final_SAU_EEZ.raw <- read.csv("data/Final SAU EEZ.csv", stringsAsFactors=FALSE, header=T, sep = ";")
 
 ##FILTER SAU DATASETS: 5 last years, landings, NAs
 
-Final_SAU_EEZ <- filter(Final_SAU_EEZ, year > 2009, catch_type=="Landings")
+Final_SAU_EEZ <- filter(Final_SAU_EEZ.raw, year > 2009, catch_type=="Landings")
 Final_SAU_EEZ[rowSums(is.na(Final_SAU_EEZ)) != ncol(Final_SAU_EEZ),]
 
 
@@ -110,7 +110,6 @@ ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Isopsetta isolepis"] <
 
 Sp_ReviewDat <- as.character(unique(ReviewDat$b_scientific_name))  #list species in review
 Sp_SAU <- as.character(unique(Final_SAU_EEZ$scientific_name))      #list species in SAU
-Sp_SAU_FE <- as.character(unique(Final_SAU_FE$scientific_name))      #list species in SAU
 
 #compare species in Review and SAU
 matchsp <- Sp_ReviewDat %in% Sp_SAU
@@ -162,7 +161,7 @@ ReviewDat$area_name <- trim(ReviewDat$area_name)
 EEZ_ReviewDat  <- unique(ReviewDat$area_name) #final list of EEZs in the Review dataset
 EEZ_SAU <- unique(Final_SAU_EEZ$area_name)
 
-EEZ_ReviewDat %in% EEZ_SAU  
+EEZ_ReviewDat %in% EEZ_SAU  ###3 last elements = FALSE!!!
 
 #write.csv(EEZ_ReviewDat, "data/EEZ_ReviewDat")
 
@@ -173,6 +172,10 @@ write.csv(list_FE, "data/list_FE.csv")
 
 ##ADD TOTAL CATCH AND LANDINGS BY EEZ
 #select the EEZs of the review in the SAU database:
+#REVISAR FINAL_SAU_EEZ?
+library(Hmisc)
+levels(as.factor(Final_SAU_EEZ$area_name))
+levels(as.factor(EEZ_ReviewDat))#16 EEZs in review and only 13 in Final_SAU_EEZ
 
 Final_SAU_EEZ <- subset(Final_SAU_EEZ, Final_SAU_EEZ$area_name %in% EEZ_ReviewDat)
 
@@ -181,7 +184,7 @@ counts <- Final_SAU_EEZ %>%
   group_by(area_name, year) %>%
   tally
 #delete year 2012 for the low number of observations as compared to other years
-Final_SAU_EEZ <- subset(Final_SAU_EEZ, Final_SAU_EEZ$year!=2012)
+Final_SAU_EEZ <- subset(Final_SAU_EEZ, Final_SAU_EEZ$year!=2012)##REALLY DIFFERENT?
 
 #dataframe total EEZ catch
 
