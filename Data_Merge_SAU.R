@@ -4,7 +4,7 @@
 # - Biblio_database.csv for the list of EEZs and species per EEZ
 # - Final_SAU_EEZ
 #output files:
-# - ReviewDat with EEZ catches
+# - ReviewDat_Merge_SAU with EEZ catches
 # - list_FE
 
 #Download the required libraries
