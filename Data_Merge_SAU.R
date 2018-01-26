@@ -14,7 +14,7 @@ library(ggplot2)
 ##OPEN DATASETS EEZ and Review
 
 #Read input file: our review database
-ReviewDat.raw <- read.csv("data/biblio_database.csv", stringsAsFactors=FALSE)
+ReviewDat.raw <- read.csv("data/biblio_database.csv", stringsAsFactors=FALSE, header=T, sep = ";")
 colnames(ReviewDat.raw)
 ReviewDat <- ReviewDat.raw[, 1:68] #to erase empty columns
 
@@ -22,16 +22,13 @@ ReviewDat <- ReviewDat.raw[, 1:68] #to erase empty columns
 Final_SAU_EEZ.raw <- read.csv("data/Final SAU EEZ.csv", stringsAsFactors=FALSE, header=T, sep = ";")
 
 ##FILTER SAU DATASETS: 5 last years, landings, NAs
-
 Final_SAU_EEZ <- filter(Final_SAU_EEZ.raw, year > 2009, catch_type=="Landings")
-Final_SAU_EEZ[rowSums(is.na(Final_SAU_EEZ)) != ncol(Final_SAU_EEZ),]
 
 
 
-## 1. MATCH SPECIES NAMES IN REVIEW AND SAU
+## 1. MATCH SPECIES NAMES IN REVIEW AND SAU####
 
 ##Check list of un-matchig names
-
 Sp_ReviewDat <- as.character(unique(ReviewDat$b_scientific_name))  #list species in review
 Sp_SAU <- as.character(unique(Final_SAU_EEZ$scientific_name))      #list species in SAU
 
@@ -42,7 +39,6 @@ table2 <- subset(table1, table1$matchsp==FALSE) ##species from review database m
 table2  #list of unmatching species
 
 #remove blank spaces from variable values in species
-
 trim <- function (x) gsub("^\\s+|\\s+$", "", x)
 ReviewDat$b_scientific_name <- trim(ReviewDat$b_scientific_name)
 
@@ -107,7 +103,6 @@ ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Isopsetta isolepis"] <
 #ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Sebastes paucispinis"] <- "Sebastes"
 
 ##Check list of un-matchig names
-
 Sp_ReviewDat <- as.character(unique(ReviewDat$b_scientific_name))  #list species in review
 Sp_SAU <- as.character(unique(Final_SAU_EEZ$scientific_name))      #list species in SAU
 
@@ -120,15 +115,11 @@ table2  #list of unmatching species (should be 3 when including genrus updates, 
 #Final list of matching species in ReviewDAt
 Sp_ReviewDat <- as.character(subset(table1, table1$matchsp==TRUE)[,2]) 
 
-write.csv(Sp_ReviewDat, "data/Sp_ReviewDat.csv")
 
 
-
-
-## 2. MATCH EEZ NAMES IN REVIEW AND SAU (area_name)
+## 2. MATCH EEZ NAMES IN REVIEW AND SAU (area_name)####
 
 #correct EEZ names in Review Database
-
 ReviewDat$eez_countries[ReviewDat$eez_countries == "USA (Alaska, Arctic)"] <- "USA (Alaska-Subarctic)"
 ReviewDat$eez_countries[ReviewDat$eez_countries == "Spain (mainland, Med and Gulf of Cadiz)"] <- "Spain (mainland Med and Gulf of Cadiz)"
 ReviewDat$eez_countries[ReviewDat$site == "Northeast US shelf"] <- "USA (East Coast)"
@@ -160,153 +151,54 @@ ReviewDat$area_name <- trim(ReviewDat$area_name)
 
 EEZ_ReviewDat  <- unique(ReviewDat$area_name) #final list of EEZs in the Review dataset
 EEZ_SAU <- unique(Final_SAU_EEZ$area_name)
-
-EEZ_ReviewDat %in% EEZ_SAU  ###3 last elements = FALSE!!!
-
-#write.csv(EEZ_ReviewDat, "data/EEZ_ReviewDat")
+EEZ_ReviewDat %in% EEZ_SAU
 
 
-list_FE <- unique(Final_SAU_EEZ$fishing_entity)
-write.csv(list_FE, "data/list_FE.csv")
 
-
-##ADD TOTAL CATCH AND LANDINGS BY EEZ
-#select the EEZs of the review in the SAU database:
-#REVISAR FINAL_SAU_EEZ?
-library(Hmisc)
-levels(as.factor(Final_SAU_EEZ$area_name))
-levels(as.factor(EEZ_ReviewDat))#16 EEZs in review and only 13 in Final_SAU_EEZ
-
-Final_SAU_EEZ <- subset(Final_SAU_EEZ, Final_SAU_EEZ$area_name %in% EEZ_ReviewDat)
+# 3. ADD TOTAL CATCH AND LANDINGS BY EEZ####
+#EEZs of the review are now the same as in the SAU database
+identical(sort(unique(ReviewDat$area_name)),sort(unique(Final_SAU_EEZ$area_name)))
 
 #check observations for EEZ data
 counts <- Final_SAU_EEZ %>%
   group_by(area_name, year) %>%
   tally
+
 #delete year 2012 for the low number of observations as compared to other years
-Final_SAU_EEZ <- subset(Final_SAU_EEZ, Final_SAU_EEZ$year!=2012)##REALLY DIFFERENT?
+Final_SAU_EEZ <- subset(Final_SAU_EEZ, Final_SAU_EEZ$year!=2012)##This is a bit strange
 
 #dataframe total EEZ catch
+tonlandEEZ<-Final_SAU_EEZ %>%
+            group_by(area_name) %>%
+            summarise(tonnesEEZ=sum(tonnes,na.rm = T),
+                      landedvalueEEZ=sum(landed_value,na.rm = T))
 
-tonnesEEZ <- aggregate(tonnes ~ area_name, Final_SAU_EEZ, sum)
-landedvalueEEZ <-  aggregate(landed_value ~ area_name, Final_SAU_EEZ, sum)
-colnames(tonnesEEZ) <- c("area_name", "tonnesEEZ")
-colnames(landedvalueEEZ) <- c("area_name", "landedvalueEEZ")
-
-ReviewDat <- merge(ReviewDat, tonnesEEZ, by=c("area_name"), all.x=TRUE)
-ReviewDat <- merge(ReviewDat, landedvalueEEZ, by=c("area_name"), all.x=TRUE)
+ReviewDat <- merge(ReviewDat, tonlandEEZ, by=c("area_name"), all.x=TRUE)
 
 
 
-##Run Data SAU if needed to upload Final_SAU_FE
-##OPEN FE DATA (from Data_SAU.R using list_FE.csv)
-#Read input file: the FE species catched
-Final_SAU_FE <- read.csv("data/Final SAU FE.csv", stringsAsFactors=FALSE)
+# 4. ADD TOTAL CATCH AND LANDINGS BY EEZ AND SP####
+tonlandEEZsp<-Final_SAU_EEZ %>%
+  group_by(area_name, scientific_name) %>%
+  summarise(tonnesEEZsp=mean(tonnes,na.rm = T),
+            landedvalueEEZsp=mean(landed_value,na.rm = T))#Why mean?????
 
-
-##FILTER SAU DATASETS: 5 last years, landings, NAs
-
-Final_SAU_FE <- filter(Final_SAU_FE, year > 2009, catch_type=="Landings")
-#Final_SAU_FE[rowSums(is.na(Final_SAU_FE)) != ncol(Final_SAU_FE),]
-
-
-
-
-##ADD TOTAL CATCH AND LANDINGS BY EEZ AND SP
-
-#dataframe sp - EEZ catch
-
-counts <- Final_SAU_FE %>%
-  group_by(fishing_entity, year) %>%
-  tally
-
-
-tonnesEEZsp <- aggregate(tonnes ~ area_name+scientific_name, Final_SAU_EEZ, mean)
-landedvalueEEZsp <-  aggregate(landed_value ~ area_name+scientific_name, Final_SAU_EEZ, mean)
-colnames(tonnesEEZsp) <- c("area_name", "scientific_name", "tonnesEEZsp")
-colnames(landedvalueEEZsp) <- c("area_name", "scientific_name","landedvalueEEZsp")
-
-
-splist <- unique(tonnesEEZsp$scientific_name)
+splist <- unique(tonlandEEZsp$scientific_name)
 Sp_ReviewDat %in% splist
 
 #add total EEZ catches and landings per SP to ReviewDat
-
-ReviewDat <- merge(ReviewDat, tonnesEEZsp, by=c("area_name","scientific_name"), all.x=TRUE)
-
-#check missing species in tonnesEEZsp
-na <- is.na(ReviewDat$tonnesEEZsp)
-table(na) #we miss 144 observations
-
 #add total EEZ landings and landings per sp to ReviewDat
+ReviewDat <- merge(ReviewDat, tonlandEEZsp, by=c("area_name","scientific_name"), all.x=TRUE)
 
-ReviewDat <- merge(ReviewDat, landedvalueEEZsp, by=c("area_name","scientific_name"), all.x=TRUE)
-na <- is.na(ReviewDat$landedvalueEEZsp)
-table(na) #we miss 144 observations
-
-
-### FISHING ENTITIES 
-
-#add fishing entities to ReviewDat by species and average years (mean across years)
-
-Final_SAU_FE <- Final_SAU_FE %>%
-  group_by(fishing_entity, area_name, scientific_name) %>%
-  summarize(tonnesFEsp=mean(tonnes), landedvalueFEsp=mean(landed_value))
-
-ReviewDat <- merge(ReviewDat, Final_SAU_FE, by=c("area_name","scientific_name"), all.x=TRUE)
-
-
-#total catch per species for Fishing entities (sum across species and fishing entities)
-
-tonnesFEspT<- aggregate(tonnesFEsp ~ fishing_entity + scientific_name, Final_SAU_FE, sum)
-landedvalueFEspT <-  aggregate(landedvalueFEsp ~ fishing_entity+scientific_name, Final_SAU_FE, sum)
-colnames(tonnesFEspT) <- c("fishing_entity", "scientific_name", "tonnesFEspT")
-colnames(landedvalueFEspT) <- c("fishing_entity", "scientific_name", "landedvalueFEspT")
-
-ReviewDat <- merge(ReviewDat, tonnesFEspT, by=c("fishing_entity", "scientific_name"), all.x=TRUE)
-ReviewDat <- merge(ReviewDat, landedvalueFEspT, by=c("fishing_entity", "scientific_name"), all.x=TRUE)
+#check missing species in tonnesEEZsp and landedvalueEEZsp
+na1 <- is.na(ReviewDat$tonnesEEZsp)
+table(na1) #we miss 183 observations
+na2 <- is.na(ReviewDat$landedvalueEEZsp)
+table(na2) #we miss 183 observations
 
 
 
-#Total catch per fishing entity (sum across fishing entities)
-
-
-tonnesFE<- aggregate(tonnesFEsp ~ fishing_entity, Final_SAU_FE, sum)
-landedvalueFE <-  aggregate(landedvalueFEsp ~ fishing_entity, Final_SAU_FE, sum)
-colnames(tonnesFE) <- c("fishing_entity", "tonnesFE")
-colnames(landedvalueFE) <- c("fishing_entity", "landedvalueFE")
-
-ReviewDat <- merge(ReviewDat, tonnesFE, by=c("fishing_entity"), all.x=TRUE)
-ReviewDat <- merge(ReviewDat, landedvalueFE, by=c("fishing_entity"), all.x=TRUE)
-
-
-
-write.csv(ReviewDat, file = "data/ReviewDat.csv")
-
-
-
-
-##GRAPHS for VISUALIZING CATCH DATA
-
-##A figure of fishing countries and fishing entities in the Review:
-
-tonnesFEf<- aggregate(tonnesFEsp 67y~ fishing_entity+area_name, Final_SAU_FE, sum)
-landedvalueFEf <-  aggregate(landedvalueFEsp ~ fishing_entity+area_name, Final_SAU_FE, sum)
-colnames(tonnesFEf) <- c("fishing_entity", "area_name", "tonnesFE_EEZ")
-colnames(landedvalueFEf) <- c("fishing_entity", "area_name", "landedvalueFE_EEZ")
-
-FE_EEZ <- merge(tonnesFEf,landedvalueFEf)
-
-FE_EEZ <- subset(FE_EEZ, FE_EEZ$area_name %in% EEZ_ReviewDat)
-
-write.csv(FE_EEZ, file = "data/FE_EEZ.csv")
-
-
-f1 <- ggplot(FE_EEZ, aes(x=fishing_entity, y=area_name))+
-  geom_point(aes(size=tonnesFE_EEZ, colour=landedvalueFE_EEZ))+
-  xlab("Fishing countries")+
-  ylab("EEZ")+
-  theme(axis.text.x = element_text(angle=-45, hjust= 0.06))+
-  scale_color_gradient(low = "blue", high = "red")
-
-
+# 5. OUTPUT FILES####
+list_FE <- unique(Final_SAU_EEZ$fishing_entity)
+#write.csv(list_FE, "data/list_FE.csv")
+#write.csv(ReviewDat, "data/ReviewDat_Merge_SAU.csv")
