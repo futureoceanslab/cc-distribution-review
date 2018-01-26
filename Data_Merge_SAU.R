@@ -1,10 +1,11 @@
-##december 17
 ##Elena Ojea
 #Code for EEZ and species list from the review - matching EEZ data
 #input files: 
 # - Biblio_database.csv for the list of EEZs and species per EEZ
-# - Final_SAU_FE and Final_SAU_EEZ
-#output file: ReviewDat with EEZ and FE catches
+# - Final_SAU_EEZ
+#output files:
+# - ReviewDat with EEZ catches
+# - list_FE
 
 #Download the required libraries
 library(dplyr)
