@@ -20,7 +20,7 @@ colnames(ReviewDat.raw)
 ReviewDat <- ReviewDat.raw[, 1:68] #to erase empty columns
 
 #Read input file: the EEZ species catched
-Final_SAU_EEZ.raw <- read.csv("data/Final SAU EEZ.csv", stringsAsFactors=FALSE, header=T, sep = ";")
+Final_SAU_EEZ.raw <- read.csv("data/Final_SAU_EEZ.csv", stringsAsFactors=FALSE, header=T, sep = ";")
 
 ##FILTER SAU DATASETS: 5 last years, landings, NAs
 Final_SAU_EEZ <- filter(Final_SAU_EEZ.raw, year > 2009, catch_type=="Landings")
