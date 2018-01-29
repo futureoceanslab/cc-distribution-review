@@ -96,7 +96,7 @@ input: biblio_database.csv
 
 R code which describes the database used for this study.
 
- <strong>1.General description of the scientific papers used as database:</strong> Authors, type of data, duration of sampling, etc.
+ <strong>1.General description:</strong> Authors, year or article publication, type of data, duration of sampling, etc.
  Outcome: Figure
 
 <strong>2. Quality of data:</strong> Statistical methodology, number of observations and length of databases. 
