@@ -92,4 +92,12 @@ input: Final SAU EEZ.csv
 R markdown code for the figures, used the 3  .csv generated files as input, together with the Biblio_database.csv file
 input: biblio_database.csv
 
+<strong>-4. DATABASE DESCRIPTION </strong>
 
+R code which describes the database use for this research.
+
+ <strong>1.General description of the scientific papers used as database: Authors, type of data, duration of sampling, etc.
+ Outcome: Figure
+
+<strong>2. Quality of data: Statistical methodology, number of observations and length of databases. 
+ Outcome: Figure
