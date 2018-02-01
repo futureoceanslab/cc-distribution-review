@@ -173,7 +173,7 @@ tonlandEEZyear<-Final_SAU_EEZ %>%
             group_by(area_name,year) %>%
             summarise(tonnesEEZyear=sum(tonnes,na.rm = T),
                       landedvalueEEZyear=sum(landed_value,na.rm = T))
-#take mean value across years (2010-2014    
+#take mean value across years (2010-2014)    
 tonlandEEZ<- tonlandEEZyear %>%
   group_by(area_name) %>%
   summarise(tonnesEEZ=mean(tonnesEEZyear,na.rm = T),

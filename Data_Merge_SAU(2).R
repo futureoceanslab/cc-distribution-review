@@ -11,22 +11,24 @@ Final_SAU_FE <- filter(Final_SAU_FE, year > 2009, catch_type=="Landings")
 #dataframe sp - EEZ catch
 counts <- Final_SAU_FE %>%
   group_by(fishing_entity, year) %>%
-  tally  ##YEAR 2012 removed in ReviewDat_Merge_SaU$tonnesEEZ,landedvalueEEZ!!!!!!
+  tally  
 
 
 # 1. FISHING ENTITIES#### 
 
-#add fishing entities to ReviewDat by species and average years (mean across years)
-Final_SAU_FE <- Final_SAU_FE %>%
+#add fishing entities landings and catches per species to ReviewDat 
+
+#Catches and Landings per fishing entity, EEZ and species (mean across years)
+tonlandFEsp <- Final_SAU_FE %>%
   group_by(fishing_entity, area_name, scientific_name) %>%
   summarise(tonnesFEsp=mean(tonnes,na.rm=T),
             landedvalueFEsp=mean(landed_value, na.rm=T))#Why mean?????
 
-ReviewDat <- merge(ReviewDat_Merge_SAU, Final_SAU_FE, by=c("area_name","scientific_name"), all.x=TRUE)
+ReviewDat <- merge(ReviewDat_Merge_SAU, tonlandFEsp, by=c("area_name","scientific_name"), all.x=TRUE)
 
 
-#total catch per species for Fishing entities (sum across species and fishing entities)
-tonlandFEspT<- Final_SAU_FE %>%
+#total catch per species for Fishing entities (sum across species and eezs)
+tonlandFEspT<- tonlandFEsp %>%
               group_by(fishing_entity, scientific_name) %>%
               summarise(tonnesFEspT=sum(tonnesFEsp,na.rm=T),
                         landedvalueFEspT=sum(landedvalueFEsp, na.rm=T))
@@ -34,11 +36,11 @@ tonlandFEspT<- Final_SAU_FE %>%
 ReviewDat <- merge(ReviewDat, tonlandFEspT, by=c("fishing_entity", "scientific_name"), all.x=TRUE)
 
 
-#Total catch per fishing entity (sum across fishing entities)
-tonlandFE<- Final_SAU_FE %>%
+#Total catch per fishing entity (mean across fishing entities)
+tonlandFE<- tonlandFEspT %>%
   group_by(fishing_entity) %>%
-  summarise(tonnesFE=sum(tonnesFEsp,na.rm=T),
-            landedvalueFE=sum(landedvalueFEsp, na.rm=T))
+  summarise(tonnesFE=sum(tonnesFEspT,na.rm=T),
+            landedvalueFE=sum(landedvalueFEspT, na.rm=T))
 
 ReviewDat <- merge(ReviewDat, tonlandFE, by=c("fishing_entity"), all.x=TRUE)
 
