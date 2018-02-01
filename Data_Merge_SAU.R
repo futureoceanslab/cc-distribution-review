@@ -165,24 +165,32 @@ counts <- Final_SAU_EEZ %>%
   group_by(area_name, year) %>%
   tally
 
-#delete year 2012 for the low number of observations as compared to other years
-Final_SAU_EEZ <- subset(Final_SAU_EEZ, Final_SAU_EEZ$year!=2012)##This is a bit strange
 
-#dataframe total EEZ catch
-tonlandEEZ<-Final_SAU_EEZ %>%
-            group_by(area_name) %>%
-            summarise(tonnesEEZ=sum(tonnes,na.rm = T),
-                      landedvalueEEZ=sum(landed_value,na.rm = T))
+
+#dataframe total EEZ catch 
+#sum all catches per area_name and year
+tonlandEEZyear<-Final_SAU_EEZ %>%
+            group_by(area_name,year) %>%
+            summarise(tonnesEEZyear=sum(tonnes,na.rm = T),
+                      landedvalueEEZyear=sum(landed_value,na.rm = T))
+#take mean value across years (2010-2014    
+tonlandEEZ<- tonlandEEZyear %>%
+  group_by(area_name) %>%
+  summarise(tonnesEEZ=mean(tonnesEEZyear,na.rm = T),
+            landedvalueEEZ=mean(landedvalueEEZyear,na.rm = T))          
+            
+            
 
 ReviewDat <- merge(ReviewDat, tonlandEEZ, by=c("area_name"), all.x=TRUE)
 
 
 
 # 4. ADD TOTAL CATCH AND LANDINGS BY EEZ AND SP####
+#gives mean value across years (2010-2014 ) annual tonnes (2010-2014) 
 tonlandEEZsp<-Final_SAU_EEZ %>%
   group_by(area_name, scientific_name) %>%
   summarise(tonnesEEZsp=mean(tonnes,na.rm = T),
-            landedvalueEEZsp=mean(landed_value,na.rm = T))#Why mean?????
+            landedvalueEEZsp=mean(landed_value,na.rm = T))
 
 splist <- unique(tonlandEEZsp$scientific_name)
 Sp_ReviewDat %in% splist
