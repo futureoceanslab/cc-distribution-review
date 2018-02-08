@@ -1,7 +1,7 @@
 ##Elena Ojea
 #Code for EEZ and species list from the review - matching EEZ data
 #input files: 
-# - Biblio_database.csv for the list of EEZs and species per EEZ with fishbase (ReviewDatsp)
+# - ReviewDatsp.csv biblio data + fishbase species info from integration_fishbase.R code
 # - Final_SAU_EEZ
 #output files:
 # - ReviewDat_Merge_SAU with EEZ catches
