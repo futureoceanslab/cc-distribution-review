@@ -12,7 +12,7 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 
-##OPEN DATASETS EEZ and Review
+##OPEN DATASETS EEZ and Review with Fishbase (feb 18)
 
 #Read input file: our review database
 #ReviewDat.raw <- read.csv("data/biblio_database.csv", stringsAsFactors=FALSE, header=T, sep = ";")
@@ -21,7 +21,7 @@ ReviewDat.raw <- read.csv("data/ReviewDatsp.csv", stringsAsFactors=FALSE, header
 
 colnames(ReviewDat.raw)
 #ReviewDat <- ReviewDat.raw[, 1:68] #to erase empty columns
-ReviewDat <- ReviewDat.raw ##NEW
+ReviewDat <- ReviewDat.raw [, 2:167] 
 
 #Read input file: the EEZ species catched
 Final_SAU_EEZ.raw <- read.csv("data/Final_SAU_EEZ.csv", stringsAsFactors=FALSE, header=T, sep = ";")
@@ -147,7 +147,7 @@ ReviewDat <- ReviewDat %>%
 
 #recode colnames in ReviewDat to match Final_SAU_EEZ names
 colnames(ReviewDat)[12] <- "scientific_name"
-colnames(ReviewDat)[68] <- "area_name"
+colnames(ReviewDat)[166] <- "area_name"  ##need to change if going back to biblio_database without fishbase
 
 #remove blank spaces from eez variable names in Review
 ReviewDat$area_name <- trim(ReviewDat$area_name)
