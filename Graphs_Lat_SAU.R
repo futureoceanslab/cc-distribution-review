@@ -11,7 +11,7 @@ library(ggrepel)
 
 #Open ReviewDat with SAU data on EEZ and FE:
 
-ReviewDat <- read.csv("data/ReviewDat.csv", stringsAsFactors=FALSE)
+ReviewDat <- read.csv("data/Biblio_database_full.csv", stringsAsFactors=FALSE)
 
 
 #CATCH DEPENDENCY OF FISHING ENTITIES
