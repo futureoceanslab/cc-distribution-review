@@ -24,7 +24,7 @@ tonlandFEsp <- Final_SAU_FE %>%
   summarise(tonnesFEsp=mean(tonnes,na.rm=T),
             landedvalueFEsp=mean(landed_value, na.rm=T))#Why mean?????
 
-ReviewDat <- merge(ReviewDat_Merge_SAU, tonlandFEsp, by=c("area_name","scientific_name"), all.x=TRUE)
+ReviewDatFB_SAU3  <- merge(ReviewDat_Merge_SAU, tonlandFEsp, by=c("area_name","scientific_name"), all.x=TRUE)
 
 
 #total catch per species for Fishing entities (sum across species and eezs)
@@ -33,7 +33,7 @@ tonlandFEspT<- tonlandFEsp %>%
               summarise(tonnesFEspT=sum(tonnesFEsp,na.rm=T),
                         landedvalueFEspT=sum(landedvalueFEsp, na.rm=T))
 
-ReviewDat <- merge(ReviewDat, tonlandFEspT, by=c("fishing_entity", "scientific_name"), all.x=TRUE)
+ReviewDatFB_SAU4 <- merge(ReviewDatFB_SAU3, tonlandFEspT, by=c("fishing_entity", "scientific_name"), all.x=TRUE)
 
 
 #Total catch per fishing entity (mean across fishing entities)
@@ -42,9 +42,9 @@ tonlandFE<- tonlandFEspT %>%
   summarise(tonnesFE=sum(tonnesFEspT,na.rm=T),
             landedvalueFE=sum(landedvalueFEspT, na.rm=T))
 
-ReviewDat <- merge(ReviewDat, tonlandFE, by=c("fishing_entity"), all.x=TRUE)
+ReviewDatFB_SAU5 <- merge(ReviewDatFB_SAU4, tonlandFE, by=c("fishing_entity"), all.x=TRUE)
 
 
 
 # 2. OUTPUT FILES####
-#write.csv(ReviewDat, file = "data/ReviewDat.csv")
+#write.csv(ReviewDatFB_SAU5, file = "data/Biblio_database_full.csv")
