@@ -47,4 +47,4 @@ ReviewDat <- merge(ReviewDat, tonlandFE, by=c("fishing_entity"), all.x=TRUE)
 
 
 # 2. OUTPUT FILES####
-write.csv(ReviewDat, file = "data/ReviewDat.csv")
+#write.csv(ReviewDat, file = "data/ReviewDat.csv")
