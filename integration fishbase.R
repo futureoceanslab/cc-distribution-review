@@ -19,7 +19,12 @@ library(data.table)
 
 #ReviewDat <- read.csv("~/OneDrive/CLOCK_TEAM/03_FUTURE OCEANS/FO_BIBLIO/FO_DATA_ANALYSIS/R for fishbase review/biblio_database.csv")
 #ReviewDat <- read.csv("C:/Users/alba.aguion/OneDrive/CLOCK_TEAM/03_FUTURE OCEANS/FO_BIBLIO/FO_DATA_ANALYSIS/R for fishbase review/biblio_database.csv")
-ReviewDat <- read.csv("data/biblio_database.csv", stringsAsFactors=FALSE, header=T, sep = ";")
+ReviewDat <- read.csv("data/biblio_database.csv", stringsAsFactors=FALSE, header=T, sep = ",")
+
+
+##delete blank columns
+colnames(ReviewDat)
+ReviewDat <- ReviewDat[, 1:69] 
 
 
 #TO REMOVE NICOLAS ET AL. - values too different from the rest of the observations
@@ -65,10 +70,7 @@ fb_variables <- c("StockCode", "sciname", "StockDefs", "LocalUnique", "IUCN_Code
 
 mystockdat <- stockdat[, fb_variables]   #select the database for the fb_variables I want
 
-##now I add the variables to the review database
-#cleaning of the database
-colnames(ReviewDat)
-ReviewDat<-ReviewDat[, 1:67] #to delete empty columns
+
 
 #ID variable -StockCode - to join the databases REVIEW and STOCKDAT
 colnames(ReviewDat)[22] <- "StockCode"  #to put the same variable name in both databases
