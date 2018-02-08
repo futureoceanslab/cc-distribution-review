@@ -109,11 +109,46 @@ l9 <- ggplot(range, aes(scientific_name,b_value, label=fishing_entity))+
 l9
 
 
+####AREA###PLOTS CATCH DEPENDENCY PER SP and FE total SP, per SP and FE total catch
+#FE total catch dependency on species in EEZ
+
+#FIGURE 3
+
+
+l3 <- ggplot(area, aes(fishing_entity, b_value, label = scientific_name, na.rm=TRUE)) +
+  #geom_point()
+  geom_jitter(alpha=0.8, aes(color=catchdepFEsp, size=tonnesFEsp),
+              position = position_jitter(width = .001))+
+  theme(axis.text.x = element_text(angle=-45, hjust= 0.06))+
+  #geom_text_repel(data=subset(area, range$tonnesFEsp>20000), size=3, vjust=1)+
+  ggtitle("area impacts in fishing entities")+
+  xlab("Fishing Entities")+
+  ylab("km/decade")
+l3
 
 
 
+##using fishing entities in the X Axis
+#FIGURE 4
 
-##MODEL example - needs data from fishbase too
-m <-glm(b_value  ~ study_year+lat_dec+b_years+tonnesEEZ+landedvalueEEZ+tonnesEEZsp+landedvalueEEZsp+tonnesFEsp+tonnesFE+landedvalueFE+catchdepFEsp+landdepFEsp+spvalueFE, data=depth)
-summary(m)
+l4 <- ggplot(area, aes(fishing_entity,catchdepFE, label=scientific_name))+
+  geom_point(aes(color=b_value, size=tonnesFEsp))+
+  geom_text_repel(data=subset(area, depth$catchdepFE>0.05), size=2, vjust=1)+
+  theme(axis.text.x = element_text(angle=-45, hjust= 0.06))+
+  scale_color_gradient(low = "blue", high = "red")+
+  ggtitle("Countries species dependence")
+l4
+
+
+##using scientific names in the X Axis
+#FIGURE 9
+l9 <- ggplot(area, aes(scientific_name,b_value, label=fishing_entity))+
+  geom_point(aes(color=catchpresEEZsp, size=tonnesEEZ))+
+  #geom_text_repel(data=subset(area, range$catchdepFE>0.05), size=3, vjust=1)+
+  theme(axis.text.x = element_text(size=6, angle=-45, hjust= 0.06))+
+  scale_color_gradient(low = "blue", high = "red")
+l9
+
+
+
 
