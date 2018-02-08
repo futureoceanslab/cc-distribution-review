@@ -3,10 +3,6 @@
 ##Date: April 7th 2017
 ##output: two csv files with stock and species data (ReviewDatst.csv", "ReviewDatsp.csv")
 
-#set working directory
-
-#setwd("~/OneDrive/CLOCK_TEAM/03_FUTURE OCEANS/FO_BIBLIO/FO_DATA_ANALYSIS/R for fishbase review")
-setwd("C:/Users/alba.aguion/OneDrive/CLOCK_TEAM/03_FUTURE OCEANS/FO_BIBLIO/FO_DATA_ANALYSIS/R for fishbase review")
 
 #install libraries
 library(rfishbase)
@@ -21,8 +17,10 @@ library(data.table)
 
 #open data: reviewdatabase
 
-ReviewDat <- read.csv("~/OneDrive/CLOCK_TEAM/03_FUTURE OCEANS/FO_BIBLIO/FO_DATA_ANALYSIS/R for fishbase review/biblio_database.csv")
-ReviewDat <- read.csv("C:/Users/alba.aguion/OneDrive/CLOCK_TEAM/03_FUTURE OCEANS/FO_BIBLIO/FO_DATA_ANALYSIS/R for fishbase review/biblio_database.csv")
+#ReviewDat <- read.csv("~/OneDrive/CLOCK_TEAM/03_FUTURE OCEANS/FO_BIBLIO/FO_DATA_ANALYSIS/R for fishbase review/biblio_database.csv")
+#ReviewDat <- read.csv("C:/Users/alba.aguion/OneDrive/CLOCK_TEAM/03_FUTURE OCEANS/FO_BIBLIO/FO_DATA_ANALYSIS/R for fishbase review/biblio_database.csv")
+ReviewDat <- read.csv("data/biblio_database.csv", stringsAsFactors=FALSE, header=T, sep = ";")
+
 
 #TO REMOVE NICOLAS ET AL. - values too different from the rest of the observations
 ReviewDat<-subset(ReviewDat, ! id_study=="6") 
@@ -52,8 +50,8 @@ speciesDat <- species(SpReview) #for all  fishbase data
 stockdat <- stocks(SpReview)
 
 ##Now I save the new databases for fishbase data
-write.csv(speciesDat, file = "speciesDat.csv")
-write.csv(stockdat, file = "stockdat.csv")
+#write.csv(speciesDat, file = "speciesDat.csv")
+#write.csv(stockdat, file = "stockdat.csv")
 
 
 
@@ -91,9 +89,8 @@ ReviewDatsp <- left_join(ReviewDat, speciesDat, by = "SpecCode")
 
 
 #Now I save the FULL data of fishbase with our reviewdata
-write.csv(ReviewDatst, file = "ReviewDatst.csv") #for the stocks data
-write.csv(ReviewDatsp, file = "ReviewDatsp.csv") #for the species data
-
+#write.csv(ReviewDatst, file = "ReviewDatst.csv") #for the stocks data
+#write.csv(ReviewDatsp, file = "ReviewDatsp.csv") #for the species data
 
 
 

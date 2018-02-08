@@ -1,7 +1,7 @@
 ##Elena Ojea
 #Code for EEZ and species list from the review - matching EEZ data
 #input files: 
-# - Biblio_database.csv for the list of EEZs and species per EEZ
+# - Biblio_database.csv for the list of EEZs and species per EEZ with fishbase (ReviewDatsp)
 # - Final_SAU_EEZ
 #output files:
 # - ReviewDat_Merge_SAU with EEZ catches
@@ -15,9 +15,13 @@ library(ggplot2)
 ##OPEN DATASETS EEZ and Review
 
 #Read input file: our review database
-ReviewDat.raw <- read.csv("data/biblio_database.csv", stringsAsFactors=FALSE, header=T, sep = ";")
+#ReviewDat.raw <- read.csv("data/biblio_database.csv", stringsAsFactors=FALSE, header=T, sep = ";")
+ReviewDat.raw <- read.csv("data/ReviewDatsp.csv", stringsAsFactors=FALSE, header=T, sep = ",") ## biblio_database + fishbase from script integration_fishbase.R
+
+
 colnames(ReviewDat.raw)
-ReviewDat <- ReviewDat.raw[, 1:68] #to erase empty columns
+#ReviewDat <- ReviewDat.raw[, 1:68] #to erase empty columns
+ReviewDat <- ReviewDat.raw ##NEW
 
 #Read input file: the EEZ species catched
 Final_SAU_EEZ.raw <- read.csv("data/Final_SAU_EEZ.csv", stringsAsFactors=FALSE, header=T, sep = ";")
