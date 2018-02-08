@@ -106,7 +106,7 @@ l2 <- ggplot(latitude, aes(catchdepFEsp, b_value, label = scientific_name)) +
   #FIGIRE 3
   
   latitude <- subset(latitude, !is.na(latitude$fishing_entity))
-  l3 <- ggplot(a, aes(fishing_entity, b_value, label = scientific_name, na.rm=TRUE)) +
+  l3 <- ggplot(latitude, aes(fishing_entity, b_value, label = scientific_name, na.rm=TRUE)) +
     #geom_point()
     geom_jitter(alpha=0.8, aes(color=catchdepFEsp, size=tonnesFEsp),
                 position = position_jitter(width = .001))+
@@ -114,8 +114,9 @@ l2 <- ggplot(latitude, aes(catchdepFEsp, b_value, label = scientific_name)) +
     #geom_text_repel(data=subset(latitude, latitude$tonnesFEsp>20000), size=3, vjust=1)+
     ggtitle("latitude impacts in fishing entities")+
     xlab("Fishing Entities")+
-    ylab("km/decade")
-  l3
+    ylab("km/decade")+
+    ylim(-100, 200)
+    l3
 
 
 
@@ -182,10 +183,10 @@ l8
 l9 <- ggplot(latitude, aes(scientific_name,b_value, label=fishing_entity))+
   geom_point(aes(color=catchpresEEZsp, size=tonnesEEZ))+
   #geom_text_repel(data=subset(latitude, latitude$catchdepFE>0.05), size=3, vjust=1)+
-  theme(axis.text.x = element_text(size=6, angle=-45, hjust= 0.06))+
-  scale_color_gradient(low = "blue", high = "red")
+  theme(axis.text.x = element_text(size=8, angle=-45, hjust= 0.06))+
+  scale_color_gradient(low = "blue", high = "red")+
+  ylim(-50, 200)
 l9
-
 
 
 
