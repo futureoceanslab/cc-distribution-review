@@ -189,10 +189,21 @@ ReviewDatFB_SAU1 <- merge(ReviewDatFB, tonlandEEZ, by=c("area_name"), all.x=TRUE
 
 # 4. ADD TOTAL CATCH AND LANDINGS BY EEZ AND SP####
 #gives mean value across years (2010-2014 ) annual tonnes (2010-2014) 
+tonlandEEZspyear<-Final_SAU_EEZ %>%
+  group_by(area_name, year, scientific_name) %>%
+  summarise(tonnesEEZspyear=sum(tonnes,na.rm = T),
+            landedvalueEEZspyear=sum(landed_value,na.rm = T))
+tonlandEEZspbis<-tonlandEEZspyear %>%
+  group_by(area_name, scientific_name) %>%
+  summarise(tonnesEEZsp=mean(tonnesEEZspyear,na.rm = T),
+            landedvalueEEZsp=mean(landedvalueEEZspyear,na.rm = T))
+
 tonlandEEZsp<-Final_SAU_EEZ %>%
   group_by(area_name, scientific_name) %>%
   summarise(tonnesEEZsp=mean(tonnes,na.rm = T),
             landedvalueEEZsp=mean(landed_value,na.rm = T))
+
+identical(tonlandEEZspbis,tonlandEEZsp)
 
 splist <- unique(tonlandEEZsp$scientific_name)
 Sp_ReviewDatFB %in% splist
