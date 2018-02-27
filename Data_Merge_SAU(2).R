@@ -19,10 +19,22 @@ counts <- Final_SAU_FE %>%
 #add fishing entities landings and catches per species to ReviewDat 
 
 #Catches and Landings per fishing entity, EEZ and species (mean across years)
+tonlandFEspyear <- Final_SAU_FE %>%
+  group_by(fishing_entity, area_name, year, scientific_name) %>%
+  summarise(tonnesFEspyear=sum(tonnes,na.rm=T),
+            landedvalueFEspyear=sum(landed_value, na.rm=T))
+
+tonlandFEspbis <- tonlandFEspyear %>% #borrar bis
+  group_by(fishing_entity, area_name, scientific_name) %>%
+  summarise(tonnesFEsp=mean(tonnesFEspyear,na.rm=T),
+            landedvalueFEsp=mean(landedvalueFEspyear, na.rm=T))
+
 tonlandFEsp <- Final_SAU_FE %>%
   group_by(fishing_entity, area_name, scientific_name) %>%
   summarise(tonnesFEsp=mean(tonnes,na.rm=T),
             landedvalueFEsp=mean(landed_value, na.rm=T))#Why mean?????
+
+identical(tonlandFEspbis,tonlandFEsp)
 
 ReviewDatFB_SAU3  <- merge(ReviewDat_Merge_SAU, tonlandFEsp, by=c("area_name","scientific_name"), all.x=TRUE)
 
