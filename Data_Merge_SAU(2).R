@@ -38,7 +38,6 @@ identical(tonlandFEspbis,tonlandFEsp)
 
 ReviewDatFB_SAU3  <- merge(ReviewDat_Merge_SAU, tonlandFEsp, by=c("area_name","scientific_name"), all.x=TRUE)
 
-
 #total catch per species for Fishing entities (sum across species and eezs)
 tonlandFEspT<- tonlandFEsp %>%
               group_by(fishing_entity, scientific_name) %>%
@@ -56,7 +55,18 @@ tonlandFE<- tonlandFEspT %>%
 
 ReviewDatFB_SAU5 <- merge(ReviewDatFB_SAU4, tonlandFE, by=c("fishing_entity"), all.x=TRUE)
 
+#Total catch per fishing entity in EEZ (annual mean 2010-2014)
+tonlandFEEZyear <- Final_SAU_FE %>%
+  group_by(fishing_entity, area_name, year) %>%
+  summarise(tonnesFEEZyear=sum(tonnes,na.rm=T),
+            landedvalueFEZZyear=sum(landed_value, na.rm=T))
 
+tonlandFEEZ <- tonlandFEEZyear %>% 
+  group_by(fishing_entity, area_name) %>%
+  summarise(tonnesFEEZ=mean(tonnesFEEZyear,na.rm=T),
+            landedvalueFEEZ=mean(landedvalueFEZZyear, na.rm=T))
+
+ReviewDatFB_SAU6 <- merge(ReviewDatFB_SAU5, tonlandFEEZ, by=c("fishing_entity", "area_name"), all.x=TRUE)
 
 # 2. OUTPUT FILES####
-#write.csv(ReviewDatFB_SAU5, file = "data/Biblio_database_full.csv")
+#write.csv(ReviewDatFB_SAU6, file = "data/Biblio_database_full.csv")
