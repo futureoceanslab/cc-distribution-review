@@ -9,71 +9,78 @@ library(tidyr)
 library(ggplot2)
 library(ggrepel)
 
-#Open ReviewDat with SAU data on EEZ and FE:
+#Open Biblio_data with SAU data on EEZ and FE:
 
-ReviewDat <- read.csv("data/ReviewDat.csv", stringsAsFactors=FALSE)
+Biblio_data <- read.csv("data/Biblio_database_full.csv", stringsAsFactors=FALSE)
 
 
 #CATCH DEPENDENCY OF FISHING ENTITIES
 
 #1. Species catch dependency on the area
-ReviewDat$catchdepFEsp <- ReviewDat$tonnesFEsp/ReviewDat$tonnesFEspT #the dependence of the country species catches on the EEZ species catches
-ReviewDat$landdepFEsp <-  ReviewDat$landedvalueFEsp/ReviewDat$landedvalueFEspT #the dependence of the country total SP Value on the EEZ SP catch value 
+Biblio_data$catchdepFEsp <- Biblio_data$tonnesFEsp/Biblio_data$tonnesFEspT #the dependence of the country species catches on the EEZ species catches
+Biblio_data$landdepFEsp <-  Biblio_data$landedvalueFEsp/Biblio_data$landedvalueFEspT #the dependence of the country total SP Value on the EEZ SP catch value 
 
-range(ReviewDat$catchdepFEsp, na.rm=TRUE)
-range(ReviewDat$landdepFEsp, na.rm=TRUE) #is the same relation
+range(Biblio_data$catchdepFEsp, na.rm=TRUE)
+range(Biblio_data$landdepFEsp, na.rm=TRUE) #is the same relation
 
 #2. Country dependency on the species in the area
 
-ReviewDat$catchdepFE <- ReviewDat$tonnesFEsp/ReviewDat$tonnesFE #the dependence of the country species catches on the EEZ species catches
-range(ReviewDat$catchdepFE, na.rm=TRUE)
+Biblio_data$catchdepFE <- Biblio_data$tonnesFEsp/Biblio_data$tonnesFE #the dependence of the country species catches on the EEZ species catches
+range(Biblio_data$catchdepFE, na.rm=TRUE)
+
+#3. Country dependency on the area
+
+Biblio_data$catchdepFEEZ <- Biblio_data$tonnesFEEZ/Biblio_data$tonnesEEZ 
+range(Biblio_data$catchdepFEEZ, na.rm=TRUE)
+
+a<-filter(Biblio_data,catchdepFEEZ>1)
 
 ##VALUE OF SPECIES FOR FISHING ENTITIES
 
 ###Species VAlue in FE: landed value/tonnes
 
-ReviewDat$spvalueFE  <- ReviewDat$landedvalueFEsp/ReviewDat$tonnesFEsp
-range(ReviewDat$spvalueFE, na.rm=TRUE)
-quantile(ReviewDat$spvalueFE, na.rm=TRUE)
+Biblio_data$spvalueFE  <- Biblio_data$landedvalueFEsp/Biblio_data$tonnesFEsp
+range(Biblio_data$spvalueFE, na.rm=TRUE)
+quantile(Biblio_data$spvalueFE, na.rm=TRUE)
 
 
 ##CATCH PRESSURE IN EEZ
 
-ReviewDat$catchpresEEZsp <- ReviewDat$tonnesEEZsp/ReviewDat$tonnesEEZ
-ReviewDat$landpresEEZsp <- ReviewDat$landedvalueEEZsp/ReviewDat$landedvalueEEZ
+Biblio_data$catchpresEEZsp <- Biblio_data$tonnesEEZsp/Biblio_data$tonnesEEZ
+Biblio_data$landpresEEZsp <- Biblio_data$landedvalueEEZsp/Biblio_data$landedvalueEEZ
 
-range(ReviewDat$catchpresEEZsp, na.rm=TRUE)
+range(Biblio_data$catchpresEEZsp, na.rm=TRUE)
 
 #prices in EEZs (something is wrong here, strange numbers!)
-ReviewDat$spvalueEEZ <- ReviewDat$tonnesEEZsp/ReviewDat$landedvalueEEZsp 
-range(ReviewDat$spvalueEEZ, na.rm=TRUE)
-quantile(ReviewDat$spvalueEEZ, na.rm=TRUE)
+Biblio_data$spvalueEEZ <- Biblio_data$tonnesEEZsp/Biblio_data$landedvalueEEZsp 
+range(Biblio_data$spvalueEEZ, na.rm=TRUE)
+quantile(Biblio_data$spvalueEEZ, na.rm=TRUE)
 
 
 
 ##PREPARE VARIABLES FOR PLOTS
 
-ReviewDat$b_value <- as.numeric(as.character(ReviewDat$b_value))
+Biblio_data$b_value <- as.numeric(as.character(Biblio_data$b_value))
 #Subsets of the impacts
-ReviewDat$b_impact<-as.factor(ReviewDat$b_impact)
-ReviewDat$b_value<-as.numeric(as.character(ReviewDat$b_value))
+Biblio_data$b_impact<-as.factor(Biblio_data$b_impact)
+Biblio_data$b_value<-as.numeric(as.character(Biblio_data$b_value))
 
-#levels(ReviewDatSAU$b_impact)
-levels(ReviewDat$b_impact)<-c("mean lat shift", "mean lat shift", "depth shift", "boundary lat shift", "boundary lat shift", "mean long shift", "mean long shift", "mean lat and long shift", "area occupied")
+#levels(Biblio_dataSAU$b_impact)
+levels(Biblio_data$b_impact)<-c("mean lat shift", "mean lat shift", "depth shift", "boundary lat shift", "boundary lat shift", "mean long shift", "mean long shift", "mean lat and long shift", "area occupied")
 #remove Nicolas (uds=6)
-ReviewDat <- subset(ReviewDat, ReviewDat$id_study!=6)
+Biblio_data <- subset(Biblio_data, Biblio_data$id_study!=6)
 
-latitude <- subset (ReviewDat, b_impact =="mean lat shift")
-depth    <- subset (ReviewDat, b_impact=="depth shift")
-range    <- subset (ReviewDat, b_impact== "boundary lat shift")
-area     <- subset (ReviewDat, b_impact == "area occupied")
+latitude <- subset (Biblio_data, b_impact =="mean lat shift")
+depth    <- subset (Biblio_data, b_impact=="depth shift")
+range    <- subset (Biblio_data, b_impact== "boundary lat shift")
+area     <- subset (Biblio_data, b_impact == "area occupied")
 
 ####RANGE###PLOTS CATCH DEPENDENCY PER SP and FE total SP, per SP and FE total catch
 #FE total catch dependency on species in EEZ
 
 #FIGURE 3
 
-range    <- subset (ReviewDat, b_impact== "boundary lat shift")
+range    <- subset (Biblio_data, b_impact== "boundary lat shift")
 l3 <- ggplot(range, aes(fishing_entity, b_value, label = scientific_name, na.rm=TRUE)) +
   #geom_point()
   geom_jitter(alpha=0.8, aes(color=catchdepFEsp, size=tonnesFEsp),
