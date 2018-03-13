@@ -30,6 +30,13 @@ range(Biblio_data$landdepFEsp, na.rm=TRUE) #is the same relation
 Biblio_data$catchdepFE <- Biblio_data$tonnesFEsp/Biblio_data$tonnesFE #the dependence of the country species catches on the EEZ species catches
 range(Biblio_data$catchdepFE, na.rm=TRUE)
 
+#3. Country dependency on the area
+
+Biblio_data$catchdepFEEZ <- Biblio_data$tonnesFEEZ/Biblio_data$tonnesEEZ 
+range(Biblio_data$catchdepFEEZ, na.rm=TRUE)
+
+a<-filter(Biblio_data,catchdepFEEZ>1)
+
 ##VALUE OF SPECIES FOR FISHING ENTITIES
 
 ###Species VAlue in FE: landed value/tonnes
