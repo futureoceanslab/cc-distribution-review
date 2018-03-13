@@ -62,10 +62,8 @@ quantile(Biblio_data$spvalueEEZ, na.rm=TRUE)
 
 ##PREPARE VARIABLES FOR PLOTS
 
-Biblio_data$b_value <- as.numeric(as.character(Biblio_data$b_value))
 #Subsets of the impacts
 Biblio_data$b_impact<-as.factor(Biblio_data$b_impact)
-Biblio_data$b_value<-as.numeric(as.character(Biblio_data$b_value))
 
 #levels(Biblio_dataSAU$b_impact)
 levels(Biblio_data$b_impact)<-c("mean lat shift", "mean lat shift", "depth shift", "boundary lat shift", "boundary lat shift", "mean long shift", "mean long shift", "mean lat and long shift", "area occupied")
@@ -197,9 +195,33 @@ l9 <- ggplot(latitude, aes(scientific_name,b_value, label=fishing_entity))+
   ylim(-50, 200)
 l9
 
+#FIGURE 10
+latitude_b_min<-latitude %>%
+  group_by(fishing_entity) %>%
+  summarise(b_mean=mean(b_value,na.rm = T),
+            b=min(b_value,na.rm = T),
+            b_sd=sd(b_value,na.rm = T),
+            b_n=n(),
+            graph="b_min")
+#latitude_b_min$graph<-"b_min"
+latitude_b_max<-latitude %>%
+  group_by(fishing_entity) %>%
+  summarise(b_mean=mean(b_value,na.rm = T),
+            b=max(b_value,na.rm = T),
+            b_sd=sd(b_value,na.rm = T),
+            b_n=n(),
+            graph="b_max")
+#latitude_b_max$graph<-"b_max"
 
+latitude_b<-bind_rows(latitude_b_min,latitude_b_max)
 
-
+ggplot(latitude_b)+
+  geom_point(aes(x=fishing_entity,y=graph,size=b))+ #color=b, 
+  #scale_color_gradient(low = "blue", high = "red")+
+  scale_color_gradient(guide = F)+
+  ylim(min(latitude_b$graph), max(latitude_b$graph))+ 
+  coord_flip()
+#NO PUEDE HABER MISSING VALUES!!!!!!!!!!!! ERROR AL HACER MERGE EN DATA_MERGE_scripts
 
 ##MODEL example - needs data from fishbase too
 m <-glm(b_value  ~ study_year+lat_dec+b_years+tonnesEEZ+landedvalueEEZ+tonnesEEZsp+landedvalueEEZsp+tonnesFEsp+tonnesFE+landedvalueFE+catchdepFEsp+landdepFEsp+spvalueFE, data=latitude)
