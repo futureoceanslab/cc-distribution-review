@@ -193,17 +193,11 @@ tonlandEEZspyear<-Final_SAU_EEZ %>%
   group_by(area_name, year, scientific_name) %>%
   summarise(tonnesEEZspyear=sum(tonnes,na.rm = T),
             landedvalueEEZspyear=sum(landed_value,na.rm = T))
-tonlandEEZspbis<-tonlandEEZspyear %>%
+tonlandEEZsp<-tonlandEEZspyear %>%
   group_by(area_name, scientific_name) %>%
   summarise(tonnesEEZsp=mean(tonnesEEZspyear,na.rm = T),
             landedvalueEEZsp=mean(landedvalueEEZspyear,na.rm = T))
 
-tonlandEEZsp<-Final_SAU_EEZ %>%
-  group_by(area_name, scientific_name) %>%
-  summarise(tonnesEEZsp=mean(tonnes,na.rm = T),
-            landedvalueEEZsp=mean(landed_value,na.rm = T))
-
-identical(tonlandEEZspbis,tonlandEEZsp)
 
 splist <- unique(tonlandEEZsp$scientific_name)
 Sp_ReviewDatFB %in% splist
