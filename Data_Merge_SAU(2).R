@@ -29,8 +29,16 @@ tonlandFEsp <- tonlandFEspyear %>% #borrar bis
   summarise(tonnesFEsp=mean(tonnesFEspyear,na.rm=T),
             landedvalueFEsp=mean(landedvalueFEspyear, na.rm=T))
 
-
 ReviewDatFB_SAU3  <- merge(ReviewDat_Merge_SAU, tonlandFEsp, by=c("area_name","scientific_name"), all.x=TRUE)
+
+#PB names don't match!
+a<-as.character(unique(ReviewDatFB_SAU3$area_name))
+b<-as.character(unique(ReviewDatFB_SAU3$scientific_name))
+c<-as.character(unique(tonlandFEsp$area_name))
+d<-as.character(unique(tonlandFEsp$scientific_name))
+a %in% c
+b %in% d
+
 
 #total catch per species for Fishing entities (sum across species and eezs)
 tonlandFEspT<- tonlandFEsp %>%
