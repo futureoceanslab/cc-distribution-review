@@ -39,7 +39,7 @@ Sp_SAU <- as.character(unique(Final_SAU_EEZ$scientific_name))      #list species
 matchsp <- Sp_ReviewDatFB %in% Sp_SAU
 table1 <- data.frame(matchsp, Sp_ReviewDatFB)
 table2 <- subset(table1, table1$matchsp==FALSE) ##species from review database missing in Sea Around Us
-table2  #list of unmatching species
+table2 #list of unmatching species
 
 #remove blank spaces from variable values in species
 trim <- function (x) gsub("^\\s+|\\s+$", "", x)
@@ -54,6 +54,7 @@ ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Stenotomus caprinu
 ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Clupea pallasii"] <- "Clupea pallasii pallasii"
 ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Scophthalmidae"] <- "Scophthalmus aquosus"
 ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Isopsetta isolepis"] <- "Eopsetta jordani"
+ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Loligo pealeii"] <- "Doryteuthis pealeii"
 
 #genrus level changes
 #ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Seriola quinqueradiata"] <- "Seriola"
