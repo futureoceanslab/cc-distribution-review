@@ -131,14 +131,6 @@ ReviewDatFB$eez_countries[ReviewDatFB$eez_countries == "Denmark (North Sea), Ger
 ReviewDatFB$eez_countries[ReviewDatFB$eez_countries == "Canada (East Coast)\n"] <- "Canada (East Coast)"
 ReviewDatFB$eez_countries[ReviewDatFB$eez_countries == "United Kindom (UK)"] <- "United Kingdom (UK)"
 
-##some observations have no EEZ. I put a EEZ based on location and http://www.marineregions.org/eezmapper.php
-##[6] Spain(Northwest), [166-175] France (Atlantic), [176,177] Norway; [178-189] US North East coast. 
-##REPASAR FILAS SI SE MODIFICA LA BASE ORIGINAL
-ReviewDatFB$eez_countries[6] <- "Spain (Northwest)" 
-ReviewDatFB$eez_countries[166:175] <- rep("France (Atlantic Coast)", 10)
-ReviewDatFB$eez_countries[176:177] <- rep("Norway", 2)
-ReviewDatFB$eez_countries[178:189] <- rep("USA (East Coast)", 12)
-
 #split EEZs and multiply the rows for each EEZ
 ReviewDatFB <- ReviewDatFB %>% 
   mutate(eez_countries = strsplit(as.character(eez_countries), ",")) %>% 
