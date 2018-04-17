@@ -40,8 +40,7 @@ a %in% c
 b %in% d
 sp2<-b[which(!b %in% d)]
 
-##correcciones (REPASAR POR QUE)
-#SP
+
 #species level changes
 ReviewDatFB_SAU3$b_scientific_name[ReviewDatFB_SAU3$b_scientific_name=="AtheresthesÊstomias"] <- "Atheresthes stomias"
 ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Lepidopsetta\240polyxystra"] <- "Lepidopsetta bilineata"
