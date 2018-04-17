@@ -123,14 +123,6 @@ Sp_ReviewDatFB <- as.character(subset(table1, table1$matchsp==TRUE)[,2])
 
 ## 2. MATCH EEZ NAMES IN REVIEW AND SAU (area_name)####
 
-#correct EEZ names in Review Database
-ReviewDatFB$eez_countries[ReviewDatFB$eez_countries == "USA (Alaska, Arctic)"] <- "USA (Alaska-Subarctic)"
-ReviewDatFB$eez_countries[ReviewDatFB$eez_countries == "Spain (mainland, Med and Gulf of Cadiz)"] <- "Spain (mainland Med and Gulf of Cadiz)"
-ReviewDatFB$eez_countries[ReviewDatFB$site == "Northeast US shelf"] <- "USA (East Coast)"
-ReviewDatFB$eez_countries[ReviewDatFB$eez_countries == "Denmark (North Sea), Germany (North Sea), Netherlands, Norway, United Kingdom (UK), Belgium, Sweden (West Coast)"] <- "Denmark (North Sea), Germany (North Sea), Netherlands, Norway, United Kingdom (UK), Belgium"
-ReviewDatFB$eez_countries[ReviewDatFB$eez_countries == "Canada (East Coast)\n"] <- "Canada (East Coast)"
-ReviewDatFB$eez_countries[ReviewDatFB$eez_countries == "United Kindom (UK)"] <- "United Kingdom (UK)"
-
 #split EEZs and multiply the rows for each EEZ
 ReviewDatFB <- ReviewDatFB %>% 
   mutate(eez_countries = strsplit(as.character(eez_countries), ",")) %>% 
