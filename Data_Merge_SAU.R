@@ -54,55 +54,6 @@ ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Scophthalmidae"] <
 ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Isopsetta isolepis"] <- "Eopsetta jordani"  
 ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Loligo pealeii"] <- "Doryteuthis pealeii"  
 
-#genrus level changes
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Seriola quinqueradiata"] <- "Seriola"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Sebastes viviparus"] <- "Sebastes"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Enchelyopus cimbrius"] <- "Gaidropsarus"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Bathyraja violacea"] <- "Raja"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Leucoraja erinacea"] <- "Raja"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Alosa pseudoharengus"] <- "Alosa"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Alosa sapidissima"] <- "Alosa"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Pseudopleuronectes americanus"] <- "Pleuronectidae"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Scophthalmus aquosus"] <- "Scophthalmidae"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Lophius americanus"] <- "Lophiidae"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Paralichthys dentatus"] <- "Paralichthyidae"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Hippoglossina oblonga"] <- "Paralichthyidae"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Gaidropsarus macrophthalmus"] <- "Gaidropsarus"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Myoxocephalus octodecemspinosus"] <- "Cottidae"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Loligo pealeii"] <- "Loligo"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Sebastes fasciatus"] <- "Sebastes"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Leucoraja ocellata"] <- "Raja"       #because they are <90cm
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Sebastes saxicola"] <- "Sebastes"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Serranus atrobranchus"] <- "Serranus"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Penaeus duorarum"] <- "Penaeidae"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Penaeus aztecus"] <- "Penaeidae"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Amblyraja radiata"] <- "Raja"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Sebastes ruberrimus"] <- "Sebastes"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Sebastes brevispinis"] <- "Sebastes"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Raja rhina"] <- "Rajidae"  #greater than 90cm"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Raja binoculata"] <- "Rajidae"  #greater than 90cm"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Pandalus platyceros"] <- "Pandalus"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Isopsetta isolepis"] <- "Pleuronectidae"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Paralithodes platypus"] <- "Lithodidae"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Pandalus eous"] <- "Pandalus"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Paralithodes aequispinus"] <- "Lithodidae"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Chionoecetes bairdi"] <- "Chionoecetes"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Berryteuthis magister"] <- "Mollusca"  #general but present in the alaska/subartic
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Urophycis regia"] <- "Phycis"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Buglossidium luteum"] <- "Soleidae"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Arnoglossus laterna"] <- "Bothidae"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Peprilus burti"] <- "Stromateidae"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Diplectrum bivittatum"] <- "Serranus"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Cyclopsetta chittendeni"] <- "Paralichthyidae"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Lithodes aequispinus"] <- "Lithodidae"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Sebastolobus alascanus"] <- "Sebastidae"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Chlamys islandica"] <- "Chlamys"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Anchoa hepsetus"] <- "Anchoviella"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Doryteuthis opalescens"] <- "Loligo"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Merluccius productus"] <- "Merluccius"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Sebastes crameri"] <- "Sebastes"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Sebastes goodei"] <- "Sebastes"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Sebastes paucispinis"] <- "Sebastes"
 
 ##Check list of un-matchig names
 Sp_ReviewDatFB <- as.character(unique(ReviewDatFB$b_scientific_name))  #list species in review
@@ -112,7 +63,7 @@ Sp_SAU <- as.character(unique(Final_SAU_EEZ$scientific_name))      #list species
 matchsp <- Sp_ReviewDatFB %in% Sp_SAU
 table1 <- data.frame(matchsp, Sp_ReviewDatFB)
 table2 <- subset(table1, table1$matchsp==FALSE) ##species from review database missing in Sea Around Us
-table2  #list of unmatching species (should be 3 when including genrus updates, "Chlamys islandica" is not in Final_SAU_EEZ but it is present n Final_SAU_FE so I dont change it)
+table2  #list of unmatching speciesFinal_SAU_EEZ but it is present n Final_SAU_FE so I dont change it)
 
 #Final list of matching species in ReviewDatFB
 Sp_ReviewDatFB <- as.character(subset(table1, table1$matchsp==TRUE)[,2]) 
