@@ -93,6 +93,8 @@ EEZ_ReviewDatFB %in% EEZ_SAU
 
 
 # 3. ADD TOTAL CATCH AND LANDINGS BY EEZ####
+##Eliminate France from Final_SAU_EEZ
+Final_SAU_EEZ<-subset(Final_SAU_EEZ, ! area_name=="France (Atlantic Coast)")
 #EEZs of the review are now the same as in the SAU database
 identical(sort(unique(ReviewDatFB$area_name)),sort(unique(Final_SAU_EEZ$area_name)))
 
