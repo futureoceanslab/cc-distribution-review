@@ -40,7 +40,7 @@ a %in% c
 b %in% d
 sp2<-b[which(!b %in% d)]
 
--#EEZ level changes
+#EEZ level changes
 ReviewDatFB_SAU3$area_name[ReviewDatFB_SAU3$area_name == "USA (Alaska-Subarctic)"] <- "USA (Alaska, Subarctic)"
 ReviewDatFB_SAU3$area_name[ReviewDatFB_SAU3$area_name == "Spain (mainland Med and Gulf of Cadiz)"] <- "Spain (mainland, Med and Gulf of Cadiz)"
 
