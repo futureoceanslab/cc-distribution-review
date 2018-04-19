@@ -13,7 +13,7 @@ list_FE <- read.csv("data/list_FE.csv")
 
 #the downloaded files are merged in one database with this code:
 
-path <- "data/data SAU/"
+path <- "data/data_FE_SAU/"
 l <- list.files(path, pattern = ".csv")
 #l <- l0[-c(7, 24)] # to delete certain files. E.g. column 7(France) and 24
 
