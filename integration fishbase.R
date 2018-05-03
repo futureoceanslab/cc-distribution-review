@@ -21,76 +21,63 @@ library(data.table)
 #ReviewDat <- read.csv("C:/Users/alba.aguion/OneDrive/CLOCK_TEAM/03_FUTURE OCEANS/FO_BIBLIO/FO_DATA_ANALYSIS/R for fishbase review/biblio_database.csv")
 ReviewDat <- read.csv("data/biblio_database.csv", stringsAsFactors=FALSE, header=T, sep = ",")
 
-
+##CLEAR DATABASE
 ##delete blank columns
 colnames(ReviewDat)
 ReviewDat <- ReviewDat[, 1:69] 
-
-
-#TO REMOVE NICOLAS ET AL. - values too different from the rest of the observations
-ReviewDat<-subset(ReviewDat, ! id_study=="6") 
-
-#detele blank spaces in Species scientific name
+#detele blank spaces in Species scientific name to match review_database-fishbase_database
 trim.trailing <- function (x) sub("\\s+$", "", x)
 ReviewDat$b_scientific_name <- trim.trailing(ReviewDat$b_scientific_name )
-
-##Create a list of our species scientific names and check names
+##Check spp names to match review_database-fishbase_database
 ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Atheresthes\240stomias"] <- "Atheresthes stomias"
 ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Lepidopsetta\240polyxystra"] <- "Lepidopsetta polyxystra"
-SpReviewOriginal <- unique(as.character(ReviewDat$b_scientific_name)) #list of species from original database (146)
-SpCodes<-as.vector(unique(ReviewDat$rfishbase_species_code)) #there are MISSING CODES (124 sp included here)
-SpReview <- unlist(species_names(SpCodes))  #only select the species where we have SpCodes
+
+
+##Create a list of our species scientific names
+SpReviewOriginal <- unique(as.character(ReviewDat$b_scientific_name)) # Review_database. list of species from original database (146)
+SpCodes<-as.vector(unique(ReviewDat$rfishbase_species_code)) #Fishbase-spp codes. there are MISSING CODES (123 sp included here) ( there is a NA)
+SpReview <- unlist(species_names(SpCodes))  #Fishbase-spp names. only select the species where we have SpCodes (123 spp names matched)
 spdiff <- SpReviewOriginal %in% SpReview
-table(spdiff)
-spmiss <- SpReviewOriginal[spdiff==FALSE] #species not included in the SpReview
-#spmiss #species missing in the Spcode merging 
+table(spdiff) # Synthesis of matches and mismatches between review-fishbase (120 true, 26 false)
+spmiss <- SpReviewOriginal[spdiff==FALSE] #species not included in the SpReview to take into account
+#spmiss #species missing in the Spcode merging ???
 
-
-##getting SPECIES LEVEL data for our species list
-
-#speciesDat <- species(SpReview, fields=c("SpecCode", "PriceCateg", "Vulnerability")) #for specific variables
+##GET INFO FROM FISHBASE
+##getting SPECIES LEVEL data from Fishbase to our species list (123 spp out of 146 spp)
+#speciesDat <- species(SpReview, fields=c("SpecCode", "PriceCateg", "Vulnerability")) #for specific variables ??
 speciesDat <- species(SpReview) #for all  fishbase data
-
-#getting STOCK LEVEL data for our species list
+#getting STOCK LEVEL data from Fishbase to our species list (123 spp out of 146 spp)
 stockdat <- stocks(SpReview)
 
-##Now I save the new databases for fishbase data
+##SAVE DATA
 #write.csv(speciesDat, file = "speciesDat.csv")
 #write.csv(stockdat, file = "stockdat.csv")
 
 
-
-##INCLUDE STOCK and SPECIES DTA into the REVIEW DATABASE
-
-
-##here I select the variables I am interested to add at the STOCK LEVEL
+##INCLUDE STOCK and SPECIES DATA into the REVIEW DATABASE
+##Selection of interesting variables to add at the STOCK LEVEL
 
 fb_variables <- c("StockCode", "sciname", "StockDefs", "LocalUnique", "IUCN_Code", "Protected", "Resilience",
                   "StocksRefNo", "EnvTemp", "Abundance", "CountryComp", "Catches", "FAOAqua", "SpecCode")
 
-mystockdat <- stockdat[, fb_variables]   #select the database for the fb_variables I want
-
-
+mystockdat <- stockdat[, fb_variables]   #selection of database from which I extract fb_variables
 
 #ID variable -StockCode - to join the databases REVIEW and STOCKDAT
-colnames(ReviewDat)[22] <- "StockCode"  #to put the same variable name in both databases
-
-#put the variable sin the same format (character)
+colnames(ReviewDat)[22] <- "StockCode"  #to put the same variable name in both databases to join them
+#Put the variables of both databases  in the same format (as character)
 mystockdat$StockCode<-as.character(mystockdat$StockCode)
 ReviewDat$StockCode<-as.character(ReviewDat$StockCode)
 
 #ID variable -SpecCode - to join the databases REVIEW and SPECIESDAT
-colnames(ReviewDat)[23] <- "SpecCode"  #to put the same variable name in both databases
+colnames(ReviewDat)[23] <- "SpecCode"  #to put the same variable name in both databases to join them
 
-#merging of review+stockdat
+##MERGING
+# Review+stockdat
 ReviewDatst <- left_join(ReviewDat, mystockdat, by = "StockCode")
-
-#merging of review+speciesdat
+#Review+speciesdat
 ReviewDatsp <- left_join(ReviewDat, speciesDat, by = "SpecCode")
 
-
-
-#Now I save the FULL data of fishbase with our reviewdata
+#Save the FULL data (stockdat and speciesdat) of fishbase with our reviewdata
 #write.csv(ReviewDatst, file = "ReviewDatst.csv") #for the stocks data
 #write.csv(ReviewDatsp, file = "ReviewDatsp.csv") #for the species data
 
