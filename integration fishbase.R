@@ -3,7 +3,6 @@
 ##Date: April 7th 2017
 ##output: two csv files with stock and species data (ReviewDatst.csv", "ReviewDatsp.csv")
 
-
 #install libraries
 library(rfishbase)
 library(cluster)
@@ -37,14 +36,14 @@ ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Lepidopsetta\240polyxy
 SpReviewOriginal <- unique(as.character(ReviewDat$b_scientific_name)) # Review_database. list of species from original database (146)
 SpCodes<-as.vector(unique(ReviewDat$rfishbase_species_code)) #Fishbase-spp codes. there are MISSING CODES (123 sp included here) ( there is a NA)
 SpReview <- unlist(species_names(SpCodes))  #Fishbase-spp names. only select the species where we have SpCodes (123 spp names matched)
-spdiff <- SpReviewOriginal %in% SpReview
-table(spdiff) # Synthesis of matches and mismatches between review-fishbase (120 true, 26 false)
+spdiff <- SpReviewOriginal %in% SpReview##?????
+table(spdiff) # Synthesis of matches and mismatches between review-fishbase (120 true, 26 false) ???
 spmiss <- SpReviewOriginal[spdiff==FALSE] #species not included in the SpReview to take into account
 #spmiss #species missing in the Spcode merging ???
 
 ##GET INFO FROM FISHBASE
 ##getting SPECIES LEVEL data from Fishbase to our species list (123 spp out of 146 spp)
-#speciesDat <- species(SpReview, fields=c("SpecCode", "PriceCateg", "Vulnerability")) #for specific variables ??
+#speciesDat <- species(SpReview, fields=c("SpecCode", "PriceCateg", "Vulnerability")) #for specific variables ???
 speciesDat <- species(SpReview) #for all  fishbase data
 #getting STOCK LEVEL data from Fishbase to our species list (123 spp out of 146 spp)
 stockdat <- stocks(SpReview)
@@ -69,7 +68,7 @@ mystockdat$StockCode<-as.character(mystockdat$StockCode)
 ReviewDat$StockCode<-as.character(ReviewDat$StockCode)
 
 #ID variable -SpecCode - to join the databases REVIEW and SPECIESDAT
-colnames(ReviewDat)[23] <- "SpecCode"  #to put the same variable name in both databases to join them
+colnames(ReviewDat)[23] <- "SpecCode"  #to put the same variable name in both databases to join them (we take all of them and do not select anything?????)
 
 ##MERGING
 # Review+stockdat
@@ -84,8 +83,7 @@ ReviewDatsp <- left_join(ReviewDat, speciesDat, by = "SpecCode")
 
 
 
-
-
+## What about this????
 ##Additional codes for variable selection and NA omission
 
 ##Removing variables  with NA values 
