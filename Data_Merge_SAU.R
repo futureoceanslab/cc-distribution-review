@@ -22,7 +22,7 @@ colnames(ReviewDatFB.raw)
 ReviewDatFB <- ReviewDatFB.raw [, 2:167]   
 
 #Read input file: the EEZ species catched
-Final_SAU_EEZ.raw <- read.csv("data/Final_SAU_EEZ.csv", stringsAsFactors=FALSE, header=T, sep = ";")
+Final_SAU_EEZ.raw <- read.csv("data/Final_SAU_EEZ.csv", stringsAsFactors=FALSE, header=T)
 
 ##FILTER SAU DATASETS: 5 last years, landings, NAs
 Final_SAU_EEZ <- filter(Final_SAU_EEZ.raw, year > 2009, catch_type=="Landings")
