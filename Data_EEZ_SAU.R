@@ -15,7 +15,7 @@ func <- function(i){
 l1 <- lapply(1:length(l), func)
 final <- bind_rows(l1)
 
-#write.csv(final, file = "data/Final_SAU_EEZ.csv")
+#write.csv(final, file = "data/Final_SAU_EEZ.csv",row.names = FALSE)
 
 #verification number of EEZ names and number of rows
 unique(final$area_name)
