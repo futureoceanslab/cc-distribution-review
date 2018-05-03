@@ -15,7 +15,7 @@ library(ggplot2)
 ##OPEN DATASETS EEZ and Review with Fishbase (feb 18)
 
 #Read input file: our review database with the fishbase inputs
-ReviewDatFB.raw <- read.csv("data/ReviewDatsp.csv", stringsAsFactors=FALSE, header=T, sep = ",") ## biblio_database + fishbase from script integration_fishbase.R
+ReviewDatFB.raw <- read.csv("data/ReviewDatsp.csv", stringsAsFactors=FALSE, header=T) ## biblio_database + fishbase from script integration_fishbase.R
 
 
 colnames(ReviewDatFB.raw)
@@ -74,7 +74,7 @@ Sp_ReviewDatFB <- as.character(subset(table1, table1$matchsp==TRUE)[,2])
 
 #split EEZs and multiply the rows for each EEZ
 ReviewDatFB <- ReviewDatFB %>% 
-  mutate(eez_countries = strsplit(as.character(eez_countries), ",")) %>% 
+  mutate(eez_countries = strsplit(as.character(eez_countries), "-")) %>% 
   unnest(eez_countries)
 
 #recode colnames in ReviewDatFB to match Final_SAU_EEZ names
