@@ -49,8 +49,8 @@ speciesDat <- species(SpReview) #for all  fishbase data
 stockdat <- stocks(SpReview)
 
 ##SAVE DATA
-#write.csv(speciesDat, file = "speciesDat.csv")
-#write.csv(stockdat, file = "stockdat.csv")
+#write.csv(speciesDat, file = "data/speciesDat.csv")
+#write.csv(stockdat, file = "data/stockdat.csv")
 
 
 ##INCLUDE STOCK and SPECIES DATA into the REVIEW DATABASE
@@ -77,8 +77,8 @@ ReviewDatst <- left_join(ReviewDat, mystockdat, by = "StockCode")
 ReviewDatsp <- left_join(ReviewDat, speciesDat, by = "SpecCode")
 
 #Save the FULL data (stockdat and speciesdat) of fishbase with our reviewdata
-#write.csv(ReviewDatst, file = "ReviewDatst.csv") #for the stocks data
-#write.csv(ReviewDatsp, file = "ReviewDatsp.csv") #for the species data
+#write.csv(ReviewDatst, file = "data/ReviewDatst.csv") #for the stocks data
+#write.csv(ReviewDatsp, file = "data/ReviewDatsp.csv") #for the species data
 
 
 
