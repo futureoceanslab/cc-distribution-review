@@ -4,11 +4,7 @@
 #Elena Ojea, december 17
 
 
-#to select the fishing entities I use the list_FE.csv, obtained from Data_Merge_SAu.csv 
-
-list_FE <- read.csv("data/list_FE.csv")
-
-
+#to select the fishing entities (download the from SAU online) I use the list_FE.csv, obtained from Data_Merge_SAu.csv 
 ##then, I manually  download each Fishing entity country from SAU webpage and save them in data/SAU-
 
 #the downloaded files are merged in one database with this code:
