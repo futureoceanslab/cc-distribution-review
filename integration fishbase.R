@@ -31,24 +31,24 @@ ReviewDat$b_scientific_name <- trim.trailing(ReviewDat$b_scientific_name )
 ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Atheresthes\240stomias"] <- "Atheresthes stomias"
 ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Lepidopsetta\240polyxystra"] <- "Lepidopsetta polyxystra"
 ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Clupea pallasii"] <- "Clupea pallasii pallasii"
+ReviewDat$rfishbase_species_code[ReviewDat$rfishbase_species_code=="322"] <- "308"
+ReviewDat$rfishbase_species_code[ReviewDat$rfishbase_species_code=="3"] <- NA
 
 ##Create a list of our species scientific names
 SpReviewOriginal <- unique(as.character(ReviewDat$b_scientific_name)) # Review_database. list of species from original database (146)
-SpCodes<-as.vector(unique(ReviewDat$rfishbase_species_code)) #Fishbase-spp codes. there are MISSING CODES (123 sp included here) ( there is a NA)
-SpReview <- unlist(species_names(SpCodes))  #Fishbase-spp names. only select the species where we have SpCodes (123 spp names matched)
-spdiff <- SpReviewOriginal %in% SpReview##?????
-table(spdiff) # Synthesis of matches and mismatches between review-fishbase (120 true, 26 false) ???
+SpCodes<-as.vector(unique(ReviewDat$rfishbase_species_code)) #Fishbase-spp codes. there are MISSING CODES (122 sp-codes included here) ( there are 2 NA)
+SpReview <- unlist(species_names(SpCodes))  #Fishbase-spp names. only select the species where we have SpCodes (122 spp names matched)
+spdiff <- SpReviewOriginal %in% SpReview
+table(spdiff) # Synthesis of matches and mismatches between review-fishbase (122 true, 24 false)
 spmiss <- SpReviewOriginal[spdiff==FALSE] #species not included in the SpReview to take into account
-#spmiss #species missing in the Spcode merging ???
-SpecCode("Merluccius australis")
 
-## To chek the matches???
-write.csv(spmiss, file="data/listspmiss.csv")
-write.csv(SpReview, file="data/listSpReview.csv")
-write.csv(SpReviewOriginal, file="data/listSpReviewOriginal.csv")
+## To chek the matches among lists
+#write.csv(SpReviewOriginal, file="data/listSpReviewOriginal.csv")
+#write.csv(SpReview, file="data/listSpReview.csv")
+#write.csv(spmiss, file="data/listspmiss.csv")
 
 ##GET INFO FROM FISHBASE
-##getting SPECIES LEVEL data from Fishbase to our species list (123 spp out of 146 spp)
+##getting SPECIES LEVEL data from Fishbase to our species list (122 spp out of 146 spp)
 #speciesDat <- species(SpReview, fields=c("SpecCode", "PriceCateg", "Vulnerability")) #examples for specific variables
 speciesDat <- species(SpReview) #for all  fishbase data
 #getting STOCK LEVEL data from Fishbase to our species list (123 spp out of 146 spp)
