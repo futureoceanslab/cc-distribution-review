@@ -30,7 +30,7 @@ ReviewDat$b_scientific_name <- trim.trailing(ReviewDat$b_scientific_name )
 ##Check spp names to match review_database-fishbase_database
 ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Atheresthes\240stomias"] <- "Atheresthes stomias"
 ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Lepidopsetta\240polyxystra"] <- "Lepidopsetta polyxystra"
-
+ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Clupea pallasii"] <- "Clupea pallasii pallasii"
 
 ##Create a list of our species scientific names
 SpReviewOriginal <- unique(as.character(ReviewDat$b_scientific_name)) # Review_database. list of species from original database (146)
@@ -40,6 +40,12 @@ spdiff <- SpReviewOriginal %in% SpReview##?????
 table(spdiff) # Synthesis of matches and mismatches between review-fishbase (120 true, 26 false) ???
 spmiss <- SpReviewOriginal[spdiff==FALSE] #species not included in the SpReview to take into account
 #spmiss #species missing in the Spcode merging ???
+SpecCode("Merluccius australis")
+
+## To chek the matches???
+write.csv(spmiss, file="data/listspmiss.csv")
+write.csv(SpReview, file="data/listSpReview.csv")
+write.csv(SpReviewOriginal, file="data/listSpReviewOriginal.csv")
 
 ##GET INFO FROM FISHBASE
 ##getting SPECIES LEVEL data from Fishbase to our species list (123 spp out of 146 spp)
