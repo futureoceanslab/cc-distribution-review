@@ -20,7 +20,7 @@ library(data.table)
 #ReviewDat <- read.csv("C:/Users/alba.aguion/OneDrive/CLOCK_TEAM/03_FUTURE OCEANS/FO_BIBLIO/FO_DATA_ANALYSIS/R for fishbase review/biblio_database.csv")
 ReviewDat <- read.csv("data/biblio_database.csv", stringsAsFactors=FALSE, header=T, sep = ",")
 
-##CLEAR DATABASE
+##CLEAN DATABASE
 ##delete blank columns
 colnames(ReviewDat)
 ReviewDat <- ReviewDat[, 1:69] 
