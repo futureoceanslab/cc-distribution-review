@@ -42,10 +42,10 @@ spdiff <- SpReviewOriginal %in% SpReview
 table(spdiff) # Synthesis of matches and mismatches between review-fishbase (122 true, 24 false)
 spmiss <- SpReviewOriginal[spdiff==FALSE] #species not included in the SpReview to take into account
 
-## To chek the matches among lists
+## To chek the matches among lists and edit the list of spp lost
 #write.csv(SpReviewOriginal, file="data/listSpReviewOriginal.csv")
 #write.csv(SpReview, file="data/listSpReview.csv")
-#write.csv(spmiss, file="data/listspmiss.csv")
+#write.csv(spmiss, file="data/1listspmiss.csv") ##list of lost species
 
 ##GET INFO FROM FISHBASE
 ##getting SPECIES LEVEL data from Fishbase to our species list (122 spp out of 146 spp)
