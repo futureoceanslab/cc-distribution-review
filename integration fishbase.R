@@ -43,7 +43,7 @@ spmiss <- SpReviewOriginal[spdiff==FALSE] #species not included in the SpReview 
 
 ##GET INFO FROM FISHBASE
 ##getting SPECIES LEVEL data from Fishbase to our species list (123 spp out of 146 spp)
-#speciesDat <- species(SpReview, fields=c("SpecCode", "PriceCateg", "Vulnerability")) #for specific variables ???
+#speciesDat <- species(SpReview, fields=c("SpecCode", "PriceCateg", "Vulnerability")) #examples for specific variables
 speciesDat <- species(SpReview) #for all  fishbase data
 #getting STOCK LEVEL data from Fishbase to our species list (123 spp out of 146 spp)
 stockdat <- stocks(SpReview)
@@ -68,7 +68,7 @@ mystockdat$StockCode<-as.character(mystockdat$StockCode)
 ReviewDat$StockCode<-as.character(ReviewDat$StockCode)
 
 #ID variable -SpecCode - to join the databases REVIEW and SPECIESDAT
-colnames(ReviewDat)[23] <- "SpecCode"  #to put the same variable name in both databases to join them (we take all of them and do not select anything?????)
+colnames(ReviewDat)[23] <- "SpecCode"  #to put the same variable name in both databases to join them
 
 ##MERGING
 # Review+stockdat
@@ -79,31 +79,5 @@ ReviewDatsp <- left_join(ReviewDat, speciesDat, by = "SpecCode")
 #Save the FULL data (stockdat and speciesdat) of fishbase with our reviewdata
 #write.csv(ReviewDatst, file = "data/ReviewDatst.csv") #for the stocks data
 #write.csv(ReviewDatsp, file = "data/ReviewDatsp.csv") #for the species data
-
-
-
-
-## What about this????
-##Additional codes for variable selection and NA omission
-
-##Removing variables  with NA values 
-#nasumsp <- colSums(is.na(speciesDat))   # to know how many missing values we have in the fishbase variables
-#varselection_sp <- subset(nasumsp, nasumsp==0)
-#variables_sp_fb <- row.names(as.data.frame(varselection_sp)) #list of variables from fishbase atthe stock level with no NAs
-
-#to select  variables at the STOCK LEVEL
-#dim(stockdat)
-#variables <- colnames(stockdat)
-#nasum <- colSums(is.na(stockdat))   # to know how many missing values we have in the fishbase variables
-#varselection_stock <- subset(nasum, nasum==0) #choose the fishbase variables with no missing values
-#variables_stock_fb <- row.names(as.data.frame(varselection_stock)) #list of variables from fishbase atthe stock level with no NAs
-
-#to avoid variables with NAs in the stock and species data
-#mystockdat   <- stockdat[, variables_stock_fb]   #select the non NA variables in stockdat 
-#myspeciesdat <- speciesDat[, variables_sp_fb]    #select the non NA variables in speciesDat
-
-#to create the final database with the selected variables:
-#ReviewDat <- left_join(ReviewDat, myspeciesdat, by = "SpecCode")
-#ReviewDat <- left_join(ReviewDat, mystockdat, by = "StockCode")
 
 
