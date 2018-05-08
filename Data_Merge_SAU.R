@@ -27,8 +27,8 @@ Final_SAU_EEZ <- filter(Final_SAU_EEZ.raw, year > 2009, catch_type=="Landings")
 colnames(ReviewDatFB.raw)
 ReviewDatFB <- ReviewDatFB.raw [, 2:167]   
 #detele blank spaces in Species scientific name to match review_database-SAU_database
-trim.trailing <- function (x) sub("\\s+$", "", x)
-ReviewDatFB$b_scientific_name <- trim.trailing(ReviewDatFB$b_scientific_name )
+trim<- function (x) sub("\\s+$", "", x)
+ReviewDatFB$b_scientific_name <- trim(ReviewDatFB$b_scientific_name )
 
 ##Check spp names to match review_database-fishbase_database ????
 #ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Atheresthes\240stomias"] <- "Atheresthes stomias"
