@@ -30,15 +30,15 @@ ReviewDatFB <- ReviewDatFB.raw [, 2:167]
 trim<- function (x) sub("\\s+$", "", x)
 ReviewDatFB$b_scientific_name <- trim(ReviewDatFB$b_scientific_name )
 
-##Check spp names to match review_database-fishbase_database ????
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Atheresthes\240stomias"] <- "Atheresthes stomias"
-#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Lepidopsetta\240polyxystra"] <- "Lepidopsetta polyxystra"
+##Check spp names to match review_database-fishbase_database
+#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Atheresthes\240stomias"] <- "Atheresthes stomias"??
+#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Lepidopsetta\240polyxystra"] <- "Lepidopsetta polyxystra"??
 ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Clupea pallasii"] <- "Clupea pallasii pallasii"
-ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Loligo opalescens"] <- "Doryteuthis opalescens"
-ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Stenotomus caprinus"] <- "Stenotomus chrysops" 
-ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Scophthalmidae"] <- "Scophthalmus aquosus" 
-ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Isopsetta isolepis"] <- "Eopsetta jordani"  
-ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Loligo pealeii"] <- "Doryteuthis pealeii"  
+ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Loligo opalescens"] <- "Doryteuthis opalescens"##!
+#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Stenotomus caprinus"] <- "Stenotomus chrysops"???
+#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Scophthalmidae"] <- "Scophthalmus aquosus" ##Family??
+#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Isopsetta isolepis"] <- "Eopsetta jordani"  
+ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Loligo pealeii"] <- "Doryteuthis pealeii"##!
 
 ## MATCH SPECIES NAMES IN REVIEW AND SAU####
 ##Check list of un-matchig names
@@ -50,13 +50,15 @@ matchsp <- Sp_ReviewDatFB %in% Sp_SAU
 table(matchsp) ## 35 spp no macth, 111 spp macthed (total:146spp)
 spmiss <- Sp_ReviewDatFB[matchsp==FALSE] ## list of unmatching(lost) species
 
-#Final list of matching species in ReviewDatFB
-Sp_ReviewDatFB <- as.character(subset(table1, table1$matchsp==TRUE)[,2]) 
+##To chek the matches among lists and edit the list of spp lost
+#write.csv(ReviewDatFB, file="data/listSpReviewDatFB.csv")
+#write.csv(matchsp, file="data/listSpmatchsp.csv")
+write.csv(spmiss, file="data/2listspmiss.csv") ##list of lost species
 
+#Final list of matching species in ReviewDatFB ??
+#Sp_ReviewDatFB <- as.character(subset(table1, table1$matchsp==TRUE)[,2]) ??
 
-
-## 2. MATCH EEZ NAMES IN REVIEW AND SAU (area_name)####
-
+##MATCH EEZ NAMES IN REVIEW AND SAU (area_name)####
 #split EEZs and multiply the rows for each EEZ
 ReviewDatFB <- ReviewDatFB %>% 
   mutate(eez_countries = strsplit(as.character(eez_countries), "-")) %>% 
@@ -70,12 +72,9 @@ colnames(ReviewDatFB)[166] <- "area_name"  ##need to change if going back to bib
 ReviewDatFB$area_name <- trim(ReviewDatFB$area_name)
 
 ##Check list of un-matchig EEZs
-
 EEZ_ReviewDatFB  <- unique(ReviewDatFB$area_name) #final list of EEZs in the Review dataset
 EEZ_SAU <- unique(Final_SAU_EEZ$area_name)
 EEZ_ReviewDatFB %in% EEZ_SAU
-
-
 
 # 3. ADD TOTAL CATCH AND LANDINGS BY EEZ####
 ##Eliminate France from Final_SAU_EEZ
@@ -87,8 +86,6 @@ identical(sort(unique(ReviewDatFB$area_name)),sort(unique(Final_SAU_EEZ$area_nam
 counts <- Final_SAU_EEZ %>%
   group_by(area_name, year) %>%
   tally
-
-
 
 #dataframe total EEZ catch 
 #sum all catches per area_name and year
@@ -102,11 +99,7 @@ tonlandEEZ<- tonlandEEZyear %>%
   summarise(tonnesEEZ=mean(tonnesEEZyear,na.rm = T),
             landedvalueEEZ=mean(landedvalueEEZyear,na.rm = T))          
             
-            
-
 ReviewDatFB_SAU1 <- merge(ReviewDatFB, tonlandEEZ, by=c("area_name"), all.x=TRUE)
-
-
 
 # 4. ADD TOTAL CATCH AND LANDINGS BY EEZ AND SP####
 #gives mean value across years (2010-2014 ) annual tonnes (2010-2014) 
@@ -118,7 +111,6 @@ tonlandEEZsp<-tonlandEEZspyear %>%
   group_by(area_name, scientific_name) %>%
   summarise(tonnesEEZsp=mean(tonnesEEZspyear,na.rm = T),
             landedvalueEEZsp=mean(landedvalueEEZspyear,na.rm = T))
-
 
 splist <- unique(tonlandEEZsp$scientific_name)
 Sp_ReviewDatFB %in% splist
@@ -132,8 +124,6 @@ na1 <- is.na(ReviewDatFB_SAU2$tonnesEEZsp)
 table(na1) #we miss 183 observations
 na2 <- is.na(ReviewDatFB_SAU2$landedvalueEEZsp)
 table(na2) #we miss 183 observations
-
-
 
 # 5. OUTPUT FILES####
 list_FE <- unique(Final_SAU_EEZ$fishing_entity)
