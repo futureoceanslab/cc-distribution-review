@@ -13,57 +13,42 @@ library(tidyr)
 library(ggplot2)
 
 ##OPEN DATASETS EEZ and Review with Fishbase (feb 18)
-
 #Read input file: our review database with the fishbase inputs
 ReviewDatFB.raw <- read.csv("data/ReviewDatsp.csv", stringsAsFactors=FALSE, header=T) ## biblio_database + fishbase from script integration_fishbase.R
-
-
-colnames(ReviewDatFB.raw)
-ReviewDatFB <- ReviewDatFB.raw [, 2:167]   
-
+ 
 #Read input file: the EEZ species catched
 Final_SAU_EEZ.raw <- read.csv("data/Final_SAU_EEZ.csv", stringsAsFactors=FALSE, header=T)
 
 ##FILTER SAU DATASETS: 5 last years, landings, NAs
 Final_SAU_EEZ <- filter(Final_SAU_EEZ.raw, year > 2009, catch_type=="Landings")
 
+##CLEAN OUR REVIEW-DATABASE
+##delete blank columns
+colnames(ReviewDatFB.raw)
+ReviewDatFB <- ReviewDatFB.raw [, 2:167]   
+#detele blank spaces in Species scientific name to match review_database-SAU_database
+trim.trailing <- function (x) sub("\\s+$", "", x)
+ReviewDatFB$b_scientific_name <- trim.trailing(ReviewDatFB$b_scientific_name )
 
-
-## 1. MATCH SPECIES NAMES IN REVIEW AND SAU####
-
-##Check list of un-matchig names
-Sp_ReviewDatFB <- as.character(unique(ReviewDatFB$b_scientific_name))  #list species in review
-Sp_SAU <- as.character(unique(Final_SAU_EEZ$scientific_name))      #list species in SAU
-
-#compare species in Review and SAU
-matchsp <- Sp_ReviewDatFB %in% Sp_SAU
-table1 <- data.frame(matchsp, Sp_ReviewDatFB)
-table2 <- subset(table1, table1$matchsp==FALSE) ##species from review database missing in Sea Around Us
-table2 #list of unmatching species
-
-#remove blank spaces from variable values in species
-trim <- function (x) gsub("^\\s+|\\s+$", "", x)
-ReviewDatFB$b_scientific_name <- trim(ReviewDatFB$b_scientific_name)
-
-#species level changes
-ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Atheresthes\240stomias"] <- "Atheresthes stomias"
+##Check spp names to match review_database-fishbase_database ????
+#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Atheresthes\240stomias"] <- "Atheresthes stomias"
+#ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Lepidopsetta\240polyxystra"] <- "Lepidopsetta polyxystra"
+ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Clupea pallasii"] <- "Clupea pallasii pallasii"
 ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Loligo opalescens"] <- "Doryteuthis opalescens"
 ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Stenotomus caprinus"] <- "Stenotomus chrysops" 
-ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Clupea pallasii"] <- "Clupea pallasii pallasii" 
 ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Scophthalmidae"] <- "Scophthalmus aquosus" 
 ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Isopsetta isolepis"] <- "Eopsetta jordani"  
 ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Loligo pealeii"] <- "Doryteuthis pealeii"  
 
-
+## MATCH SPECIES NAMES IN REVIEW AND SAU####
 ##Check list of un-matchig names
 Sp_ReviewDatFB <- as.character(unique(ReviewDatFB$b_scientific_name))  #list species in review
 Sp_SAU <- as.character(unique(Final_SAU_EEZ$scientific_name))      #list species in SAU
 
 #compare species in Review and SAU
 matchsp <- Sp_ReviewDatFB %in% Sp_SAU
-table1 <- data.frame(matchsp, Sp_ReviewDatFB)
-table2 <- subset(table1, table1$matchsp==FALSE) ##species from review database missing in Sea Around Us
-table2  #list of unmatching speciesFinal_SAU_EEZ but it is present n Final_SAU_FE so I dont change it)
+table(matchsp) ## 35 spp no macth, 111 spp macthed (total:146spp)
+spmiss <- Sp_ReviewDatFB[matchsp==FALSE] ## list of unmatching(lost) species
 
 #Final list of matching species in ReviewDatFB
 Sp_ReviewDatFB <- as.character(subset(table1, table1$matchsp==TRUE)[,2]) 
