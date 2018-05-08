@@ -80,6 +80,7 @@ colnames(ReviewDat)[23] <- "SpecCode"  #to put the same variable name in both da
 # Review+stockdat
 ReviewDatst <- left_join(ReviewDat, mystockdat, by = "StockCode")
 #Review+speciesdat
+ReviewDat$SpecCode<-as.integer(ReviewDat$SpecCode)
 ReviewDatsp <- left_join(ReviewDat, speciesDat, by = "SpecCode")
 
 #Save the FULL data (stockdat and speciesdat) of fishbase with our reviewdata
