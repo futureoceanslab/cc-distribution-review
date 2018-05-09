@@ -87,7 +87,7 @@ ReviewDat$SpecCode<-as.integer(ReviewDat$SpecCode)
 ReviewDatsp <- left_join(ReviewDat, speciesDat, by = "SpecCode")
 
 #Save the FULL data (stockdat and speciesdat) of fishbase with our reviewdata
-write.csv(ReviewDatst, file = "data/ReviewDatst.csv") #for the stocks data
-write.csv(ReviewDatsp, file = "data/ReviewDatsp.csv") #for the species data
+#write.csv(ReviewDatst, file = "data/ReviewDatst.csv") #for the stocks data
+#write.csv(ReviewDatsp, file = "data/ReviewDatsp.csv") #for the species data
 
 
