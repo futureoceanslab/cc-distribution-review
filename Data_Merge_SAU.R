@@ -53,7 +53,7 @@ spmiss <- Sp_ReviewDatFB[matchsp==FALSE] ## list of unmatching(lost) species
 ##To chek the matches among lists and edit the list of spp lost
 #write.csv(ReviewDatFB, file="data/listSpReviewDatFB.csv")
 #write.csv(matchsp, file="data/listSpmatchsp.csv")
-write.csv(spmiss, file="data/2listspmiss.csv") ##list of lost species
+write.csv(spmiss, file="data/2Alistspmiss.csv") ##list of lost species
 
 #Final list of matching species in ReviewDatFB ??
 #Sp_ReviewDatFB <- as.character(subset(table1, table1$matchsp==TRUE)[,2]) ??
@@ -112,6 +112,7 @@ tonlandEEZsp<-tonlandEEZspyear %>%
 
 splist <- unique(tonlandEEZsp$scientific_name)
 Sp_ReviewDatFB %in% splist
+
 
 #add total EEZ catches and landings per SP to ReviewDat
 #add total EEZ landings and landings per sp to ReviewDat
