@@ -42,17 +42,6 @@ a %in% c
 b %in% d
 sp2<-b[which(!b %in% d)]
 
-#species level changes
-ReviewDatFB_SAU3$b_scientific_name[ReviewDatFB_SAU3$b_scientific_name=="AtheresthesÊstomias"] <- "Atheresthes stomias"
-ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Lepidopsetta\240polyxystra"] <- "Lepidopsetta bilineata"
-ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Atherina presbyter"] <- "Atherina boyeri"
-ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Loligo opalescens"] <- "Doryteuthis opalescens"
-ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Stenotomus caprinus"] <- "Stenotomus chrysops"
-ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Clupea pallasii"] <- "Clupea pallasii pallasii"
-ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Scophthalmidae"] <- "Scophthalmus aquosus"
-ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Isopsetta isolepis"] <- "Eopsetta jordani"
-ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Loligo pealeii"] <- "Doryteuthis pealeii"
-
 
 #total catch per species for Fishing entities (sum across species and eezs)
 tonlandFEspT<- tonlandFEsp %>%
