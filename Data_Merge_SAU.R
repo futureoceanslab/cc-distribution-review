@@ -47,7 +47,7 @@ Sp_SAU <- as.character(unique(Final_SAU_EEZ$scientific_name))      #list species
 
 #compare species in Review and SAU
 matchsp <- Sp_ReviewDatFB %in% Sp_SAU
-table(matchsp) ## 35 spp no macth, 111 spp macthed (total:146spp)
+table(matchsp) ## 33 spp no macth, 112 spp macthed (total:145spp)
 spmiss <- Sp_ReviewDatFB[matchsp==FALSE] ## list of unmatching(lost) species
 
 ##To chek the matches among lists and edit the list of spp lost
@@ -77,8 +77,6 @@ EEZ_SAU <- unique(Final_SAU_EEZ$area_name)
 EEZ_ReviewDatFB %in% EEZ_SAU
 
 # 3. ADD TOTAL CATCH AND LANDINGS BY EEZ####
-##Eliminate France from Final_SAU_EEZ
-Final_SAU_EEZ<-subset(Final_SAU_EEZ, ! area_name=="France (Atlantic Coast)")
 #EEZs of the review are now the same as in the SAU database
 identical(sort(unique(ReviewDatFB$area_name)),sort(unique(Final_SAU_EEZ$area_name)))
 
