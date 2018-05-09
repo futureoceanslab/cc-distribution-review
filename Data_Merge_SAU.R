@@ -31,7 +31,7 @@ ReviewDatFB <- ReviewDatFB.raw [, 2:167]
 trim <- function (x) gsub("^\\s+|\\s+$", "", x)
 ReviewDatFB$b_scientific_name <- trim(ReviewDatFB$b_scientific_name)
 
-##Check spp names to match review_database-fishbase_database
+##Check spp names to match review_database-fishbase_database??????NO NEEDED!
 #ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Atheresthes\240stomias"] <- "Atheresthes stomias"??
 #ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Lepidopsetta\240polyxystra"] <- "Lepidopsetta polyxystra"??
 ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Clupea pallasii"] <- "Clupea pallasii pallasii"
@@ -40,7 +40,7 @@ ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Loligo opalescens"
 #ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Scophthalmidae"] <- "Scophthalmus aquosus" ##Family??
 #ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Isopsetta isolepis"] <- "Eopsetta jordani"  
 ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Loligo pealeii"] <- "Doryteuthis pealeii"##!
-
+ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Litopenaeus setiferus"] <- "Penaeus setiferus"
 
 ##3. MATCH SPECIES NAMES IN REVIEW AND SAU####
 ##Check list of un-matchig names
@@ -49,13 +49,13 @@ Sp_SAU <- as.character(unique(Final_SAU_EEZ$scientific_name))      #list species
 
 #compare species in Review and SAU
 matchsp <- Sp_ReviewDatFB %in% Sp_SAU
-table(matchsp) ## 33 spp no macth, 112 spp macthed (total:145spp)
+table(matchsp) ## 34 spp no macth, 111 spp macthed (total:145spp)
 spmiss <- Sp_ReviewDatFB[matchsp==FALSE] ## list of unmatching(lost) species
 
 ##To chek the matches among lists and edit the list of spp lost
 #write.csv(ReviewDatFB, file="data/listSpReviewDatFB.csv")
 #write.csv(matchsp, file="data/listSpmatchsp.csv")
-#write.csv(spmiss, file="data/2listspmiss.csv") ##list of lost species
+write.csv(spmiss, file="data/2listspmiss.csv") ##list of lost species
 
 
 ##4. MATCH COLUMNS and EEZ NAMES IN REVIEW AND SAU (area_name)####
