@@ -12,7 +12,7 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 
-##OPEN DATASETS EEZ and Review with Fishbase (feb 18)
+##1. OPEN DATASETS EEZ and Review with Fishbase (feb 18)
 #Read input file: our review database with the fishbase inputs
 ReviewDatFB.raw <- read.csv("data/ReviewDatsp.csv", stringsAsFactors=FALSE, header=T) ## biblio_database + fishbase from script integration_fishbase.R
  
@@ -22,7 +22,8 @@ Final_SAU_EEZ.raw <- read.csv("data/Final_SAU_EEZ.csv", stringsAsFactors=FALSE, 
 ##FILTER SAU DATASETS: 5 last years, landings, NAs
 Final_SAU_EEZ <- filter(Final_SAU_EEZ.raw, year > 2009, catch_type=="Landings")
 
-##CLEAN OUR REVIEW-DATABASE
+
+##2. CLEAN OUR REVIEW-DATABASE
 ##delete blank columns
 colnames(ReviewDatFB.raw)
 ReviewDatFB <- ReviewDatFB.raw [, 2:167]   
@@ -40,7 +41,8 @@ ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Loligo opalescens"
 #ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Isopsetta isolepis"] <- "Eopsetta jordani"  
 ReviewDatFB$b_scientific_name[ReviewDatFB$b_scientific_name=="Loligo pealeii"] <- "Doryteuthis pealeii"##!
 
-## MATCH SPECIES NAMES IN REVIEW AND SAU####
+
+##3. MATCH SPECIES NAMES IN REVIEW AND SAU####
 ##Check list of un-matchig names
 Sp_ReviewDatFB <- as.character(unique(ReviewDatFB$b_scientific_name))  #list species in review
 Sp_SAU <- as.character(unique(Final_SAU_EEZ$scientific_name))      #list species in SAU
@@ -55,8 +57,8 @@ spmiss <- Sp_ReviewDatFB[matchsp==FALSE] ## list of unmatching(lost) species
 #write.csv(matchsp, file="data/listSpmatchsp.csv")
 write.csv(spmiss, file="data/2Alistspmiss.csv") ##list of lost species
 
-##MATCH COLUMNS and EEZ NAMES IN REVIEW AND SAU (area_name)####
 
+##4. MATCH COLUMNS and EEZ NAMES IN REVIEW AND SAU (area_name)####
 #recode colnames in ReviewDatFB to match Final_SAU_EEZ names
 colnames(ReviewDatFB)[12] <- "scientific_name"
 colnames(ReviewDatFB)[166] <- "area_name"  ##need to change if going back to biblio_database without fishbase
@@ -74,7 +76,8 @@ EEZ_ReviewDatFB  <- unique(ReviewDatFB$area_name) #final list of EEZs in the Rev
 EEZ_SAU <- unique(Final_SAU_EEZ$area_name)
 EEZ_ReviewDatFB %in% EEZ_SAU
 
-# 3. ADD TOTAL CATCH AND LANDINGS BY EEZ####
+
+##5. ADD TOTAL CATCH AND LANDINGS BY EEZ####
 #EEZs of the review are now the same as in the SAU database
 identical(sort(unique(ReviewDatFB$area_name)),sort(unique(Final_SAU_EEZ$area_name)))
 
@@ -97,7 +100,8 @@ tonlandEEZ<- tonlandEEZyear %>%
             
 ReviewDatFB_SAU1 <- merge(ReviewDatFB, tonlandEEZ, by=c("area_name"), all.x=TRUE)
 
-# 4. ADD TOTAL CATCH AND LANDINGS BY EEZ AND SP####
+
+##6. ADD TOTAL CATCH AND LANDINGS BY EEZ AND SP####
 #gives mean value across years (2010-2014 ) annual tonnes (2010-2014) 
 tonlandEEZspyear<-Final_SAU_EEZ %>%
   group_by(area_name, year, scientific_name) %>%
@@ -111,7 +115,6 @@ tonlandEEZsp<-tonlandEEZspyear %>%
 splist <- unique(tonlandEEZsp$scientific_name)
 Sp_ReviewDatFB %in% splist
 
-
 #add total EEZ catches and landings per SP to ReviewDat
 #add total EEZ landings and landings per sp to ReviewDat
 ReviewDatFB_SAU2 <- merge(ReviewDatFB_SAU1, tonlandEEZsp, by=c("area_name","scientific_name"), all.x=TRUE)
@@ -122,7 +125,7 @@ table(na1) #we miss 183 observations
 na2 <- is.na(ReviewDatFB_SAU2$landedvalueEEZsp)
 table(na2) #we miss 183 observations
 
-# 5. OUTPUT FILES####
+##7. OUTPUT FILES####
 list_FE <- unique(Final_SAU_EEZ$fishing_entity)
 #write.csv(list_FE, "data/list_FE.csv")
 #write.csv(ReviewDatFB_SAU2, "data/ReviewDat_Merge_SAU.csv")
