@@ -55,7 +55,7 @@ spmiss <- Sp_ReviewDatFB[matchsp==FALSE] ## list of unmatching(lost) species
 ##To chek the matches among lists and edit the list of spp lost
 #write.csv(ReviewDatFB, file="data/listSpReviewDatFB.csv")
 #write.csv(matchsp, file="data/listSpmatchsp.csv")
-write.csv(spmiss, file="data/2Alistspmiss.csv") ##list of lost species
+#write.csv(spmiss, file="data/2listspmiss.csv") ##list of lost species
 
 
 ##4. MATCH COLUMNS and EEZ NAMES IN REVIEW AND SAU (area_name)####
@@ -97,7 +97,7 @@ tonlandEEZ<- tonlandEEZyear %>%
   group_by(area_name) %>%
   summarise(tonnesEEZ=mean(tonnesEEZyear,na.rm = T),
             landedvalueEEZ=mean(landedvalueEEZyear,na.rm = T))          
-            
+#merge
 ReviewDatFB_SAU1 <- merge(ReviewDatFB, tonlandEEZ, by=c("area_name"), all.x=TRUE)
 
 
@@ -111,22 +111,39 @@ tonlandEEZsp<-tonlandEEZspyear %>%
   group_by(area_name, scientific_name) %>%
   summarise(tonnesEEZsp=mean(tonnesEEZspyear,na.rm = T),
             landedvalueEEZsp=mean(landedvalueEEZspyear,na.rm = T))
+#merge: add total EEZ catches and landings per SP to ReviewDat
+ReviewDatFB_SAU2 <- merge(ReviewDatFB_SAU1, tonlandEEZsp, by=c("area_name","scientific_name"), all.x=TRUE)
 
+
+##7. Doble-check
+##Species name match - tonlandEEZsp
 splist <- unique(tonlandEEZsp$scientific_name)
 matchsp2<- Sp_ReviewDatFB %in% splist
 table(matchsp2) ## 33 spp no macth, 112 spp macthed (total:145spp). Same result in the line52 of script
 spmiss2 <- Sp_ReviewDatFB[matchsp2==FALSE] ## list of unmatching(lost) species
 ##To chek the matches among lists and edit the list of spp lost
-write.csv(spmiss2, file="data/2Blistspmiss.csv") ##list of lost species
+write.csv(spmiss2, file="data/2listspmiss.csv") ##list of lost species
 
-#add total EEZ catches and landings per SP to ReviewDat
-ReviewDatFB_SAU2 <- merge(ReviewDatFB_SAU1, tonlandEEZsp, by=c("area_name","scientific_name"), all.x=TRUE)
+##Area name check- tonlandEEZsp
+arealist <- unique(tonlandEEZsp$area_name)
+matcharea <- EEZ_ReviewDatFB %in% arealist
+table(matcharea) ## All EEZ(15) of the review match with the EEZ of tonlandEEZsp. Same result in the line77 of script
 
-#check missing species in tonnesEEZsp and landedvalueEEZsp
+##Species name match - ReviewDatFB_SAU2
+splist <- unique(ReviewDatFB_SAU2$scientific_name)
+matchsp2<- Sp_ReviewDatFB %in% splist
+table(matchsp2) 
+##Area name check - ReviewDatFB_SAU2
+arealist <- unique(ReviewDatFB_SAU2$area_name)
+matcharea <- EEZ_ReviewDatFB %in% arealist
+table(matcharea)
+
+#check missing species in tonnesEEZsp and landedvalueEEZsp ???
 na1 <- is.na(ReviewDatFB_SAU2$tonnesEEZsp)
-table(na1) #we miss 183 observations
+table(na1) #we miss 183 observations ???
 na2 <- is.na(ReviewDatFB_SAU2$landedvalueEEZsp)
-table(na2) #we miss 183 observations
+table(na2) #we miss 183 observations ???
+
 
 ##7. OUTPUT FILES####
 list_FE <- unique(Final_SAU_EEZ$fishing_entity)
