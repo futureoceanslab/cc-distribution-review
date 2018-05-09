@@ -117,10 +117,9 @@ matchsp2<- Sp_ReviewDatFB %in% splist
 table(matchsp2) ## 33 spp no macth, 112 spp macthed (total:145spp). Same result in the line52 of script
 spmiss2 <- Sp_ReviewDatFB[matchsp2==FALSE] ## list of unmatching(lost) species
 ##To chek the matches among lists and edit the list of spp lost
-write.csv(spmiss2, file="data/2Blistspmiss.csv") ##list of lost species!!!
+write.csv(spmiss2, file="data/2Blistspmiss.csv") ##list of lost species
 
 #add total EEZ catches and landings per SP to ReviewDat
-#add total EEZ landings and landings per sp to ReviewDat
 ReviewDatFB_SAU2 <- merge(ReviewDatFB_SAU1, tonlandEEZsp, by=c("area_name","scientific_name"), all.x=TRUE)
 
 #check missing species in tonnesEEZsp and landedvalueEEZsp
