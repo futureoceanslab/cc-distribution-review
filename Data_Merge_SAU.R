@@ -68,7 +68,7 @@ ReviewDatFB <- ReviewDatFB %>%
   mutate(eez_countries = strsplit(as.character(eez_countries), "-")) %>% 
   unnest(eez_countries)
 
-#remove blank spaces from eez variable names in Review???
+#remove blank spaces from eez variable names in Review??
 ReviewDatFB$area_name <- trim(ReviewDatFB$area_name)
 
 ##Check list of un-matchig EEZs
@@ -77,7 +77,7 @@ EEZ_SAU <- unique(Final_SAU_EEZ$area_name)
 EEZ_ReviewDatFB %in% EEZ_SAU
 
 
-##5. ADD TOTAL CATCH AND LANDINGS BY EEZ####
+##5. MERGE: ADD TOTAL CATCH AND LANDINGS BY EEZ####
 #EEZs of the review are now the same as in the SAU database
 identical(sort(unique(ReviewDatFB$area_name)),sort(unique(Final_SAU_EEZ$area_name)))
 
@@ -101,7 +101,7 @@ tonlandEEZ<- tonlandEEZyear %>%
 ReviewDatFB_SAU1 <- merge(ReviewDatFB, tonlandEEZ, by=c("area_name"), all.x=TRUE)
 
 
-##6. ADD TOTAL CATCH AND LANDINGS BY EEZ AND SP####
+##6. MERGE: ADD TOTAL CATCH AND LANDINGS BY EEZ AND SP####
 #gives mean value across years (2010-2014 ) annual tonnes (2010-2014) 
 tonlandEEZspyear<-Final_SAU_EEZ %>%
   group_by(area_name, year, scientific_name) %>%
@@ -113,7 +113,11 @@ tonlandEEZsp<-tonlandEEZspyear %>%
             landedvalueEEZsp=mean(landedvalueEEZspyear,na.rm = T))
 
 splist <- unique(tonlandEEZsp$scientific_name)
-Sp_ReviewDatFB %in% splist
+matchsp2<- Sp_ReviewDatFB %in% splist
+table(matchsp2) ## 33 spp no macth, 112 spp macthed (total:145spp). Same result in the line52 of script
+spmiss2 <- Sp_ReviewDatFB[matchsp2==FALSE] ## list of unmatching(lost) species
+##To chek the matches among lists and edit the list of spp lost
+write.csv(spmiss2, file="data/2Blistspmiss.csv") ##list of lost species!!!
 
 #add total EEZ catches and landings per SP to ReviewDat
 #add total EEZ landings and landings per sp to ReviewDat
