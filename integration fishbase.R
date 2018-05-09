@@ -28,11 +28,12 @@ ReviewDat <- ReviewDat[, 1:69]
 trim.trailing <- function (x) sub("\\s+$", "", x)
 ReviewDat$b_scientific_name <- trim.trailing(ReviewDat$b_scientific_name )
 ##Check spp names to match review_database-fishbase_database
-ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Atheresthes\240stomias"] <- "Atheresthes stomias"
-ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Lepidopsetta\240polyxystra"] <- "Lepidopsetta polyxystra"
+ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Atheresthes\240stomias"] <- "Atheresthes stomias"##??
+ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Lepidopsetta\240polyxystra"] <- "Lepidopsetta polyxystra"##??
 ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Clupea pallasii"] <- "Clupea pallasii pallasii"
 ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Loligo pealeii"] <- "Doryteuthis pealeii"
 ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Loligo opalescens"] <- "Doryteuthis opalescens"
+ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Litopenaeus setiferus"] <- "Penaeus setiferus"
 ReviewDat$rfishbase_species_code[ReviewDat$rfishbase_species_code=="322"] <- "308"
 ReviewDat$rfishbase_species_code[ReviewDat$rfishbase_species_code=="3"] <- NA
 
@@ -86,7 +87,7 @@ ReviewDat$SpecCode<-as.integer(ReviewDat$SpecCode)
 ReviewDatsp <- left_join(ReviewDat, speciesDat, by = "SpecCode")
 
 #Save the FULL data (stockdat and speciesdat) of fishbase with our reviewdata
-#write.csv(ReviewDatst, file = "data/ReviewDatst.csv") #for the stocks data
-#write.csv(ReviewDatsp, file = "data/ReviewDatsp.csv") #for the species data
+write.csv(ReviewDatst, file = "data/ReviewDatst.csv") #for the stocks data
+write.csv(ReviewDatsp, file = "data/ReviewDatsp.csv") #for the species data
 
 
