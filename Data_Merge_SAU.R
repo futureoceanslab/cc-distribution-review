@@ -59,14 +59,14 @@ write.csv(spmiss, file="data/2Alistspmiss.csv") ##list of lost species
 
 
 ##4. MATCH COLUMNS and EEZ NAMES IN REVIEW AND SAU (area_name)####
-#recode colnames in ReviewDatFB to match Final_SAU_EEZ names
-colnames(ReviewDatFB)[12] <- "scientific_name"
-colnames(ReviewDatFB)[166] <- "area_name"  ##need to change if going back to biblio_database without fishbase
-
 #split EEZs and multiply the rows for each EEZ
 ReviewDatFB <- ReviewDatFB %>% 
   mutate(eez_countries = strsplit(as.character(eez_countries), "-")) %>% 
   unnest(eez_countries)
+
+#recode colnames in ReviewDatFB to match Final_SAU_EEZ names
+colnames(ReviewDatFB)[12] <- "scientific_name"
+colnames(ReviewDatFB)[166] <- "area_name"  ##need to change if going back to biblio_database without fishbase
 
 #remove blank spaces from eez variable names in Review??
 ReviewDatFB$area_name <- trim(ReviewDatFB$area_name)
