@@ -34,14 +34,16 @@ tonlandFEsp <- tonlandFEspyear %>% #borrar bis
 ReviewDatFB_SAU3  <- merge(ReviewDat_Merge_SAU, tonlandFEsp, by=c("area_name","scientific_name"), all.x=TRUE)
 
 #PB names don't match!
-a<-as.character(unique(ReviewDatFB_SAU3$area_name))
-b<-as.character(unique(ReviewDatFB_SAU3$scientific_name))
-c<-as.character(unique(tonlandFEsp$area_name))
-d<-as.character(unique(tonlandFEsp$scientific_name))
-a %in% c
-b %in% d
-sp2<-b[which(!b %in% d)]
-
+a<-unique(ReviewDatFB_SAU3$area_name)
+b<-unique(ReviewDatFB_SAU3$scientific_name)
+c<-unique(tonlandFEsp$area_name)
+d<-unique(tonlandFEsp$scientific_name)
+a %in% c#checking EEZ names match
+#sp2<-b[which(!b %in% d)]
+matchsp <- b %in% d
+table(matchsp) ## 29 spp no macth, 116 spp macthed (total:145spp)
+spmiss <- b[matchsp==FALSE] ## list of unmatching(lost) species
+write.csv(spmiss, file="data/3listspmiss.csv") ##list of lost species
 
 #total catch per species for Fishing entities (sum across species and eezs)
 tonlandFEspT<- tonlandFEsp %>%
