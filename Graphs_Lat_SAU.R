@@ -35,8 +35,6 @@ range(Biblio_data$catchdepFE, na.rm=TRUE)
 Biblio_data$catchdepFEEZ <- Biblio_data$tonnesFEEZ/Biblio_data$tonnesEEZ 
 range(Biblio_data$catchdepFEEZ, na.rm=TRUE)
 
-a<-filter(Biblio_data,catchdepFEEZ>1)
-
 ##VALUE OF SPECIES FOR FISHING ENTITIES
 
 ###Species VAlue in FE: landed value/tonnes
