@@ -55,20 +55,18 @@ spmiss <- Sp_ReviewDatFB[matchsp==FALSE] ## list of unmatching(lost) species
 #write.csv(matchsp, file="data/listSpmatchsp.csv")
 write.csv(spmiss, file="data/2Alistspmiss.csv") ##list of lost species
 
-#Final list of matching species in ReviewDatFB ??
-#Sp_ReviewDatFB <- as.character(subset(table1, table1$matchsp==TRUE)[,2]) ??
-
-##MATCH EEZ NAMES IN REVIEW AND SAU (area_name)####
-#split EEZs and multiply the rows for each EEZ
-ReviewDatFB <- ReviewDatFB %>% 
-  mutate(eez_countries = strsplit(as.character(eez_countries), "-")) %>% 
-  unnest(eez_countries)
+##MATCH COLUMNS and EEZ NAMES IN REVIEW AND SAU (area_name)####
 
 #recode colnames in ReviewDatFB to match Final_SAU_EEZ names
 colnames(ReviewDatFB)[12] <- "scientific_name"
 colnames(ReviewDatFB)[166] <- "area_name"  ##need to change if going back to biblio_database without fishbase
 
-#remove blank spaces from eez variable names in Review
+#split EEZs and multiply the rows for each EEZ
+ReviewDatFB <- ReviewDatFB %>% 
+  mutate(eez_countries = strsplit(as.character(eez_countries), "-")) %>% 
+  unnest(eez_countries)
+
+#remove blank spaces from eez variable names in Review???
 ReviewDatFB$area_name <- trim(ReviewDatFB$area_name)
 
 ##Check list of un-matchig EEZs
