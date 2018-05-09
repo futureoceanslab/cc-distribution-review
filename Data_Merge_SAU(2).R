@@ -39,10 +39,7 @@ b<-unique(ReviewDatFB_SAU3$scientific_name)
 c<-unique(tonlandFEsp$area_name)
 d<-unique(tonlandFEsp$scientific_name)
 a %in% c#checking EEZ names match
-#sp2<-b[which(!b %in% d)]
-matchsp <- b %in% d
-table(matchsp) ## 29 spp no macth, 116 spp macthed (total:145spp)
-spmiss <- b[matchsp==FALSE] ## list of unmatching(lost) species
+spmiss<-b[which(!b %in% d)]## list of unmatching(lost) species,29 spp no macth, 116 spp macthed (total:145spp)
 write.csv(spmiss, file="data/3listspmiss.csv") ##list of lost species
 
 #total catch per species for Fishing entities (sum across species and eezs)
