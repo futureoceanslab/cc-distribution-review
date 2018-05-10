@@ -11,7 +11,7 @@ library(plyr)
 # STOCK LEVEL####
 
 #open dataset
-table<-read.table("ReviewDatst.csv", header= T, sep= ",")
+table<-read.table("data/ReviewDatst.csv", header= T, sep= ",")
 str(table)
 
 #Factors
