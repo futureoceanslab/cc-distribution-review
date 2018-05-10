@@ -9,7 +9,7 @@ library(ggplot2)
 library(tidyverse)
 
 #open dataset
-table1<-read.table("biblio_database.csv", header= T, sep= ",")
+table1<-read.table("data/biblio_database.csv", header= T, sep= ",")
 table<-table1[,1:69]    #delete columns 
 str(table)
 
