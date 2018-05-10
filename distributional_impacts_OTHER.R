@@ -10,7 +10,7 @@ library(tidyverse)
 library(plyr)
 
 #open dataset
-table<-read.table("biblio_database.csv", header= T, sep= ",")
+table<-read.table("data/biblio_database.csv", header= T, sep= ",")
 
 #Factors
 table$researcher<-as.factor(table$researcher)
