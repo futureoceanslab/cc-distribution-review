@@ -4,74 +4,26 @@ Climate change distributional impacts in marine commercial species Review Databa
 
 biblio_database.csv
 
+
 This repository contains:
  
+
 <strong>-1. ECOLOGICAL ANALYSIS</strong>
 
-<strong>Biomass vs distribution:</strong>
-r code for the exploration of center of biomass vs center of gravity observations. Is it possible to combine them? It contains:
+<strong>distributional_impacts_CENTERS_BIO_vs_GRAV</strong>
+r code for the exploration of center of biomass vs center of gravity observations. Is it possible to combine them? input: biblio_database.csv
 
-1. Center of biomass combined with center of gravity (We concluded this is the best option). Input: biblio_database.csv
+<strong>distributional_impacts_PAPER</strong> 
+r code for the analysis of climate variables and distributional impacts. Figures for the paper and SSMM. Input: biblio_database. csv
 
-2. Just center of gravity observations. Input: biblio_database.csv
+<strong>distributional_impacts_OTHER</strong> 
+r code for the analysis of climate variables and distributional impacts not included in the paper. Input: biblio_database. csv
 
-3. Just center of biomass observations. Input: biblio_database.csv
-
-<strong>Distributional impacts:</strong> 
-r code for the analysis of climate variables related to the distributional impacts and their magnitude. It contains:
-
-1. Analysis of the climate change variables that cause each of the distributional impacts (Stalked chart Figure 2D in our poster) Input: biblio_database.csv and Stalked_Bar_Chart_cc_variables.csv
-
-2. Magnitude of the latitude shift: boxplot, geom_bar, and histograms of different types (type 3.2 in the script Figure 2A in our poster). Input: biblio_database.csv
-
-3. Magnitude of the depth shift: boxplot, geom_bar, and histograms of different types (type 3 in the script Figure 2B in our poster). Input: biblio_database.csv
-
-4. Magnitude of the boundary shift: boxplot, geom_bar and histograms of different types (type 3 in the script Figure 2C in our poster). Input: biblio_database.csv
-
-5. Magnitude of the area shift: boxplot, geom_bar and histograms of different types. Input:biblio_databse.csv
-
-6. Histograms Multiplot for latitude, depth, boundary and area magnitude shifts. Input: biblio_database. csv
+<strong>distributional_impacts_FISHBASE</strong> 
+r code for the analysis of the database combined with fishbase information data per species and per stock. Inputs: ReviewDatst. csv, ReviewDatsp.csv
 
 
-<strong>Pie graph: NOT UPLOADED SCRIPT TO THE LASTEST biblio_database.csv!</strong>
-
-r code for pie graphs and other graphs not used yet. Input: biblio_database.csv
-
-<strong>-2. FISH BASE </strong>
-
-<strong>Integration fishbase:</strong>
-r code for the integration of our review database and Fish Base information 
-Input: biblio_database.csv
-Output: ReviewDatsp.csv and ReviewDatst.csv
-
-<strong>Species code:</strong>
-r code for the price category, vulnerability and commercial importance at species level. It contains:
-
-1. Exploratory analysis of price category per distributional impact. Input: ReviewDatsp.csv
-
-2. Exploratory analysis of vulnerability per distributional impact. Input: ReviewDatsp.csv
-
-3. Exploratory analysis of commercial importance per distributional impact. Input: ReviewDatsp.csv
-
-4. Pie charts and ggplots on aquaculture, habitat, gears, anad/catad, years of study and commercial importance. Input: ReviewDatsp.csv
-
-5. Analysis for ICES poster:
-
-     5.1. Number of Pelagic vs. demersal (Figure 2E in our poster). Input: ReviewDatsp.csv and Stalked_Bar_Chart_demers_pelag1.csv
-
-     5.2. Number of commercial important species. Input: ReviewDatsp.csv and Stalked_Bar_Chart_impor.csv
-
-     5.3. Number of different price category species (Figure 2F in our poster). Input: ReviewDatsp.csv and Stalked_Bar_Chart_price.csv
-
-6. Exploratory analysis on "Do species that have a greater range shift more or less?" and "Do species that live longer shift more?" Input: ReviewDatsp.csv
-
-<strong>Stock code:</strong>
-r code for the analysis of the resilience and environment/habitat at stock level. It contains:
-
-1. Exploratory analysis of resilience per distributional impact. Input: ReviewDatst.csv
-2. Exploratory analysis of environment/habitat per distributional impact. Input: ReviewDatst.csv
-
-<strong>-3. SEA AROUND US</strong>
+<strong>-2. SEA AROUND US</strong>
 
 Graphs on fish dependency  and pressure per species.
 It contents one R code file (Data_SAU.R) for merging original SAU data of countries into one file (Final_SAU_FE), R code (Data_Merge_SAU.R) to merge the database from the review (biblio_database) and the SAU EEZ data, and  R code file (Data_Merge_SAU(2).R) to add data on fishing entities, and a final code (Graphs_Lat_SAU.R) for the graphs on latitude, and one .Rmd file for exporting these graphs to PDF/htlm (TO BE UPDATED). 
