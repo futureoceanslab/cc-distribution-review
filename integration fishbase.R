@@ -33,7 +33,7 @@ ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Lepidopsetta\240polyxy
 ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Clupea pallasii"] <- "Clupea pallasii pallasii"
 ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Loligo pealeii"] <- "Doryteuthis pealeii"
 ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Loligo opalescens"] <- "Doryteuthis opalescens"
-ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Litopenaeus setiferus"] <- "Penaeus setiferus"
+##ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Litopenaeus setiferus"] <- "Penaeus setiferus"
 ReviewDat$rfishbase_species_code[ReviewDat$rfishbase_species_code=="322"] <- "308"
 ReviewDat$rfishbase_species_code[ReviewDat$rfishbase_species_code=="3"] <- NA
 
