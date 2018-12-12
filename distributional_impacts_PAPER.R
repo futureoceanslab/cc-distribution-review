@@ -124,7 +124,7 @@ ggplot(data = data1, aes(x = Impact, y = Sample.Size, fill = factor(cc))) +
 
 #same figure without climate velocity
 
-data1<-read.table("Stalked_Bar_Chart_cc_variablesNCV.csv", header= T, sep= "," )
+data1<-read.table("data/Stalked_Bar_Chart_cc_variablesNCV.csv", header= T, sep= "," )
 
 data1$cc <- factor(data1$cc, levels = c("sst_bt","AMO","sst", "sst_bt_AMO",
                                         "bt"), labels=c("SST and BT", "AMO", "SST", "SST, BT and AMO", "BT"))
