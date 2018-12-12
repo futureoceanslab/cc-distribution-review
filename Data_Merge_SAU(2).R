@@ -73,4 +73,116 @@ tonlandFEEZ <- tonlandFEEZyear %>%
 ReviewDatFB_SAU6 <- merge(ReviewDatFB_SAU5, tonlandFEEZ, by=c("fishing_entity", "area_name"), all.x=TRUE)
 
 # 2. OUTPUT FILES####
-#write.csv(ReviewDatFB_SAU6, file = "data/Biblio_database_full.csv")
+##write.csv(ReviewDatFB_SAU6, file = "data/Biblio_database_full.csv")
+
+##Graphs for Catch dependency in SAU and Review
+#Elena Ojea
+#December 2017
+#source: Biblio_database_full.csv
+#output: figures impacts catch dependency, catch pressure
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(ggrepel)
+
+#Open Biblio_data with SAU data on EEZ and FE:
+
+Biblio_data <- read.csv("data/Biblio_database_full.csv", stringsAsFactors=FALSE)
+
+#CATCH DEPENDENCY OF FISHING ENTITIES
+
+#3. Species catch dependency on the area
+Biblio_data$catchdepFEsp <- Biblio_data$tonnesFEsp/Biblio_data$tonnesFEspT #the dependence of the country species catches on the EEZ species catches
+Biblio_data$landdepFEsp <-  Biblio_data$landedvalueFEsp/Biblio_data$landedvalueFEspT #the dependence of the country total SP Value on the EEZ SP catch value 
+
+range(Biblio_data$catchdepFEsp, na.rm=TRUE)
+range(Biblio_data$landdepFEsp, na.rm=TRUE) #is the same relation
+
+#4. Country dependency on the species in the area
+
+Biblio_data$catchdepFE <- Biblio_data$tonnesFEsp/Biblio_data$tonnesFE #the dependence of the country species catches on the EEZ species catches
+range(Biblio_data$catchdepFE, na.rm=TRUE)
+
+#5. Country dependency on the area
+
+Biblio_data$catchdepFEEZ <- Biblio_data$tonnesFEEZ/Biblio_data$tonnesEEZ 
+range(Biblio_data$catchdepFEEZ, na.rm=TRUE)
+
+##VALUE OF SPECIES FOR FISHING ENTITIES
+
+###Species VAlue in FE: landed value/tonnes
+
+Biblio_data$spvalueFE  <- Biblio_data$landedvalueFEsp/Biblio_data$tonnesFEsp
+range(Biblio_data$spvalueFE, na.rm=TRUE)
+quantile(Biblio_data$spvalueFE, na.rm=TRUE)
+
+##CATCH PRESSURE IN EEZ
+
+Biblio_data$catchpresEEZsp <- Biblio_data$tonnesEEZsp/Biblio_data$tonnesEEZ
+Biblio_data$landpresEEZsp <- Biblio_data$landedvalueEEZsp/Biblio_data$landedvalueEEZ
+
+range(Biblio_data$catchpresEEZsp, na.rm=TRUE)
+
+#prices in EEZs (something is wrong here, strange numbers!)
+Biblio_data$spvalueEEZ <- Biblio_data$tonnesEEZsp/Biblio_data$landedvalueEEZsp 
+range(Biblio_data$spvalueEEZ, na.rm=TRUE)
+quantile(Biblio_data$spvalueEEZ, na.rm=TRUE)
+
+##Graphs for Catch dependency in SAU and Review
+#Elena Ojea
+#December 2017
+#source: Biblio_database_full.csv
+#output: figures impacts catch dependency, catch pressure
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(ggrepel)
+
+#Open Biblio_data with SAU data on EEZ and FE:
+
+Biblio_data <- read.csv("data/Biblio_database_full.csv", stringsAsFactors=FALSE)
+
+#CATCH DEPENDENCY OF FISHING ENTITIES
+
+#3. Species catch dependency on the area
+Biblio_data$catchdepFEsp <- Biblio_data$tonnesFEsp/Biblio_data$tonnesFEspT #the dependence of the country species catches on the EEZ species catches
+Biblio_data$landdepFEsp <-  Biblio_data$landedvalueFEsp/Biblio_data$landedvalueFEspT #the dependence of the country total SP Value on the EEZ SP catch value 
+
+range(Biblio_data$catchdepFEsp, na.rm=TRUE)
+range(Biblio_data$landdepFEsp, na.rm=TRUE) #is the same relation
+
+#4. Country dependency on the species in the area
+
+Biblio_data$catchdepFE <- Biblio_data$tonnesFEsp/Biblio_data$tonnesFE #the dependence of the country species catches on the EEZ species catches
+range(Biblio_data$catchdepFE, na.rm=TRUE)
+
+#5. Country dependency on the area
+
+Biblio_data$catchdepFEEZ <- Biblio_data$tonnesFEEZ/Biblio_data$tonnesEEZ 
+range(Biblio_data$catchdepFEEZ, na.rm=TRUE)
+
+##VALUE OF SPECIES FOR FISHING ENTITIES
+
+###Species VAlue in FE: landed value/tonnes
+
+Biblio_data$spvalueFE  <- Biblio_data$landedvalueFEsp/Biblio_data$tonnesFEsp
+range(Biblio_data$spvalueFE, na.rm=TRUE)
+quantile(Biblio_data$spvalueFE, na.rm=TRUE)
+
+##CATCH PRESSURE IN EEZ
+
+Biblio_data$catchpresEEZsp <- Biblio_data$tonnesEEZsp/Biblio_data$tonnesEEZ
+Biblio_data$landpresEEZsp <- Biblio_data$landedvalueEEZsp/Biblio_data$landedvalueEEZ
+
+range(Biblio_data$catchpresEEZsp, na.rm=TRUE)
+
+#prices in EEZs (something is wrong here, strange numbers!)
+Biblio_data$spvalueEEZ <- Biblio_data$tonnesEEZsp/Biblio_data$landedvalueEEZsp 
+range(Biblio_data$spvalueEEZ, na.rm=TRUE)
+quantile(Biblio_data$spvalueEEZ, na.rm=TRUE)
+
+##6. OUTPUT FILES###
+##write.csv(Biblio_data, file = "data/Biblio_database_full.csv")
+
