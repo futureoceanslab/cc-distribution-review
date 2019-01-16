@@ -104,7 +104,7 @@ lat_lon<-table[table$b_impact %in% c("lat shift center of grav",
                                      "lat and long shift center of grav"),]
 
 l<-as.data.frame(table(lat_lon$b_impact))
-l<-bind_rows(list(l[1:2,],l[4:8,]))
+l<-rbind(list(l[1:2,],l[4:8,]))
 
 plot_latlon<-ggplot(lat_lon, aes(x= lat_lon$b_impact , y = lat_lon$b_value)) +
   scale_x_discrete(name = NULL, 
@@ -158,7 +158,7 @@ multiplot(plot_latlon, plot_depth, plot_area, cols=3)
 
 #lat+long, long not done
 
-table<-read.table("biblio_database.csv", header= T, sep= ",")
+table<-read.table("data/biblio_database.csv", header= T, sep= ",")
 table<-table[,1:69] #get rid of empty columns
 
 #FOR LATITUDE: 
