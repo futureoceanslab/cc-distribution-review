@@ -159,7 +159,7 @@ kruskal.test(lat$b_value~lat$EnvTemp) #no sig dif
 # SPECIES LEVEL####
 
 #open dataset
-table<-read.table("ReviewDatsp.csv", header= T, sep= ",")
+table<-read.table("data/ReviewDatsp.csv", header= T, sep= ",")
 str(table)
 
 #Factors

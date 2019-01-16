@@ -16,8 +16,6 @@ library(data.table)
 
 #open data: reviewdatabase
 
-#ReviewDat <- read.csv("~/OneDrive/CLOCK_TEAM/03_FUTURE OCEANS/FO_BIBLIO/FO_DATA_ANALYSIS/R for fishbase review/biblio_database.csv")
-#ReviewDat <- read.csv("C:/Users/alba.aguion/OneDrive/CLOCK_TEAM/03_FUTURE OCEANS/FO_BIBLIO/FO_DATA_ANALYSIS/R for fishbase review/biblio_database.csv")
 ReviewDat <- read.csv("data/biblio_database.csv", stringsAsFactors=FALSE, header=T, sep = ",")
 
 ##CLEAN DATABASE
@@ -40,7 +38,7 @@ ReviewDat$rfishbase_species_code[ReviewDat$rfishbase_species_code=="3"] <- NA
 ##Create a list of our species scientific names
 SpReviewOriginal <- unique(as.character(ReviewDat$b_scientific_name)) # Review_database. list of species from original database (145)
 SpCodes<-as.vector(unique(ReviewDat$rfishbase_species_code)) #Fishbase-spp codes. there are MISSING CODES (122 sp-codes included here) ( there is 1 NA)
-SpReview <- unlist(species_names(SpCodes))  #Fishbase-spp names. only select the species where we have SpCodes (122 spp names matched)
+SpReview <- unlist(species_names(SpCodes)[,2]) #Fishbase-spp names. only select the species where we have SpCodes (122 spp names matched)
 spdiff <- SpReviewOriginal %in% SpReview
 table(spdiff) # Synthesis of matches and mismatches between review-fishbase (122 true, 23 false)
 spmiss <- SpReviewOriginal[spdiff==FALSE] #species not included in the SpReview to take into account
@@ -57,17 +55,12 @@ speciesDat <- species(SpReview) #for all  fishbase data
 #getting STOCK LEVEL data from Fishbase to our species list (123 spp out of 146 spp)
 stockdat <- stocks(SpReview)
 
-##SAVE DATA
-#write.csv(speciesDat, file = "data/speciesDat.csv")
-#write.csv(stockdat, file = "data/stockdat.csv")
-
-
 ##INCLUDE STOCK and SPECIES DATA into the REVIEW DATABASE
 ##Selection of interesting variables to add at the STOCK LEVEL
 
-fb_variables <- c("StockCode", "sciname", "StockDefs", "LocalUnique", "IUCN_Code", "Protected", "Resilience",
+fb_variables <- c("StockCode", "StockDefs", "LocalUnique", "IUCN_Code", "Protected", "Resilience", 
                   "StocksRefNo", "EnvTemp", "Abundance", "CountryComp", "Catches", "FAOAqua", "SpecCode")
-
+                #sciname is not a variable anymore
 mystockdat <- stockdat[, fb_variables]   #selection of database from which I extract fb_variables
 
 #ID variable -StockCode - to join the databases REVIEW and STOCKDAT
@@ -89,5 +82,3 @@ ReviewDatsp <- left_join(ReviewDat, speciesDat, by = "SpecCode")
 #Save the FULL data (stockdat and speciesdat) of fishbase with our reviewdata
 #write.csv(ReviewDatst, file = "data/ReviewDatst.csv") #for the stocks data
 #write.csv(ReviewDatsp, file = "data/ReviewDatsp.csv") #for the species data
-
-
