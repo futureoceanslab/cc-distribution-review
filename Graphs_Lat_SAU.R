@@ -9,6 +9,9 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(ggrepel)
+library(grid)
+library(gridExtra)
+library(plotly)
 
 
 #Open Biblio_data with SAU data on EEZ and FE:
@@ -83,13 +86,16 @@ area     <- subset (Biblio_data, b_impact == "area occupied")
 l1 <- ggplot(latitude, aes(catchdepFE, b_value, label = scientific_name)) +
   geom_jitter(alpha=0.8, aes(color=fishing_entity, size=tonnesFEsp),
               position = position_jitter(width = .001))+
-  geom_text_repel(data=subset(latitude, latitude$catchdepFE>0.05), size=3, vjust=1)+
-  geom_text_repel(data=subset(latitude, latitude$b_value>150), size=3, vjust=1)+
+  #geom_text_repel(data=subset(latitude, latitude$catchdepFE>0.05), size=3, vjust=1)+
+  #geom_text_repel(data=subset(latitude, latitude$b_value>150), size=3, vjust=1)+
   ggtitle("Latitude Shift")+
   xlab("FE total catch dependency on species in EEZ")+
   ylab("km/decade")+
   theme(legend.position="bottom")
 l1
+
+
+l1 + facet_wrap( ~ latitude$fishing_entity)
 
 #FE species catch dependency in EEZ
 #FIGIRE 2
