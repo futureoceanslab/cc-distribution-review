@@ -110,7 +110,7 @@ data<-data.frame(impacts, AMO, Climate_Velocity, sst, sst_bt_AMO, sst_bt, bt)
 #Colors: http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
 #Colors2: https://greggilbertlab.sites.ucsc.edu/wp-content/uploads/sites/276/2015/10/colorbynames.png
 
-data1<-read.table("Stalked_Bar_Chart_cc_variables.csv", header= T, sep= "," )
+data1<-read.table("data/Stalked_Bar_Chart_cc_variables.csv", header= T, sep= "," )
 
 data1$cc <- factor(data1$cc, levels = c("sst_bt","AMO","sst", "sst_bt_AMO",
                                         "bt","Climate_Velocity"), labels=c("SST and BT", "AMO", "SST", "SST, BT and AMO", "BT", "Climate Velocity"))
@@ -124,7 +124,7 @@ ggplot(data = data1, aes(x = Impact, y = Sample.Size, fill = factor(cc))) +
 
 #same figure without climate velocity
 
-data1<-read.table("Stalked_Bar_Chart_cc_variablesNCV.csv", header= T, sep= "," )
+data1<-read.table("data/Stalked_Bar_Chart_cc_variablesNCV.csv", header= T, sep= "," )
 
 data1$cc <- factor(data1$cc, levels = c("sst_bt","AMO","sst", "sst_bt_AMO",
                                         "bt"), labels=c("SST and BT", "AMO", "SST", "SST, BT and AMO", "BT"))

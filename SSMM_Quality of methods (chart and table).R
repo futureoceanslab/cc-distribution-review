@@ -1,6 +1,6 @@
 
 ##Author: Diego Salgueiro Otero
-##Data: 30/01/2017
+##Data: 11/05/2018
 ##Title: Script for methods quality for the review paper
 
 #Installing packages
@@ -16,14 +16,11 @@ library(data.table)
 library(grid)
 library(shiny)
 
-##Makeing a specific subset to plot the specific varibales
-mybiblio_database<-biblio_database[,c(2, 3,4, 6, 8,32,33,59, 63)]
+##Making a specific subset to plot the specific varibales
+mybiblio_database <- read.csv("data/biblio_database.csv", stringsAsFactors=FALSE, header=T, sep = ",")
+mybiblio_database<-mybiblio_database[,c(2, 3,4, 6, 8,32,33,59, 63)]
 str(mybiblio_database)
 mybiblio_database<- as.data.frame(mybiblio_database)
-
-## remove Nicholas (because is not only marine)
-mybiblio_database<- mybiblio_database[-c(166:175), ]
-mybiblio_database
 
 ##order in time 
 mybiblio_database<-mybiblio_database[order(mybiblio_database$article_year),]
@@ -71,9 +68,8 @@ mybiblio_database$b_years_pattern<- factor( mybiblio_database$b_years_pattern, l
 mybiblio_database$data_type<- factor( mybiblio_database$data_type, levels=c("1","4"),
                                       labels=c("Data collected","Biological surveys"))
 
-mybiblio_database$statistical_methodology<- factor( mybiblio_database$statistical_methodology, levels=c("1","2","5","23"),
+mybiblio_database$statistical_methodology<- factor( mybiblio_database$statistical_methodology, levels=c("1","2","5","2,3"),
                                                     labels=c("Correlation","Regression","Indirect relation", "Regression and Spatial analysis"))
-
 
 ##FIGURES
 
@@ -90,14 +86,16 @@ mytable<-mybiblio_database[,c(3,4,6,7,8,9,10)]
 mytable
 ##Re-order the columns in the dataframe
 mytable<-mytable[, c(1,2,7,3,4,5,6)]
+##Save the table in csv to further manipulation
+write.csv(mytable, file = "data/Methodsdata.csv")
 
-## Creating a database in excell (called "Methods_table") based on the information of mytable dataframe, but simplified.
-##Subsetting only the 26 first rows.
-Mytable<- Methods_table[c(1:26),]
+## Creation of a database in excell (called "Methods_table.csv") based on the information of mytable dataframe, but manually simplified.## Need to be codified.
+##Open "Methods_table.csv"
+Mytable<- read.csv("data/Methods_table.csv", stringsAsFactors=FALSE, header=T, sep = ";")
 ##Transforming the database in a dataframe
 Mytable<- as.data.frame(Mytable)
 
-##Exporting the second figure (table) as a pdf
-pdf("Description of database.pdf", height = 11, width = 13)
+##Exporting and save the second figure (table) as a pdf
+pdf(file = "data/Description of database.pdf", height = 11, width = 13)
 grid.table(Mytable, rows=NULL)
 dev.off() 
