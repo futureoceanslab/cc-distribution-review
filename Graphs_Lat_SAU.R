@@ -32,7 +32,7 @@ range(Biblio_data$catchdepFE, na.rm=TRUE)
 
 #3. Country dependency on the area
 
-Biblio_data$catchdepFEEZ <- Biblio_data$tonnesFEEZ/Biblio_data$tonnesEEZ 
+Biblio_data$catchdepFEEZ <- round((Biblio_data$tonnesFEEZ/Biblio_data$tonnesFE)*100,2) 
 range(Biblio_data$catchdepFEEZ, na.rm=TRUE)
 
 ##VALUE OF SPECIES FOR FISHING ENTITIES
@@ -194,34 +194,42 @@ l9 <- ggplot(latitude, aes(scientific_name,b_value, label=fishing_entity))+
 l9
 
 #FIGURE 10
-latitude_b_min<-latitude %>%
-  group_by(fishing_entity) %>%
+latitude_graph1<-latitude %>%
+  group_by(fishing_entity,area_name,catchdepFEEZ) %>%
+  #filter(fishing_entity=="Belgium")%>%
   summarise(b_mean=mean(b_value,na.rm = T),
-            b=min(b_value,na.rm = T),
-            b_sd=sd(b_value,na.rm = T),
+            b_min=min(b_value,na.rm = T),
+            b_max=max(b_value,na.rm = T),
+            #b_sd=sd(b_value,na.rm = T),
             b_n=n(),
-            graph="b_min")
-#latitude_b_min$graph<-"b_min"
-latitude_b_max<-latitude %>%
-  group_by(fishing_entity) %>%
-  summarise(b_mean=mean(b_value,na.rm = T),
-            b=max(b_value,na.rm = T),
-            b_sd=sd(b_value,na.rm = T),
-            b_n=n(),
-            graph="b_max")
-#latitude_b_max$graph<-"b_max"
+            graph="dep")
+latitude_graph<-latitude_graph1[complete.cases(latitude_graph1), ]
 
-latitude_b<-bind_rows(latitude_b_min,latitude_b_max)
+graph1<-filter(latitude_graph, area_name %in% c("Belgium","Denmark (North Sea)",
+                                                "Germany (North Sea)","Netherlands",
+                                                "Norway","Spain (Northwest)","United Kingdom (UK)")) 
+graph2<-filter(latitude_graph, area_name %in% c("Canada (East Coast)","Japan (main islands)",
+                                                "Korea (South)","USA (Alaska, Subarctic)","USA (East Coast)",
+                                                "USA (Gulf of Mexico)","USA (West Coast)")) 
 
-ggplot(latitude_b)+
-  geom_point(aes(x=fishing_entity,y=graph,size=b))+ #color=b, 
-  #scale_color_gradient(low = "blue", high = "red")+
-  scale_color_gradient(guide = F)+
-  ylim(min(latitude_b$graph), max(latitude_b$graph))+ 
-  coord_flip()
-#NO PUEDE HABER MISSING VALUES!!!!!!!!!!!! ERROR AL HACER MERGE EN DATA_MERGE_scripts
+ggplot(graph1, aes(x = fishing_entity, y = catchdepFEEZ))+#, group = b_mean, fill = b_mean
+  geom_bar(stat = "identity")+#, width = 0.5, position = "dodge"
+  facet_grid(. ~ area_name)+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 90, size = 8,vjust=0.2,hjust=1),
+        strip.text = element_text(size=12))+
+  ggtitle("FE catch dependency on EEZ")
+
+ggplot(graph2, aes(x = fishing_entity, y = catchdepFEEZ))+#, group = b_mean, fill = b_mean
+  geom_bar(stat = "identity")+#, width = 0.5, position = "dodge"
+  facet_grid(. ~ area_name)+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 90, size = 8,vjust=0.2,hjust=1),
+        strip.text = element_text(size=12))+
+  ggtitle("FE catch dependency on EEZ")
+
+#?NO PUEDE HABER MISSING VALUES!!!!!!!!!!!! ERROR AL HACER MERGE EN DATA_MERGE_scripts
 
 ##MODEL example - needs data from fishbase too
 m <-glm(b_value  ~ study_year+lat_dec+b_years+tonnesEEZ+landedvalueEEZ+tonnesEEZsp+landedvalueEEZsp+tonnesFEsp+tonnesFE+landedvalueFE+catchdepFEsp+landdepFEsp+spvalueFE, data=latitude)
 summary(m)
-
