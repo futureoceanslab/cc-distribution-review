@@ -118,5 +118,5 @@ table(na2) #we miss 229 observations, False 524, True 229
 
 ##8. OUTPUT FILES####
 list_FE <- unique(Final_SAU_EEZ$fishing_entity)
-#write.csv(list_FE, "data/list_FE.csv")
-#write.csv(ReviewDatFB_SAU2, "data/ReviewDat_Merge_SAU.csv")
+#write.csv(list_FE, "data/list_FE.csv", row.names = F)
+#write.csv(ReviewDatFB_SAU2, "data/ReviewDat_Merge_SAU.csv", row.names = F)

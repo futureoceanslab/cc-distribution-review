@@ -26,4 +26,4 @@ l1 <- lapply(1:length(l), func)
 # here we combine all dataframes together
 Final_SAU_FE <- do.call(rbind.data.frame, l1) #combine the datasets on fishing entities total catch
 
-write.csv(Final_SAU_FE , file = "data/Final_SAU_FE.csv")
+write.csv(Final_SAU_FE , file = "data/Final_SAU_FE.csv", row.names = F)
