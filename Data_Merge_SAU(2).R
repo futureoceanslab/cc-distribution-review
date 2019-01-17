@@ -33,12 +33,12 @@ tonlandFEsp <- tonlandFEspyear %>% #borrar bis
 
 ReviewDatFB_SAU3  <- merge(ReviewDat_Merge_SAU, tonlandFEsp, by=c("area_name","scientific_name"), all.x=TRUE)
 
-#PB names don't match!
+#Verification of EEZ names and species
 a<-unique(ReviewDatFB_SAU3$area_name)
 b<-unique(ReviewDatFB_SAU3$scientific_name)
 c<-unique(tonlandFEsp$area_name)
 d<-unique(tonlandFEsp$scientific_name)
-a %in% c#checking EEZ names match
+a %in% c#checking EEZ names match, all TRUE -> they all macth
 spmiss<-b[which(!b %in% d)]## list of unmatching(lost) species,29 spp no macth, 116 spp macthed (total:145spp)
 write.csv(spmiss, file="data/3listspmiss.csv") ##list of lost species
 
@@ -70,25 +70,9 @@ tonlandFEEZ <- tonlandFEEZyear %>%
   summarise(tonnesFEEZ=mean(tonnesFEEZyear,na.rm=T),
             landedvalueFEEZ=mean(landedvalueFEZZyear, na.rm=T))
 
-ReviewDatFB_SAU6 <- merge(ReviewDatFB_SAU5, tonlandFEEZ, by=c("fishing_entity", "area_name"), all.x=TRUE)
+Biblio_data <- merge(ReviewDatFB_SAU5, tonlandFEEZ, by=c("fishing_entity", "area_name"), all.x=TRUE)
+#Database_full: Biblio_data with SAU data on EEZ and FE:
 
-# 2. OUTPUT FILES####
-##write.csv(ReviewDatFB_SAU6, file = "data/Biblio_database_full.csv")
-
-##Graphs for Catch dependency in SAU and Review
-#Elena Ojea
-#December 2017
-#source: Biblio_database_full.csv
-#output: figures impacts catch dependency, catch pressure
-
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-library(ggrepel)
-
-#Open Biblio_data with SAU data on EEZ and FE:
-
-Biblio_data <- read.csv("data/Biblio_database_full.csv", stringsAsFactors=FALSE)
 
 #CATCH DEPENDENCY OF FISHING ENTITIES
 
@@ -124,11 +108,11 @@ Biblio_data$landpresEEZsp <- Biblio_data$landedvalueEEZsp/Biblio_data$landedvalu
 
 range(Biblio_data$catchpresEEZsp, na.rm=TRUE)
 
-#prices in EEZs (something is wrong here, strange numbers!)
-Biblio_data$spvalueEEZ <- Biblio_data$tonnesEEZsp/Biblio_data$landedvalueEEZsp 
+#prices in EEZs (value of 1 tone species in EEZ, is it ok?)
+Biblio_data$spvalueEEZ <- Biblio_data$landedvalueEEZsp /Biblio_data$tonnesEEZsp
 range(Biblio_data$spvalueEEZ, na.rm=TRUE)
 quantile(Biblio_data$spvalueEEZ, na.rm=TRUE)
 
 ##6. OUTPUT FILES###
-##write.csv(Biblio_data, file = "data/Biblio_database_full.csv")
+#write.csv(Biblio_data, file = "data/Biblio_database_full.csv")
 
