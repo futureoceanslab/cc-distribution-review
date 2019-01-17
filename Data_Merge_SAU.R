@@ -39,12 +39,7 @@ Sp_SAU <- as.character(unique(Final_SAU_EEZ$scientific_name))      #list species
 #compare species in Review and SAU
 matchsp <- Sp_ReviewDatFB %in% Sp_SAU
 table(matchsp) ## 33 spp no macth, 112 spp macthed (total:145spp)
-spmiss <- Sp_ReviewDatFB[matchsp==FALSE] ## list of unmatching(lost) species
-
-##To chek the matches among lists and edit the list of spp lost
-#write.csv(ReviewDatFB, file="data/listSpReviewDatFB.csv")
-#write.csv(matchsp, file="data/listSpmatchsp.csv")
-write.csv(spmiss, file="data/2listspmiss.csv") ##list of lost species
+spmiss1 <- Sp_ReviewDatFB[matchsp==FALSE] ## list of unmatching(lost) species
 
 
 ##4. MATCH COLUMNS and EEZ NAMES IN REVIEW AND SAU (area_name)####
@@ -64,12 +59,10 @@ ReviewDatFB$area_name <- trim(ReviewDatFB$area_name)
 EEZ_ReviewDatFB  <- unique(ReviewDatFB$area_name) #final list of EEZs in the Review dataset
 EEZ_SAU <- unique(Final_SAU_EEZ$area_name)
 EEZ_ReviewDatFB %in% EEZ_SAU
-
-
-##5. MERGE: ADD TOTAL CATCH AND LANDINGS BY EEZ####
 #EEZs of the review are now the same as in the SAU database
 identical(sort(unique(ReviewDatFB$area_name)),sort(unique(Final_SAU_EEZ$area_name)))
 
+##5. MERGE: ADD TOTAL CATCH AND LANDINGS BY EEZ####
 #check observations for EEZ data
 counts <- Final_SAU_EEZ %>%
   group_by(area_name, year) %>%
@@ -111,18 +104,16 @@ matchsp2<- Sp_ReviewDatFB %in% splist
 table(matchsp2) ## 33 spp no macth, 112 spp macthed (total:145spp). Same result in the line52 of script
 spmiss2 <- Sp_ReviewDatFB[matchsp2==FALSE] ## list of unmatching(lost) species
 ##To chek the matches among lists and edit the list of spp lost
+identical(spmiss1,spmiss2)
 write.csv(spmiss2, file="data/2listspmiss.csv") ##list of lost species
 
-##Species name match - ReviewDatFB_SAU2
-splist <- unique(ReviewDatFB_SAU2$scientific_name)
-matchsp2<- Sp_ReviewDatFB %in% splist
-table(matchsp2) 
 
-#check missing species in tonnesEEZsp and landedvalueEEZsp ???
+#check missing species in tonnesEEZsp and landedvalueEEZsp
+#Not all the species have data for all the years/EEZs
 na1 <- is.na(ReviewDatFB_SAU2$tonnesEEZsp)
-table(na1) #we miss 183 observations ??? False 524, True 229
+table(na1) #we miss 229 observations, False 524, True 229
 na2 <- is.na(ReviewDatFB_SAU2$landedvalueEEZsp)
-table(na2) #we miss 183 observations ??? False 524, True 229
+table(na2) #we miss 229 observations, False 524, True 229
 
 
 ##8. OUTPUT FILES####
