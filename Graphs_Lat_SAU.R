@@ -4,7 +4,6 @@
 #source: Biblio_database_full.csv
 #output: figures impacts catch dependency, catch pressure
 
-
 library(dplyr)
 library(tidyr)
 library(ggplot2)
@@ -15,26 +14,40 @@ library(plotly)
 
 
 #Open Biblio_data with SAU data on EEZ and FE:
-
-Biblio_data <- read.csv("data/Biblio_database_full.csv", stringsAsFactors=FALSE)
+data <- read.csv("data/Biblio_database_full.csv", stringsAsFactors = FALSE)
 
 ##PREPARE VARIABLES FOR PLOTS
 
 #Subsets of the impacts
-Biblio_data$b_impact<-as.factor(Biblio_data$b_impact)
+data$b_impact <- as.factor(data$b_impact)
 
-levels(Biblio_data$b_impact)
-levels(Biblio_data$b_impact)<-c("mean lat shift", "mean lat shift", "depth shift", "boundary lat shift", "boundary lat shift", "mean lon shift", "mean lon shift", "mean lat and lon shift", "area occupied")
+levels(data$b_impact)
+levels(data$b_impact) <- c("mean lat shift", "mean lat shift", 
+                            "depth shift", "boundary lat shift", 
+                            "boundary lat shift", "mean lon shift", 
+                            "mean lon shift", "mean lat and lon shift", 
+                            "area occupied")
 
-latitude <- subset (Biblio_data, b_impact =="mean lat shift")
-depth    <- subset (Biblio_data, b_impact=="depth shift")
-range    <- subset (Biblio_data, b_impact== "boundary lat shift")
-area     <- subset (Biblio_data, b_impact == "area occupied")
+latitude <- subset (data, b_impact =="mean lat shift")
+depth    <- subset (data, b_impact=="depth shift")
+range    <- subset (data, b_impact== "boundary lat shift")
+area     <- subset (data, b_impact == "area occupied")
 
 
 ####LATITUDE
-###PLOTS CATCH DEPENDENCY PER SP and FE total SP, per SP and FE total catch
 
+ggplot(latitude, aes(area_name, b_value)) +
+  geom_point(aes(fill = DemersPelag)) +
+  scale_colour_manual(values = c("blue","pink","grey","green","black","yellow")) +
+  #geom_text_repel(data=subset(latitude, latitude$catchdepFE>0.05), size=2, vjust=1)+
+  theme(axis.text.x = element_text(angle=-45, hjust= 0.06)) +
+  scale_color_gradient(low = "blue", high = "red") +
+  ggtitle("Countries species dependence")
+
+
+
+
+###PLOTS CATCH DEPENDENCY PER SP and FE total SP, per SP and FE total catch
 
 #FE total catch dependency on species in EEZ
 #FIGIRE 1
