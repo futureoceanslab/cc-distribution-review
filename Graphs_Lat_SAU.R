@@ -18,58 +18,13 @@ library(plotly)
 
 Biblio_data <- read.csv("data/Biblio_database_full.csv", stringsAsFactors=FALSE)
 
-
-#CATCH DEPENDENCY OF FISHING ENTITIES
-
-#1. Species catch dependency on the area
-Biblio_data$catchdepFEsp <- Biblio_data$tonnesFEsp/Biblio_data$tonnesFEspT #the dependence of the country species catches on the EEZ species catches
-Biblio_data$landdepFEsp <-  Biblio_data$landedvalueFEsp/Biblio_data$landedvalueFEspT #the dependence of the country total SP Value on the EEZ SP catch value 
-
-range(Biblio_data$catchdepFEsp, na.rm=TRUE)
-range(Biblio_data$landdepFEsp, na.rm=TRUE) #is the same relation
-
-#2. Country dependency on the species in the area
-
-Biblio_data$catchdepFE <- Biblio_data$tonnesFEsp/Biblio_data$tonnesFE #the dependence of the country species catches on the EEZ species catches
-range(Biblio_data$catchdepFE, na.rm=TRUE)
-
-#3. Country dependency on the area
-
-Biblio_data$catchdepFEEZ <- round((Biblio_data$tonnesFEEZ/Biblio_data$tonnesFE)*100,2) 
-range(Biblio_data$catchdepFEEZ, na.rm=TRUE)
-
-##VALUE OF SPECIES FOR FISHING ENTITIES
-
-###Species VAlue in FE: landed value/tonnes
-
-Biblio_data$spvalueFE  <- Biblio_data$landedvalueFEsp/Biblio_data$tonnesFEsp
-range(Biblio_data$spvalueFE, na.rm=TRUE)
-quantile(Biblio_data$spvalueFE, na.rm=TRUE)
-
-
-##CATCH PRESSURE IN EEZ
-
-Biblio_data$catchpresEEZsp <- Biblio_data$tonnesEEZsp/Biblio_data$tonnesEEZ
-Biblio_data$landpresEEZsp <- Biblio_data$landedvalueEEZsp/Biblio_data$landedvalueEEZ
-
-range(Biblio_data$catchpresEEZsp, na.rm=TRUE)
-
-#prices in EEZs (something is wrong here, strange numbers!)
-Biblio_data$spvalueEEZ <- Biblio_data$tonnesEEZsp/Biblio_data$landedvalueEEZsp 
-range(Biblio_data$spvalueEEZ, na.rm=TRUE)
-quantile(Biblio_data$spvalueEEZ, na.rm=TRUE)
-
-
-
 ##PREPARE VARIABLES FOR PLOTS
 
 #Subsets of the impacts
 Biblio_data$b_impact<-as.factor(Biblio_data$b_impact)
 
-#levels(Biblio_dataSAU$b_impact)
-levels(Biblio_data$b_impact)<-c("mean lat shift", "mean lat shift", "depth shift", "boundary lat shift", "boundary lat shift", "mean long shift", "mean long shift", "mean lat and long shift", "area occupied")
-#remove Nicolas (uds=6)
-Biblio_data <- subset(Biblio_data, Biblio_data$id_study!=6)
+levels(Biblio_data$b_impact)
+levels(Biblio_data$b_impact)<-c("mean lat shift", "mean lat shift", "depth shift", "boundary lat shift", "boundary lat shift", "mean lon shift", "mean lon shift", "mean lat and lon shift", "area occupied")
 
 latitude <- subset (Biblio_data, b_impact =="mean lat shift")
 depth    <- subset (Biblio_data, b_impact=="depth shift")
