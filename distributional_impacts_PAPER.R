@@ -7,6 +7,7 @@
 library(rockchalk)
 library(ggplot2) 
 library(tidyverse)
+library(tidyr)
 
 #open dataset
 table1<-read.table("data/biblio_database.csv", header= T, sep= ",")
@@ -105,35 +106,42 @@ sst_bt_AMO <- c ("12", "13","12", "16")
 sst_bt <- c ("4", "3","0","1") #For latitude 1+3 (3 from lat_long)
 bt <- c ("25", "30", "0", "9")
 
-data<-data.frame(impacts, AMO, Climate_Velocity, sst, sst_bt_AMO, sst_bt, bt)
+data <- data.frame(impacts, AMO, Climate_Velocity, sst, sst_bt_AMO, sst_bt, bt)
+is.data.frame(data)
+
+data1 <- gather(data, impacts) # dataset ready for ggplot
+
+colnames(data1)[2] <- "cc"
+
+data2 <- subset (data1,  ! cc == "Climate_Velocity") # same dataset without climate velocity
+
 #http://rstudio-pubs-static.s3.amazonaws.com/3256_bb10db1440724dac8fa40da5e658ada5.html
 #Colors: http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
 #Colors2: https://greggilbertlab.sites.ucsc.edu/wp-content/uploads/sites/276/2015/10/colorbynames.png
 
-data1<-read.table("data/Stalked_Bar_Chart_cc_variables.csv", header= T, sep= "," )
 
 data1$cc <- factor(data1$cc, levels = c("sst_bt","AMO","sst", "sst_bt_AMO",
                                         "bt","Climate_Velocity"), labels=c("SST and BT", "AMO", "SST", "SST, BT and AMO", "BT", "Climate Velocity"))
-data1$Impact <- factor (data1$Impact, levels= c ("Latitude", 
+
+data1$impacts <- factor (data1$impacts, levels= c ("Latitude", 
                                                  "Depth","Boundary", "Area"), labels=c("Mean Latitude", "Depth", "Boundary Latitude", "Area"))                                       
 
-ggplot(data = data1, aes(x = Impact, y = Sample.Size, fill = factor(cc))) + 
+ggplot(data = data1, aes(x = impacts, y = value, fill = factor(cc))) + 
   geom_bar(stat="identity", alpha=0.8) + scale_fill_manual(values=c("darkgreen", "chartreuse3", "yellow", "orange", "orangered", "red3")) +
   labs( y = "Number of Observations", x = "", fill = "Climate Change variables")+ theme(panel.background = element_rect(fill = 'whitesmoke', colour = 'black'), legend.position= "left")
 
 
 #same figure without climate velocity
 
-data1<-read.table("data/Stalked_Bar_Chart_cc_variablesNCV.csv", header= T, sep= "," )
-
-data1$cc <- factor(data1$cc, levels = c("sst_bt","AMO","sst", "sst_bt_AMO",
+data2$cc <- factor(data2$cc, levels = c("sst_bt","AMO","sst", "sst_bt_AMO",
                                         "bt"), labels=c("SST and BT", "AMO", "SST", "SST, BT and AMO", "BT"))
-data1$Impact <- factor (data1$Impact, levels= c ("Latitude", 
+data2$impacts <- factor (data2$impacts, levels= c ("Latitude", 
                                                  "Depth","Boundary", "Area"), labels=c("Mean Latitude", "Depth", "Boundary Latitude", "Area"))                                       
 
-ggplot(data = data1, aes(x = Impact, y = Sample.Size, fill = factor(cc))) + 
+ggplot(data = data2, aes(x = impacts, y = value, fill = factor(cc))) + 
   geom_bar(stat="identity", alpha=0.8) + scale_fill_manual(values=c("darkgreen", "chartreuse3", "yellow", "orange", "orangered", "red3")) +
   labs( y = "Number of Observations", x = "", fill = "Climate Change variables")+ theme(panel.background = element_rect(fill = 'whitesmoke', colour = 'black'), legend.position= "left",axis.text=element_text(size=12),axis.title=element_text(size=12),legend.text=element_text(size=12))
+
 
 
 ###############################
