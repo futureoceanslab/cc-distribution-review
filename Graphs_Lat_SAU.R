@@ -4,13 +4,8 @@
 #source: Biblio_database_full.csv
 #output: figures impacts catch dependency, catch pressure
 
-library(dplyr)
-library(tidyr)
+library(tidyverse)
 library(ggplot2)
-library(ggrepel)
-library(grid)
-library(gridExtra)
-library(plotly)
 
 
 #Open Biblio_data with SAU data on EEZ and FE:
@@ -36,14 +31,115 @@ area     <- subset (data, b_impact == "area occupied")
 
 ####LATITUDE
 
-ggplot(latitude, aes(area_name, b_value)) +
-  geom_point(aes(fill = DemersPelag)) +
-  scale_colour_manual(values = c("blue","pink","grey","green","black","yellow")) +
-  #geom_text_repel(data=subset(latitude, latitude$catchdepFE>0.05), size=2, vjust=1)+
-  theme(axis.text.x = element_text(angle=-45, hjust= 0.06)) +
-  scale_color_gradient(low = "blue", high = "red") +
-  ggtitle("Countries species dependence")
+latitude$area_name <- as.factor(latitude$area_name)
 
+#Impacts by EEZ and Landings (volume t)
+seq(min(latitude$tonnesEEZsp, na.rm=T),max(latitude$tonnesEEZsp, na.rm=T), by = 250000)
+
+ggplot(latitude, aes(area_name, b_value)) +
+  geom_point(aes(color = tonnesEEZsp, size = tonnesEEZsp), alpha = 0.6) +
+  scale_colour_gradient(low="blue", high="red",guide="legend", 
+                        breaks = c(0.5e+5,5.0e+5, 7.5e+5, 1.0e+6, 1.3e+6))+
+  scale_size(range=c(3,15), breaks = c(0.5e+5,5.0e+5, 7.5e+5, 1.0e+6, 1.3e+6))+
+  theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 12),
+        axis.text.y = element_text(size = 12),
+        panel.background = element_rect(fill = "white"),
+        axis.line.x = element_line(colour = c("black")),
+        axis.line.y = element_line(colour = c("black")),
+        legend.key=element_blank(),
+        axis.title.y = element_text(size=14),
+        axis.title.x = element_text(size=14)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
+  guides(color = guide_legend(title = "Landings (tones)"),
+         size = guide_legend(title = "Landings (tones)")) +
+  labs(x = "Economic Exclusive Zones",
+       y = "Latitudinal shift (km/decade)")
+
+#Impacts by EEZ and Landings (earnings $)
+seq(min(latitude$landedvalueEEZsp, na.rm=T),max(latitude$landedvalueEEZsp, na.rm=T), by = 250000000)
+
+ggplot(latitude, aes(area_name, b_value)) +
+  geom_point(aes(color = landedvalueEEZsp, size = landedvalueEEZsp), alpha = 0.6) +
+  scale_colour_gradient(low="blue", high="red",guide="legend", 
+                        breaks = c(0.5e+8,5.0e+8, 1.0e+9, 1.3e+9))+
+  scale_size(range=c(3,15), breaks = c(0.5e+8,5.0e+8, 1.0e+9, 1.3e+9))+
+  theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 12),
+        axis.text.y = element_text(size = 12),
+        panel.background = element_rect(fill = "white"),
+        axis.line.x = element_line(colour = c("black")),
+        axis.line.y = element_line(colour = c("black")),
+        legend.key=element_blank(),
+        axis.title.y = element_text(size=14),
+        axis.title.x = element_text(size=14)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
+  guides(color = guide_legend(title = "Landings ($)"), 
+         size = guide_legend(title = "Landings ($)")) +
+  labs(x = "Economic Exclusive Zones",
+       y = "Latitudinal shift (km/decade)")
+
+#Impacts by EEZ and Price category
+ggplot(latitude, aes(PriceCateg, b_value)) +
+  geom_point(aes(color = tonnesEEZsp, size = tonnesEEZsp), alpha = 0.6) +
+  scale_colour_gradient(low="blue", high="red",guide="legend", 
+                        breaks = c(0.5e+5,5.0e+5, 7.5e+5, 1.0e+6, 1.3e+6))+
+  scale_size(range=c(3,15), breaks = c(0.5e+5,5.0e+5, 7.5e+5, 1.0e+6, 1.3e+6))+
+  theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 12),
+        axis.text.y = element_text(size = 12),
+        panel.background = element_rect(fill = "white"),
+        axis.line.x = element_line(colour = c("black")),
+        axis.line.y = element_line(colour = c("black")),
+        legend.key=element_blank(),
+        axis.title.y = element_text(size=14),
+        axis.title.x = element_text(size=14)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
+  guides(color = guide_legend(title = "Landings (tones)"),
+         size = guide_legend(title = "Landings (tones)")) +
+  labs(x = "Price Category",
+       y = "Latitudinal shift (km/decade)") +
+  scale_x_discrete(limits = c("low","medium", "high","very high"))
+
+ggplot(latitude, aes(PriceCateg, b_value)) +
+  geom_point(aes(color = landedvalueEEZsp, size = landedvalueEEZsp), alpha = 0.6) +
+  scale_colour_gradient(low="blue", high="red",guide="legend", 
+                        breaks = c(0.5e+5,5.0e+5, 7.5e+5, 1.0e+6, 1.3e+6))+
+  scale_size(range=c(3,15), breaks = c(0.5e+5,5.0e+5, 7.5e+5, 1.0e+6, 1.3e+6))+
+  theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 12),
+        axis.text.y = element_text(size = 12),
+        panel.background = element_rect(fill = "white"),
+        axis.line.x = element_line(colour = c("black")),
+        axis.line.y = element_line(colour = c("black")),
+        legend.key=element_blank(),
+        axis.title.y = element_text(size=14),
+        axis.title.x = element_text(size=14)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
+  guides(color = guide_legend(title = "Landings ($)"), 
+         size = guide_legend(title = "Landings ($)")) +
+  labs(x = "Price Category",
+       y = "Latitudinal shift (km/decade)") +
+  scale_x_discrete(limits = c("low","medium", "high","very high"))
+
+
+lat <- filter(latitude, !is.na(PriceCateg))
+lat$reo <- reorder(lat$PriceCateg, lat$b_value)
+
+ggplot(lat, aes(area_name, b_value)) +
+  geom_point(aes(color = reo), size = 8, alpha = 0.6) +
+  scale_colour_manual(values = c("very high" = "#cb181d", 
+                                 "high" = "#fb6a4a", 
+                                 "medium" = "#fcae91", 
+                                 "low" = "#fee5d9")) +
+  theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 12),
+        axis.text.y = element_text(size = 12),
+        panel.background = element_rect(fill = "white"),
+        axis.line.x = element_line(colour = c("black")),
+        axis.line.y = element_line(colour = c("black")),
+        legend.key=element_blank(),
+        axis.title.y = element_text(size=14),
+        axis.title.x = element_text(size=14)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
+  guides(color = guide_legend(title = "Price category")) +
+  labs(x = "Economic Exclusive Zones",
+       y = "Latitudinal shift (km/decade)")
 
 
 
