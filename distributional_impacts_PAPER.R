@@ -110,10 +110,12 @@ data <- data.frame(impacts, AMO, Climate_Velocity, sst, sst_bt_AMO, sst_bt, bt)
 is.data.frame(data)
 
 data1 <- gather(data, impacts) # dataset ready for ggplot
-
+data1$value <- as.numeric(data1$value)
 colnames(data1)[2] <- "cc"
 
 data2 <- subset (data1,  ! cc == "Climate_Velocity") # same dataset without climate velocity
+
+
 
 #http://rstudio-pubs-static.s3.amazonaws.com/3256_bb10db1440724dac8fa40da5e658ada5.html
 #Colors: http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
