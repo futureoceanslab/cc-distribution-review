@@ -101,8 +101,8 @@ ggplot(latitude, aes(PriceCateg, b_value)) +
 ggplot(latitude, aes(PriceCateg, b_value)) +
   geom_point(aes(color = landedvalueEEZsp, size = landedvalueEEZsp), alpha = 0.6) +
   scale_colour_gradient(low="blue", high="red",guide="legend", 
-                        breaks = c(0.5e+5,5.0e+5, 7.5e+5, 1.0e+6, 1.3e+6))+
-  scale_size(range=c(3,15), breaks = c(0.5e+5,5.0e+5, 7.5e+5, 1.0e+6, 1.3e+6))+
+                        breaks = c(1.3e+6,7.5e+8, 1.0e+9, 1.25e+9, 1.5e+9))+
+  scale_size(range=c(3,15), breaks = c(1.3e+6,7.5e+8, 1.0e+9, 1.25e+9, 1.5e+9))+
   theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 12),
         axis.text.y = element_text(size = 12),
         panel.background = element_rect(fill = "white"),
@@ -123,7 +123,7 @@ lat <- filter(latitude, !is.na(PriceCateg))
 lat$reo <- reorder(lat$PriceCateg, lat$b_value)
 
 ggplot(lat, aes(area_name, b_value)) +
-  geom_point(aes(color = reo), size = 8, alpha = 0.6) +
+  geom_point(aes(color = reo), size = 4, alpha = 0.6) +
   scale_colour_manual(values = c("very high" = "#cb181d", 
                                  "high" = "#fb6a4a", 
                                  "medium" = "#fcae91", 
@@ -156,6 +156,140 @@ ggplot(latitude, aes(x = area_name, y = fishing_entity, fill = landedvalueFEEZ/l
   theme( axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
   scale_fill_gradientn("Dependency ($)", colours = rev(brewer.pal(9, "Spectral"))) +
   xlab("Economic Exclusive Zones") + ylab("Fishing entities")
+
+
+
+####DEPTH
+
+depth$area_name <- as.factor(depth$area_name)
+
+#Impacts by EEZ and Landings (volume t)
+seq(min(depth$tonnesEEZsp, na.rm=T),max(depth$tonnesEEZsp, na.rm=T), by = 250000)
+
+ggplot(depth, aes(area_name, b_value)) +
+  geom_point(aes(color = tonnesEEZsp, size = tonnesEEZsp), alpha = 0.6) +
+  scale_colour_gradient(low="blue", high="red",guide="legend", 
+                        breaks = c(0.5e+5,5.0e+5, 7.5e+5, 1.0e+6, 1.3e+6))+
+  scale_size(range=c(3,15), breaks = c(0.5e+5,5.0e+5, 7.5e+5, 1.0e+6, 1.3e+6))+
+  theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 12),
+        axis.text.y = element_text(size = 12),
+        panel.background = element_rect(fill = "white"),
+        axis.line.x = element_line(colour = c("black")),
+        axis.line.y = element_line(colour = c("black")),
+        legend.key=element_blank(),
+        axis.title.y = element_text(size=14),
+        axis.title.x = element_text(size=14)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
+  guides(color = guide_legend(title = "Landings (t)"),
+         size = guide_legend(title = "Landings (t)")) +
+  labs(x = "Economic Exclusive Zones",
+       y = "Depth shift (m/decade)")
+
+#Impacts by EEZ and Landings (earnings $)
+seq(min(depth$landedvalueEEZsp, na.rm=T),max(depth$landedvalueEEZsp, na.rm=T), by = 250000000)
+
+ggplot(depth, aes(area_name, b_value)) +
+  geom_point(aes(color = landedvalueEEZsp, size = landedvalueEEZsp), alpha = 0.6) +
+  scale_colour_gradient(low="blue", high="red",guide="legend", 
+                        breaks = c(0.5e+8,5.0e+8, 1.0e+9, 1.3e+9))+
+  scale_size(range=c(3,15), breaks = c(0.5e+8,5.0e+8, 1.0e+9, 1.3e+9))+
+  theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 12),
+        axis.text.y = element_text(size = 12),
+        panel.background = element_rect(fill = "white"),
+        axis.line.x = element_line(colour = c("black")),
+        axis.line.y = element_line(colour = c("black")),
+        legend.key=element_blank(),
+        axis.title.y = element_text(size=14),
+        axis.title.x = element_text(size=14)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
+  guides(color = guide_legend(title = "Landings ($)"), 
+         size = guide_legend(title = "Landings ($)")) +
+  labs(x = "Economic Exclusive Zones",
+       y = "Depth shift (m/decade)")
+
+#Impacts by EEZ and Price category
+ggplot(depth, aes(PriceCateg, b_value)) +
+  geom_point(aes(color = tonnesEEZsp, size = tonnesEEZsp), alpha = 0.6) +
+  scale_colour_gradient(low="blue", high="red",guide="legend", 
+                        breaks = c(0.5e+5,5.0e+5, 7.5e+5, 1.0e+6, 1.3e+6))+
+  scale_size(range=c(3,15), breaks = c(0.5e+5,5.0e+5, 7.5e+5, 1.0e+6, 1.3e+6))+
+  theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 12),
+        axis.text.y = element_text(size = 12),
+        panel.background = element_rect(fill = "white"),
+        axis.line.x = element_line(colour = c("black")),
+        axis.line.y = element_line(colour = c("black")),
+        legend.key=element_blank(),
+        axis.title.y = element_text(size=14),
+        axis.title.x = element_text(size=14)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
+  guides(color = guide_legend(title = "Landings (t)"),
+         size = guide_legend(title = "Landings (t)")) +
+  labs(x = "Price Category",
+       y = "Depth shift (m/decade)") +
+  scale_x_discrete(limits = c("low","medium", "high","very high"))
+
+ggplot(depth, aes(PriceCateg, b_value)) +
+  geom_point(aes(color = landedvalueEEZsp, size = landedvalueEEZsp), alpha = 0.6) +
+  scale_colour_gradient(low="blue", high="red",guide="legend", 
+                        breaks = c(1.3e+6,7.5e+8, 1.0e+9, 1.25e+9, 1.5e+9))+
+  scale_size(range=c(3,15), breaks = c(1.3e+6,7.5e+8, 1.0e+9, 1.25e+9, 1.5e+9))+
+  theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 12),
+        axis.text.y = element_text(size = 12),
+        panel.background = element_rect(fill = "white"),
+        axis.line.x = element_line(colour = c("black")),
+        axis.line.y = element_line(colour = c("black")),
+        legend.key=element_blank(),
+        axis.title.y = element_text(size=14),
+        axis.title.x = element_text(size=14)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
+  guides(color = guide_legend(title = "Landings ($)"), 
+         size = guide_legend(title = "Landings ($)")) +
+  labs(x = "Price Category",
+       y = "Depth shift (m/decade)") +
+  scale_x_discrete(limits = c("low","medium", "high","very high"))
+
+
+dep <- filter(depth, !is.na(PriceCateg))
+dep$reo <- reorder(dep$PriceCateg, dep$b_value)
+
+ggplot(dep, aes(area_name, b_value)) +
+  geom_point(aes(color = reo), size = 8, alpha = 0.6) +
+  scale_colour_manual(values = c("very high" = "#cb181d", 
+                                 "high" = "#fb6a4a", 
+                                 "medium" = "#fcae91", 
+                                 "low" = "#fee5d9")) +
+  theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 12),
+        axis.text.y = element_text(size = 12),
+        panel.background = element_rect(fill = "white"),
+        axis.line.x = element_line(colour = c("black")),
+        axis.line.y = element_line(colour = c("black")),
+        legend.key=element_blank(),
+        axis.title.y = element_text(size=14),
+        axis.title.x = element_text(size=14)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
+  guides(color = guide_legend(title = "Price category")) +
+  labs(x = "Economic Exclusive Zones",
+       y = "Depth shift (m/decade)")
+
+##plot catch dependency
+ggplot(depth, aes(x = area_name, y = fishing_entity, fill = catchdepFEEZ)) +
+  geom_tile(data = subset(depth, !is.na(fishing_entity))) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  scale_fill_gradientn("Dependency (tons)", colours = rev(brewer.pal(9, "Spectral"))) +
+  xlab("Economic Exclusive Zones") + ylab("Fishing entities")
+
+##plot $ dependency
+ggplot(depth, aes(x = area_name, y = fishing_entity, fill = landedvalueFEEZ/landedvalueFE)) +
+  geom_tile(data = subset(depth, !is.na(fishing_entity))) +
+  theme_bw() +
+  theme( axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  scale_fill_gradientn("Dependency ($)", colours = rev(brewer.pal(9, "Spectral"))) +
+  xlab("Economic Exclusive Zones") + ylab("Fishing entities")
+
+
+
+
 
 
 
