@@ -141,7 +141,7 @@ ggplot(lat, aes(area_name, b_value)) +
   labs(x = "Economic Exclusive Zones",
        y = "Latitudinal shift (km/decade)")
 
-##plot dependency
+##plot catch dependency
 ggplot(latitude, aes(x = area_name, y = fishing_entity, fill = catchdepFEEZ)) +
   geom_tile(data = subset(latitude, !is.na(fishing_entity))) +
   theme_bw() +
@@ -149,7 +149,7 @@ ggplot(latitude, aes(x = area_name, y = fishing_entity, fill = catchdepFEEZ)) +
   scale_fill_gradientn("Dependency (tons)", colours = rev(brewer.pal(9, "Spectral"))) +
   xlab("Economic Exclusive Zones") + ylab("Fishing entities")
 
-##plot catches dependency
+##plot $ dependency
 ggplot(latitude, aes(x = area_name, y = fishing_entity, fill = landedvalueFEEZ/landedvalueFE)) +
   geom_tile(data = subset(latitude, !is.na(fishing_entity))) +
   theme_bw() +
