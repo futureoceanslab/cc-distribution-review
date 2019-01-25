@@ -6,7 +6,7 @@
 
 library(tidyverse)
 library(ggplot2)
-
+library(RColorBrewer)
 
 #Open Biblio_data with SAU data on EEZ and FE:
 data <- read.csv("data/Biblio_database_full.csv", stringsAsFactors = FALSE)
@@ -140,6 +140,22 @@ ggplot(lat, aes(area_name, b_value)) +
   guides(color = guide_legend(title = "Price category")) +
   labs(x = "Economic Exclusive Zones",
        y = "Latitudinal shift (km/decade)")
+
+##plot dependency
+ggplot(latitude, aes(x = area_name, y = fishing_entity, fill = catchdepFEEZ)) +
+  geom_tile(data = subset(latitude, !is.na(fishing_entity))) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  scale_fill_gradientn("Dependency (tons)", colours = rev(brewer.pal(9, "Spectral"))) +
+  xlab("Economic Exclusive Zones") + ylab("Fishing entities")
+
+##plot catches dependency
+ggplot(latitude, aes(x = area_name, y = fishing_entity, fill = landedvalueFEEZ/landedvalueFE)) +
+  geom_tile(data = subset(latitude, !is.na(fishing_entity))) +
+  theme_bw() +
+  theme( axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  scale_fill_gradientn("Dependency ($)", colours = rev(brewer.pal(9, "Spectral"))) +
+  xlab("Economic Exclusive Zones") + ylab("Fishing entities")
 
 
 
