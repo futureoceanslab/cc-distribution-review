@@ -50,8 +50,8 @@ ggplot(latitude, aes(area_name, b_value)) +
         axis.title.y = element_text(size=14),
         axis.title.x = element_text(size=14)) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
-  guides(color = guide_legend(title = "Landings (t)"),
-         size = guide_legend(title = "Landings (t)")) +
+  guides(color = guide_legend(title = "Catch (t)"),
+         size = guide_legend(title = "Catch (t)")) +
   labs(x = "Economic Exclusive Zones",
        y = "Latitudinal shift (km/decade)")
 
@@ -92,8 +92,8 @@ ggplot(latitude, aes(PriceCateg, b_value)) +
         axis.title.y = element_text(size=14),
         axis.title.x = element_text(size=14)) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
-  guides(color = guide_legend(title = "Landings (t)"),
-         size = guide_legend(title = "Landings (t)")) +
+  guides(color = guide_legend(title = "Catch (t)"),
+         size = guide_legend(title = "Catch (t)")) +
   labs(x = "Price Category",
        y = "Latitudinal shift (km/decade)") +
   scale_x_discrete(limits = c("low","medium", "high","very high"))
@@ -180,8 +180,8 @@ ggplot(depth, aes(area_name, b_value)) +
         axis.title.y = element_text(size=14),
         axis.title.x = element_text(size=14)) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
-  guides(color = guide_legend(title = "Landings (t)"),
-         size = guide_legend(title = "Landings (t)")) +
+  guides(color = guide_legend(title = "Catch (t)"),
+         size = guide_legend(title = "Catch (t)")) +
   labs(x = "Economic Exclusive Zones",
        y = "Depth shift (m/decade)")
 
@@ -222,8 +222,8 @@ ggplot(depth, aes(PriceCateg, b_value)) +
         axis.title.y = element_text(size=14),
         axis.title.x = element_text(size=14)) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
-  guides(color = guide_legend(title = "Landings (t)"),
-         size = guide_legend(title = "Landings (t)")) +
+  guides(color = guide_legend(title = "Catch (t)"),
+         size = guide_legend(title = "Catch (t)")) +
   labs(x = "Price Category",
        y = "Depth shift (m/decade)") +
   scale_x_discrete(limits = c("low","medium", "high","very high"))
