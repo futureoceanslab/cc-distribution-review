@@ -146,7 +146,7 @@ ggplot(latitude, aes(x = area_name, y = fishing_entity, fill = catchdepFEEZ)) +
   geom_tile(data = subset(latitude, !is.na(fishing_entity))) +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
-  scale_fill_gradientn("Dependency (tons)", colours = rev(brewer.pal(9, "Spectral"))) +
+  scale_fill_gradientn("Dependency (t)", colours = rev(brewer.pal(9, "Spectral"))) +
   xlab("Economic Exclusive Zones") + ylab("Fishing entities")
 
 ##plot $ dependency
@@ -276,7 +276,7 @@ ggplot(depth, aes(x = area_name, y = fishing_entity, fill = catchdepFEEZ)) +
   geom_tile(data = subset(depth, !is.na(fishing_entity))) +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
-  scale_fill_gradientn("Dependency (tons)", colours = rev(brewer.pal(9, "Spectral"))) +
+  scale_fill_gradientn("Dependency (t)", colours = rev(brewer.pal(9, "Spectral"))) +
   xlab("Economic Exclusive Zones") + ylab("Fishing entities")
 
 ##plot $ dependency
