@@ -9,6 +9,9 @@ library(ggplot2)
 
 #open dataset
 table<-read.table("data/biblio_database.csv", header= T, sep= ",")
+##Subset of biblio_database without duplicated data
+##table<- table%>%
+##  filter(table$duplicate=="1")
 table<-table[,1:69] #get rid of empty columns
 
 #Factors

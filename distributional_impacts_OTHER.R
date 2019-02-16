@@ -11,6 +11,9 @@ library(plyr)
 
 #open dataset
 table<-read.table("data/biblio_database.csv", header= T, sep= ",")
+##Subset of biblio_database without duplicated data
+##table<- table%>%
+##  filter(table$duplicate=="1")
 
 #Factors
 table$researcher<-as.factor(table$researcher)

@@ -18,6 +18,9 @@ library(shiny)
 
 ##Making a specific subset to plot the specific varibales
 mybiblio_database <- read.csv("data/biblio_database.csv", stringsAsFactors=FALSE, header=T, sep = ",")
+##Subset of biblio_database without duplicated data
+##mybiblio_database<- mybiblio_database%>%
+##  filter(mybiblio_database$duplicate=="1")
 mybiblio_database<-mybiblio_database[,c(2, 3,4, 6, 8,32,33,59, 63)]
 str(mybiblio_database)
 mybiblio_database<- as.data.frame(mybiblio_database)

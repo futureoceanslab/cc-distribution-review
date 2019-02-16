@@ -19,6 +19,9 @@ library(data.table)
 ReviewDat <- read.csv("data/biblio_database.csv", stringsAsFactors=FALSE, header=T, sep = ",")
 
 ##CLEAN DATABASE
+####Subset of biblio_database without duplicated data
+##ReviewDat<- ReviewDat%>%
+##  filter(ReviewDat$duplicate=="1")
 ##delete blank columns
 colnames(ReviewDat)
 ReviewDat <- ReviewDat[, 1:69] 

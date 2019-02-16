@@ -13,7 +13,6 @@ library(ggrepel)
 
 Biblio_data <- read.csv("data/Biblio_database_full.csv", stringsAsFactors=FALSE)
 
-
 #CATCH DEPENDENCY OF FISHING ENTITIES
 
 #1. Species catch dependency on the area
