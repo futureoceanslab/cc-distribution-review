@@ -11,6 +11,9 @@ library(ggplot2)
 library(RColorBrewer)
 library(tidyr)
 
+##read database
+Biblio_database_full <- read.csv("data/Biblio_database_full.csv", stringsAsFactors=FALSE, header=T, sep = ",")
+
 #show variables list of Biblio_database_full
 names (Biblio_database_full)
 
