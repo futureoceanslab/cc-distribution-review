@@ -24,7 +24,6 @@ ReviewDat <- read.csv("data/biblio_database.csv", stringsAsFactors=FALSE, header
 ##  filter(ReviewDat$duplicate=="1")
 ##delete blank columns
 colnames(ReviewDat)
-ReviewDat <- ReviewDat[, 1:69] 
 #detele blank spaces in Species scientific name to match review_database-fishbase_database
 trim.trailing <- function (x) sub("\\s+$", "", x)
 ReviewDat$b_scientific_name <- trim.trailing(ReviewDat$b_scientific_name )

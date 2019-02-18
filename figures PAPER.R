@@ -20,7 +20,6 @@ table1<-read.table("data/biblio_database.csv", header= T, sep= ",")
 ##Subset of biblio_database without duplicated data
 ##table1<- table1%>%
 ##  filter(table1$duplicate=="1")
-table<-table1[,1:69]    #delete columns 
 str(table)
 #Factors
 table$researcher<-as.factor(table$researcher)
