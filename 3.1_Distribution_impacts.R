@@ -14,15 +14,15 @@ library(reshape2) #melt function
 table<-read.table("data/biblio_database.csv", header= T, sep= ",")
 
 #Factors
-#table$researcher<-as.factor(table$researcher)
-#table$id_study<-as.factor(table$id_study)
-#table$cc<-as.factor(table$cc)
-#table$b_impact<-as.factor(table$b_impact)
-#table$b_direction<-as.factor(table$b_direction)
+table$researcher<-as.factor(table$researcher)
+table$id_study<-as.factor(table$id_study)
+table$cc<-as.factor(table$cc)
+table$b_impact<-as.factor(table$b_impact)
+table$b_direction<-as.factor(table$b_direction)
 
 #Numeric
-#table$b_value<-as.numeric(as.character(table$b_value), na.omit=TRUE)
-#table$b_years<-as.numeric(as.character(table$b_years))
+table$b_value<-as.numeric(as.character(table$b_value), na.omit=TRUE)
+table$b_years<-as.numeric(as.character(table$b_years))
 
 #SUBSETS COMBINE
 lat<-subset (table, b_impact_combine=="lat shift")
@@ -70,6 +70,7 @@ ggplot(data = data2, aes(x = impacts, y = value, fill = factor(cc))) +
 # LATITUDE #
 ############
 
+#histogram
 lat$sign<-ifelse(lat$b_value>0,"North", "South")# there are no zeros sum(lat$b_value==0)
 
 Fig2.lat<-lat %>% 
@@ -77,10 +78,29 @@ Fig2.lat<-lat %>%
   geom_histogram(aes(x=b_value, fill=sign, colour=sign), alpha=0.7, binwidth = 9) +
   scale_x_continuous(name="Mean Latitude Shift Rate (Km/decade)") + scale_y_continuous(name="Number of Observations")+
   scale_colour_manual(name="Shift direction", values=c("North" = "skyblue", "South"="royalblue4"), labels=c("North"="North", "South"="South")) +
-  scale_fill_manual(name="Shift direction", values=c("North" = "skyblue", "South"="royalblue4"), labels=c("North"="North", "South"="South")) + theme(panel.background = element_rect(fill = 'whitesmoke', colour = 'black'),legend.position=c(.85, .75))
-
+  scale_fill_manual(name="Shift direction", values=c("North" = "skyblue", "South"="royalblue4"), labels=c("North"="North", "South"="South")) + theme(panel.background = element_rect(fill = 'whitesmoke', colour = 'black'),legend.position=c(.85, .75))+
+  coord_flip()+
+  theme_bw()
 Fig2.lat
 
+#taxa barplot
+
+lat$tax_group <- as.factor(lat$tax_group)
+
+lat.barplot <- ggplot(lat, aes(tax_group, b_value, fill = tax_group, label=NULL)) +
+  geom_boxplot(data=subset(lat, b_value>=0), aes(tax_group, b_value),  na.rm=TRUE, outlier.shape = 1, outlier.size = 0.1)+
+  geom_boxplot(data=subset(lat, b_value<0), aes(tax_group, b_value),  na.rm=TRUE, outlier.shape = 1, outlier.size = 0.1)+
+  geom_hline(yintercept=c(0), linetype="dotted")+
+  scale_y_continuous(name ="km/decade", breaks = seq(-100, 200, by = 50)) +
+  xlab(NULL)+
+  theme(axis.text.x =element_blank())+
+  scale_fill_brewer(palette="Blues")+
+  theme_bw()
+
+
+#join_lat.jpeg
+join.lat <- plot_grid(lat.barplot, Fig2.lat, labels = c("A", "B"), align="h")
+#ggsave("join_lat.jpeg")
 
 #########
 # DEPTH #
@@ -93,9 +113,35 @@ Fig2.depth<-depth %>%
   geom_histogram(aes(x=b_value, fill=sign, colour=sign), alpha=0.7, binwidth = 4) +
   scale_x_continuous(name="Depth Shift Rate (m/decade)") + scale_y_continuous(name="Number of Observations")+
   scale_colour_manual(name="Shift direction", values=c("Deeper" = "skyblue", "Shallower"="royalblue4"), labels=c("Deeper"="Deeper", "Shallower"="Shallower")) +
-  scale_fill_manual(name="Shift direction", values=c("Deeper" = "skyblue", "Shallower"="royalblue4"), labels=c("Deeper"="Deeper", "Shallower"="Shallower")) + theme(panel.background = element_rect(fill = 'whitesmoke', colour = 'black'),legend.position=c(.85, .75))
-
+  scale_fill_manual(name="Shift direction", values=c("Deeper" = "skyblue", "Shallower"="royalblue4"), labels=c("Deeper"="Deeper", "Shallower"="Shallower")) + theme(panel.background = element_rect(fill = 'whitesmoke', colour = 'black'),legend.position=c(.85, .75))+
+  coord_flip()+
+  theme_bw()
 Fig2.depth
+
+#taxa barplot depth
+
+depth$tax_group <- as.factor(depth$tax_group)
+
+depth.barplot <- ggplot(depth, aes(tax_group, b_value, fill = tax_group, label=NULL)) +
+  geom_boxplot(data=subset(depth, b_value>=0), aes(tax_group, b_value),  na.rm=TRUE, outlier.shape = 1, outlier.size = 0.1)+
+  geom_boxplot(data=subset(depth, b_value<0), aes(tax_group, b_value),  na.rm=TRUE, outlier.shape = 1, outlier.size = 0.1)+
+  geom_hline(yintercept=c(0), linetype="dotted")+
+  scale_y_continuous(name ="m/decade", breaks = seq(-80, 60, by = 20)) +
+  xlab(NULL)+
+  theme(axis.text.x =element_blank())+
+  scale_fill_brewer(palette="Blues")+
+  theme_bw()
+
+
+#join_depth.jpeg
+join.depth <- plot_grid(depth.barplot, Fig2.depth, labels = c("A", "B"), align="h")
+#ggsave("join_depth.jpeg")
+
+#join_lat_depth
+join.lat.depth <- plot_grid(lat.barplot, Fig2.lat, depth.barplot, Fig2.depth, labels = c("A", "B", "C", "D"), align="hv")
+#ggsave("join_lat_depth.jpeg")
+
+
 
 ############
 # BOUNDARY #
@@ -103,82 +149,27 @@ Fig2.depth
 
 boundary$sign<-ifelse(boundary$b_value>0,"North", "South")# there are no zeros sum(boundary.lat$b_value==0)
 
-
 Fig2.boundary<-boundary %>%
   ggplot()+
   geom_histogram(aes(x=b_value, fill=sign, colour=sign), alpha=0.7, binwidth = 9) +
   scale_x_continuous(name="Boundary Latitude Shift Rate (Km/decade)") + scale_y_continuous(name="Number of Observations")+
   scale_colour_manual(name="Shift direction", values=c("North" = "skyblue", "South"="royalblue4"), labels=c("North"="North", "South"="South")) +
-  scale_fill_manual(name="Shift direction", values=c("North" = "skyblue", "South"="royalblue4"), labels=c("North"="North", "South"="South")) + theme(panel.background = element_rect(fill = 'whitesmoke', colour = 'black'),legend.position=c(.85, .75))
-
+  scale_fill_manual(name="Shift direction", values=c("North" = "skyblue", "South"="royalblue4"), labels=c("North"="North", "South"="South")) + theme(panel.background = element_rect(fill = 'whitesmoke', colour = 'black'),legend.position=c(.85, .75))+
+  coord_flip()+
+  theme_bw()
 Fig2.boundary
 
 
-#########################
-# Multiple plot function#
-#########################
+#taxa barplot depth
 
-multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
-  library(grid)
-  
-  # Make a list from the ... arguments and plotlist
-  plots <- c(list(...), plotlist)
-  
-  numPlots = length(plots)
-  
-  # If layout is NULL, then use 'cols' to determine layout
-  if (is.null(layout)) {
-    # Make the panel
-    # ncol: Number of columns of plots
-    # nrow: Number of rows needed, calculated from # of cols
-    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
-                     ncol = cols, nrow = ceiling(numPlots/cols))
-  }
-  
-  if (numPlots==1) {
-    print(plots[[1]])
-    
-  } else {
-    # Set up the page
-    grid.newpage()
-    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
-    
-    # Make each plot, in the correct location
-    for (i in 1:numPlots) {
-      # Get the i,j matrix positions of the regions that contain this subplot
-      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
-      
-      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
-                                      layout.pos.col = matchidx$col))
-    }
-  }
-}
+boundary$tax_group <- as.factor(boundary$tax_group)
 
-
-multiplot(Fig2.lat, Fig2.depth, Fig2.boundary, cols=3)
-
-
-#SSMM BOXPLOTS
-#LATITUDE
-ggplot(lat, aes(x =cc, y=b_value)) +
-  geom_boxplot()+
-  scale_y_continuous(name = "Mean Latitude Shift Rate (Km/decade)")+
-  scale_x_discrete(name = "Climate Change Variables")
-
-#DEPTH
-ggplot(depth, aes(x =cc, y=b_value)) +
-  geom_boxplot()+
-  scale_y_continuous(name = "Depth Shift Rate (m/decade)")+
-  scale_x_discrete(name = "Climate Change Variables")
-
-#BOUNDARY LATITUDE
-ggplot(boundary, aes(x =cc, y=b_value)) +
-  geom_boxplot()+
-  scale_y_continuous(name = "Boundary Latitude Shift Rate (Km/decade)")+
-  scale_x_discrete(name = "Climate Change Variables")
-
-#AREA
-ggplot(area, aes(x =cc, y=b_value)) +
-  geom_boxplot()+
-  scale_y_continuous(name = "Area Shift Rate (Km2/decade)")+
-  scale_x_discrete(name = "Climate Change Variables")
+boundary.barplot <- ggplot(boundary, aes(tax_group, b_value, fill = tax_group, label=NULL)) +
+  geom_boxplot(data=subset(boundary, b_value>=0), aes(tax_group, b_value),  na.rm=TRUE, outlier.shape = 1, outlier.size = 0.1)+
+  geom_boxplot(data=subset(boundary, b_value<0), aes(tax_group, b_value),  na.rm=TRUE, outlier.shape = 1, outlier.size = 0.1)+
+  geom_hline(yintercept=c(0), linetype="dotted")+
+  scale_y_continuous(name ="km/decade", breaks = seq(-100, 125, by = 25)) +
+  xlab(NULL)+
+  theme(axis.text.x =element_blank())+
+  scale_fill_brewer(palette="Blues")+
+  theme_bw()
