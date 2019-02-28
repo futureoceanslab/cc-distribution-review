@@ -55,23 +55,4 @@ levels(table$cc)<-c("AMO", #10
                         "sst,bt", #2,3
                         "bt") #3
 
-#SUBSETS IMPACT TYPE
-lat<-subset (table, b_impact=="lat shift")
-lat$b_direction<-factor(lat$b_direction)
-
-depth<-subset (table, b_impact=="depth shift")
-depth$b_direction<-factor(depth$b_direction)
-
-boundary<-subset (table, b_impact== "boundary lat shift")
-boundary$b_direction<-factor(boundary$b_direction)
-
-area<-subset (table, b_impact== "shift in area occupied")
-area$b_direction<-factor(area$b_direction)
-
-lat_long<-subset (table, b_impact== "lat and long shift")
-lat_long$b_direction<-factor(lat_long$b_direction)
-
-long<-subset (table, b_impact== "long shift")
-long$b_direction<-factor(long$b_direction)
-
 write.csv(table, "biblio_databse1.csv")
