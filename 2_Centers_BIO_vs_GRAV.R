@@ -70,4 +70,4 @@ levels(table$b_direction_combine)[levels(table$b_direction_combine)=="shift west
 levels(table$b_direction_combine)[levels(table$b_direction_combine)=="boundary lat shift east center of bio"] <- "boundary lat shift east"
 
 #####NEW DATABASE
-write.csv(table, "biblio...csv")
+write.csv(table, "biblio_database2.csv")
