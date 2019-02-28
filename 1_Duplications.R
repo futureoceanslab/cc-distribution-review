@@ -3,7 +3,7 @@ library(tidyverse)
 table <- read.table("data/biblio_database.csv", header = T, sep = ",", fileEncoding="latin1")
 
 table %>%
-  distinct(var1, var2, .keep_all = TRUE)
+  distinct(b_scientific_name, eez_countries, "...", .keep_all = TRUE)
 
 ####Impact types (from distributional_impacts) - DELETE IN FINAL SCRIPT because is in 1. Duplications
 
