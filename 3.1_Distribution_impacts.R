@@ -8,9 +8,10 @@ library(rockchalk)
 library(ggplot2) 
 library(tidyverse)
 library(tidyr)
+library(reshape2) #melt function
 
 #open dataset
-table1<-read.table("data/biblio_database.csv", header= T, sep= ",")
+table<-read.table("data/biblio_database.csv", header= T, sep= ",")
 ##Subset of biblio_database without duplicated data
 ##table1<- table1%>%
 ##  filter(table1$duplicate=="1")
@@ -93,42 +94,18 @@ long<-subset (table, b_impact_combine== "long shift")
 #################################################
 # Figure 3. CLIMATE CHANGE VARIABLES PER IMPACT #
 #################################################
-as.data.frame(table(lat$cc))
-as.data.frame(table(depth$cc))
-as.data.frame(table(boundary$cc))
-as.data.frame(table(area$cc))
-as.data.frame(table(lat_long$cc))
-as.data.frame(table(long$cc))
+clim_lat <- as.data.frame(table(lat$cc))
+clim_depth <- as.data.frame(table(depth$cc))
+clim_bound <- as.data.frame(table(boundary$cc))
+clim_ar <- as.data.frame(table(area$cc))
+#clim_latlon <- as.data.frame(table(lat_long$cc))
+#clim_lon <- as.data.frame(table(long$cc))
 
-impacts <- c ("Latitude", "Depth", "Area", "Boundary")
-AMO <- c ("7", "4", "7", "5")
-Climate_Velocity <- c ("159", "159", "0", "0")
-sst <- c ("20", "1", "0", "1" )
-sst_bt_AMO <- c ("12", "13","12", "16")
-sst_bt <- c ("4", "3","0","1") #For latitude 1+3 (3 from lat_long)
-bt <- c ("25", "30", "0", "9")
+dat <- cbind(clim_lat, clim_depth[,2], clim_bound[,2], clim_ar[,2])
+colnames(dat) <- c("cc","Mean Latitude","Depth","Area","Boundary Latitude")
 
-data <- data.frame(impacts, AMO, Climate_Velocity, sst, sst_bt_AMO, sst_bt, bt)
-is.data.frame(data)
-
-data1 <- gather(data, impacts) # dataset ready for ggplot
-data1$value <- as.numeric(data1$value)
-colnames(data1)[2] <- "cc"
-
-data2 <- subset (data1,  ! cc == "Climate_Velocity") # same dataset without climate velocity
-
-
-
-#http://rstudio-pubs-static.s3.amazonaws.com/3256_bb10db1440724dac8fa40da5e658ada5.html
-#Colors: http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
-#Colors2: https://greggilbertlab.sites.ucsc.edu/wp-content/uploads/sites/276/2015/10/colorbynames.png
-
-
-data1$cc <- factor(data1$cc, levels = c("sst_bt","AMO","sst", "sst_bt_AMO",
-                                        "bt","Climate_Velocity"), labels=c("SST and BT", "AMO", "SST", "SST, BT and AMO", "BT", "Climate Velocity"))
-
-data1$impacts <- factor (data1$impacts, levels= c ("Latitude", 
-                                                 "Depth","Boundary", "Area"), labels=c("Mean Latitude", "Depth", "Boundary Latitude", "Area"))                                       
+data1 <- melt(dat)
+colnames(data1)[2] <- "impacts"
 
 ggplot(data = data1, aes(x = impacts, y = value, fill = factor(cc))) + 
   geom_bar(stat="identity", alpha=0.8) + scale_fill_manual(values=c("darkgreen", "chartreuse3", "yellow", "orange", "orangered", "red3")) +
@@ -136,6 +113,7 @@ ggplot(data = data1, aes(x = impacts, y = value, fill = factor(cc))) +
 
 
 #same figure without climate velocity
+data2 <- subset (data1,  ! cc == "Climate_Velocity") # same dataset without climate velocity
 
 data2$cc <- factor(data2$cc, levels = c("sst_bt","AMO","sst", "sst_bt_AMO",
                                         "bt"), labels=c("SST and BT", "AMO", "SST", "SST, BT and AMO", "BT"))
