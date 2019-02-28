@@ -73,3 +73,5 @@ lat_long$b_direction<-factor(lat_long$b_direction)
 
 long<-subset (table, b_impact== "long shift")
 long$b_direction<-factor(long$b_direction)
+
+write.csv("...")
