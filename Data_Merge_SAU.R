@@ -1,8 +1,8 @@
-##Elena Ojea
+##Elena Ojea, February 2019
 #Code for EEZ and species list from the review - matching EEZ data
 #input files: 
-# - ReviewDatsp.csv biblio data + fishbase species info from integration_fishbase.R code
-# - Final_SAU_EEZ
+# - Integration output: ReviewDatsp.csv biblio data + fishbase species info from integration_fishbase.R code
+# - Data_EEZ_SAU output: Final_SAU_EEZ
 #output files:
 # - ReviewDat_Merge_SAU with EEZ catches
 # - list_FE
@@ -14,7 +14,7 @@ library(ggplot2)
 
 ##1. OPEN DATASETS EEZ and Review with Fishbase (feb 18)
 #Read input file: our review database with the fishbase inputs
-ReviewDatFB.raw <- read.csv("data/ReviewDatsp.csv", stringsAsFactors=FALSE, header=T) ## biblio_database + fishbase from script integration_fishbase.R
+ReviewDatFB <- read.csv("data/ReviewDatsp.csv", stringsAsFactors=FALSE, header=T) ## biblio_database + fishbase from script integration_fishbase.R
  
 #Read input file: the EEZ species catched
 Final_SAU_EEZ.raw <- read.csv("data/Final_SAU_EEZ.csv", stringsAsFactors=FALSE, header=T)
@@ -23,37 +23,22 @@ Final_SAU_EEZ.raw <- read.csv("data/Final_SAU_EEZ.csv", stringsAsFactors=FALSE, 
 Final_SAU_EEZ <- filter(Final_SAU_EEZ.raw, year > 2009, catch_type=="Landings")
 
 
-##2. CLEAN OUR REVIEW-DATABASE
-##delete blank columns
-colnames(ReviewDatFB.raw)
-ReviewDatFB <- ReviewDatFB.raw [, 2:167]   
-#detele blank spaces in Species scientific name to match review_database-SAU_database
-trim <- function (x) gsub("^\\s+|\\s+$", "", x)
-ReviewDatFB$b_scientific_name <- trim(ReviewDatFB$b_scientific_name)
-
-##3. MATCH SPECIES NAMES IN REVIEW AND SAU####
+##2. MATCH SPECIES NAMES IN REVIEW AND SAU####
 ##Check list of un-matchig names
 Sp_ReviewDatFB <- as.character(unique(ReviewDatFB$b_scientific_name))  #list species in review
 Sp_SAU <- as.character(unique(Final_SAU_EEZ$scientific_name))      #list species in SAU
 
 #compare species in Review and SAU
 matchsp <- Sp_ReviewDatFB %in% Sp_SAU
-table(matchsp) ## 33 spp no macth, 112 spp macthed (total:145spp)
+table(matchsp) ## 33 spp no macth, 109 spp macthed (total:142spp) *will be updated with new code March 2019
 spmiss1 <- Sp_ReviewDatFB[matchsp==FALSE] ## list of unmatching(lost) species
 
 
-##4. MATCH COLUMNS and EEZ NAMES IN REVIEW AND SAU (area_name)####
-#split EEZs and multiply the rows for each EEZ
-ReviewDatFB <- ReviewDatFB %>% 
-  mutate(eez_countries = strsplit(as.character(eez_countries), "-")) %>% 
-  unnest(eez_countries)
+##3. MATCH COLUMNS and EEZ NAMES IN REVIEW AND SAU (area_name)####
 
 #recode colnames in ReviewDatFB to match Final_SAU_EEZ names
-colnames(ReviewDatFB)[12] <- "scientific_name"
-colnames(ReviewDatFB)[166] <- "area_name"  ##need to change if going back to biblio_database without fishbase
-
-#remove blank spaces from eez variable names in Review??
-ReviewDatFB$area_name <- trim(ReviewDatFB$area_name)
+colnames(ReviewDatFB)[which(names(ReviewDatFB) == "b_scientific_name")] <- "scientific_name"
+colnames(ReviewDatFB)[which(names(ReviewDatFB) == "eez_countries")] <- "area_name"
 
 ##Check list of un-matchig EEZs
 EEZ_ReviewDatFB  <- unique(ReviewDatFB$area_name) #final list of EEZs in the Review dataset
@@ -83,7 +68,7 @@ tonlandEEZ<- tonlandEEZyear %>%
 ReviewDatFB_SAU1 <- merge(ReviewDatFB, tonlandEEZ, by=c("area_name"), all.x=TRUE)
 
 
-##6. MERGE: ADD TOTAL CATCH AND LANDINGS BY EEZ AND SP####
+##4. MERGE: ADD TOTAL CATCH AND LANDINGS BY EEZ AND SP####
 #gives mean value across years (2010-2014 ) annual tonnes (2010-2014) 
 tonlandEEZspyear<-Final_SAU_EEZ %>%
   group_by(area_name, year, scientific_name) %>%
@@ -97,26 +82,26 @@ tonlandEEZsp<-tonlandEEZspyear %>%
 ReviewDatFB_SAU2 <- merge(ReviewDatFB_SAU1, tonlandEEZsp, by=c("area_name","scientific_name"), all.x=TRUE)
 
 
-##7. Doble-check
+##5. Doble-check
 ##Species name match - tonlandEEZsp
 splist <- unique(tonlandEEZsp$scientific_name)
 matchsp2<- Sp_ReviewDatFB %in% splist
-table(matchsp2) ## 33 spp no macth, 112 spp macthed (total:145spp). Same result in the line52 of script
+table(matchsp2) ## 33 spp no macth, 109 spp macthed (total:142spp). Same resultas above
 spmiss2 <- Sp_ReviewDatFB[matchsp2==FALSE] ## list of unmatching(lost) species
 ##To chek the matches among lists and edit the list of spp lost
 identical(spmiss1,spmiss2)
-write.csv(spmiss2, file="data/2listspmiss.csv") ##list of lost species
+#write.csv(spmiss2, file="data/2listspmiss.csv") ##list of lost species
 
 
 #check missing species in tonnesEEZsp and landedvalueEEZsp
 #Not all the species have data for all the years/EEZs
 na1 <- is.na(ReviewDatFB_SAU2$tonnesEEZsp)
-table(na1) #we miss 229 observations, False 524, True 229
+table(na1) #we miss 200 observations, False 395, True 200
 na2 <- is.na(ReviewDatFB_SAU2$landedvalueEEZsp)
-table(na2) #we miss 229 observations, False 524, True 229
+table(na2) #we miss 200 observations, False 395, True 200
 
 
-##8. OUTPUT FILES####
+##6. OUTPUT FILES####
 list_FE <- unique(Final_SAU_EEZ$fishing_entity)
-#write.csv(list_FE, "data/list_FE.csv", row.names = F)
-#write.csv(ReviewDatFB_SAU2, "data/ReviewDat_Merge_SAU.csv", row.names = F)
+write.csv(list_FE, "data/list_FE.csv", row.names = F)
+write.csv(ReviewDatFB_SAU2, "data/ReviewDat_Merge_SAU.csv", row.names = F)
