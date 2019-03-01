@@ -9,20 +9,20 @@ table %>%
 
 #1. CLEAN DATABASE: Clean database (from integration fishbase.R script) - to delete after finalizing 1. Duplications)
 ##delete blank columns
-colnames(ReviewDat)
+colnames(table)
 #detele blank spaces in Species scientific name to match review_database-fishbase_database
 trim.trailing <- function (x) sub("\\s+$", "", x)
-ReviewDat$b_scientific_name <- trim.trailing(ReviewDat$b_scientific_name )
+table$b_scientific_name <- trim.trailing(table$b_scientific_name )
 ##Check spp names to match review_database-fishbase_database
-ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Atheresthes\240stomias"] <- "Atheresthes stomias"##??
-ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Lepidopsetta\240polyxystra"] <- "Lepidopsetta polyxystra"##??
-ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Clupea pallasii"] <- "Clupea pallasii pallasii"
-ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Loligo pealeii"] <- "Doryteuthis pealeii"
-ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Loligo opalescens"] <- "Doryteuthis opalescens"
-ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Litopenaeus setiferus"] <- "Penaeus setiferus" 
+table$b_scientific_name[table$b_scientific_name=="Atheresthes\240stomias"] <- "Atheresthes stomias"##??
+table$b_scientific_name[table$b_scientific_name=="Lepidopsetta\240polyxystra"] <- "Lepidopsetta polyxystra"##??
+table$b_scientific_name[table$b_scientific_name=="Clupea pallasii"] <- "Clupea pallasii pallasii"
+table$b_scientific_name[table$b_scientific_name=="Loligo pealeii"] <- "Doryteuthis pealeii"
+table$b_scientific_name[table$b_scientific_name=="Loligo opalescens"] <- "Doryteuthis opalescens"
+table$b_scientific_name[table$b_scientific_name=="Litopenaeus setiferus"] <- "Penaeus setiferus" 
 ## We dodn´t update the name of this specie (Litopenaeus setiferus) because we miss one match-sp. But we should keep it in mind to show with the final results
-ReviewDat$rfishbase_species_code[ReviewDat$rfishbase_species_code=="322"] <- "308"
-ReviewDat$rfishbase_species_code[ReviewDat$rfishbase_species_code=="3"] <- NA
+table$rfishbase_species_code[table$rfishbase_species_code=="322"] <- "308"
+table$rfishbase_species_code[table$rfishbase_species_code=="3"] <- NA
 
 
 ####2. IMPACT TYPES (from distributional_impacts) - DELETE IN FINAL SCRIPT because is in 1. Duplications
