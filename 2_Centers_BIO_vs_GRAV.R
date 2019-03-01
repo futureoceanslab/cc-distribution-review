@@ -7,7 +7,7 @@
 
 #lat+long, long not done
 
-table<-read.table("data/biblio_database.csv", header= T, sep= ",")
+table<-read.table("data/biblio_databse1.csv", header= T, sep= ",")
 
 #FOR LATITUDE: 
 table$b_impact<-as.factor(table$b_impact)
@@ -70,4 +70,4 @@ levels(table$b_direction_combine)[levels(table$b_direction_combine)=="shift west
 levels(table$b_direction_combine)[levels(table$b_direction_combine)=="boundary lat shift east center of bio"] <- "boundary lat shift east"
 
 #####NEW DATABASE
-write.csv(table, "biblio_database2.csv")
+write.csv(table, "data/biblio_database2.csv")

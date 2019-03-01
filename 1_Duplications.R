@@ -5,7 +5,27 @@ table <- read.table("data/biblio_database.csv", header = T, sep = ",", fileEncod
 table %>%
   distinct(b_scientific_name, eez_countries, "...", .keep_all = TRUE)
 
-####Impact types (from distributional_impacts) - DELETE IN FINAL SCRIPT because is in 1. Duplications
+
+
+#1. CLEAN DATABASE: Clean database (from integration fishbase.R script) - to delete after finalizing 1. Duplications)
+##delete blank columns
+colnames(ReviewDat)
+#detele blank spaces in Species scientific name to match review_database-fishbase_database
+trim.trailing <- function (x) sub("\\s+$", "", x)
+ReviewDat$b_scientific_name <- trim.trailing(ReviewDat$b_scientific_name )
+##Check spp names to match review_database-fishbase_database
+ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Atheresthes\240stomias"] <- "Atheresthes stomias"##??
+ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Lepidopsetta\240polyxystra"] <- "Lepidopsetta polyxystra"##??
+ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Clupea pallasii"] <- "Clupea pallasii pallasii"
+ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Loligo pealeii"] <- "Doryteuthis pealeii"
+ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Loligo opalescens"] <- "Doryteuthis opalescens"
+ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Litopenaeus setiferus"] <- "Penaeus setiferus" 
+## We dodn´t update the name of this specie (Litopenaeus setiferus) because we miss one match-sp. But we should keep it in mind to show with the final results
+ReviewDat$rfishbase_species_code[ReviewDat$rfishbase_species_code=="322"] <- "308"
+ReviewDat$rfishbase_species_code[ReviewDat$rfishbase_species_code=="3"] <- NA
+
+
+####2. IMPACT TYPES (from distributional_impacts) - DELETE IN FINAL SCRIPT because is in 1. Duplications
 
 #Factors
 table$researcher<-as.factor(table$researcher)
@@ -55,4 +75,4 @@ levels(table$cc)<-c("AMO", #10
                         "sst,bt", #2,3
                         "bt") #3
 
-write.csv(table, "biblio_databse1.csv")
+write.csv(table, "data/biblio_databse1.csv")
