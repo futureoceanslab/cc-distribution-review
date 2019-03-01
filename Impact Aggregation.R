@@ -162,7 +162,7 @@ ddd$duplications[ddd$duplications==2] <- 1
 #Now I merge the subsets of non-duplications (ddc) and with duplications removed/averaged (ddd)
 
 ReviewDat <- merge(ddc, ddd, all=TRUE)
-
+write.csv(ReviewDat, "biblio_databse3.csv")
 
 
 
