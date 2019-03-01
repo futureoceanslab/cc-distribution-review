@@ -62,7 +62,7 @@ repeated_sp_eez_impact <- subset(sp_eez_impact, N >1)
 ##AGGREGATION
 
 #first I select the variables in dataframe we need (simplify dataframe)
-df <- ReviewDat %>%  select(id_obs, site, id_study, eez_countries, b_scientific_name, cc, b_impact, b_value)  %>%
+df <- ReviewDat %>%  select(id_obs, site, id_study, eez_countries, b_scientific_name, cc, b_impact, b_value, rfishbase_species_code)  %>%
   group_by(eez_countries, b_scientific_name, b_impact) %>% mutate(total = n())
 
 
@@ -79,7 +79,8 @@ ddd<- ddd %>% group_by(eez_countries, b_scientific_name, b_value_x) %>% summaris
                                                                                   b_impact=paste(b_impact, collapse=","),
                                                                                   cc = paste(cc, collapse = " "),  #all values of cc
                                                                                   b_value = paste(b_value, collapse = " "),  #all values of original impact b_value
-                                                                                  total=mean(total))
+                                                                                  total=mean(total),
+                                                                                  rfishbase_species_code=sum(rfishbase_species_code))
 
 colnames(ddd)           #change column name to have b_value aggregated and be able to merge with non duplicated data
 colnames(ddd)[which(names(ddd) == "b_value")] <- "b_value_original"
@@ -93,7 +94,7 @@ ddd$duplications[ddd$duplications==2] <- 1
 #Now I merge the subsets of non-duplications (ddc) and with duplications removed/averaged (ddd)
 
 ReviewDat <- merge(ddc, ddd, all=TRUE)
-write.csv(ReviewDat, "biblio_databse3.csv")
+write.csv(ReviewDat, "data/biblio_databse3.csv")
 
 
 
