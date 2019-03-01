@@ -6,7 +6,7 @@
 library(tidyverse)
 
 #1. Open database
-data <- read.table("data/biblio_database.csv", header = T, sep = ",")
+data <- read.csv("data/biblio_database.csv", sep = ";")
 
 #2. Change species names  (to match with fishbase database)
 #detele blank spaces in Species scientific name to match review_database-fishbase_database
@@ -36,7 +36,7 @@ data$tax_group <- as.factor(data$tax_group)
 data$b_value <- as.numeric(as.character(data$b_value), na.omit = T)
 data$b_years <- as.numeric(as.character(data$b_years))
 
-#3. Change codes to a short description; in the original review center of grav separated from center of biomass
+#4. Change codes to a short description; in the original review center of grav separated from center of biomass
 data$b_impact_i <- data$b_impact
 levels(data$b_impact) <- c("lat shift center of grav", #1
                            "lat shift center of bio",  #2
@@ -73,7 +73,76 @@ levels(data$cc) <- c("AMO", #10
                      "sst", #2
                      "sst,bt,AMO", #2,3,10
                      "sst,bt", #2,3
-                     "bt") #3
+                     "bt",#3
+                     "ssta", #13
+                     "sst, AMO") #2,10
+
+#5. Find duplications
+#5.1 Select rows with same species 
+data_sp <- data %>% 
+  group_by(b_scientific_name) %>% 
+  filter(n() > 1)
+
+#TABLA PRUEBAS
+#b_impact <- c("lat","lat","lat","lat","lon","lon","lon","bound","bound")
+#eez_codes <- c("1,2","1,2",1,3,4,5,6,7,8)
+#b_scientific_name <- c("a b","a b","a b","b","c","c","d","e","e")
+#data_sp <- as.data.frame(cbind(b_impact, b_scientific_name,eez_codes))
+#data_sp$eez_codes <- as.character(data_sp$eez_codes)
+###############
+
+#5.2. Select rows with same EEZ and impact response
+commas <- data_sp %>% 
+  filter(str_detect(eez_codes, ",")) #rows with more than one EEZ
+commas
+commas_str <- as.character(commas$eez_codes)  #save names of these EEZs  
+
+commas_str <- unique(commas_str) #keep one repetition of each EEZ
+commas_str
+
+commas_vec <- unlist(strsplit(commas_str, ",")) #split EEZ names
+commas_vec
+
+data_dupl <- data_sp %>% #single duplications: "eez" vs "eez-eez"
+              group_by(b_scientific_name, b_impact) %>% 
+              filter(eez_codes %in% commas_vec)
+
+data_eez_all <- data_sp %>% #more duplications "eez-eez" vs "eez-eez"
+                  group_by(b_scientific_name, b_impact, eez_codes)  %>% 
+                  filter(n() > 1)
+
+if (dim(data_dupl)[1] > 0 ) {
+  duplications1 <- rbind(data_dupl, data_eez_all)
+} else {
+  duplications1 <- data_eez_all
+}
+
+#5.3. Select rows with database duplications
+commas2 <- duplications1 %>% 
+            filter(str_detect(fish_data_source, ",")) #rows with more than one database
+
+commas_str2 <- as.character(commas2$fish_data_source)  #save names of these databases 
+
+commas_str2 <- unique(commas_str2) #keep one repetition of each database
+
+commas_vec2 <- unlist(strsplit(commas_str2, ",")) #split databases names
+
+data_dupl2 <- duplications %>% #single duplications: "datab" vs "datab-datab"
+                group_by(b_scientific_name, b_impact) %>% 
+                filter(fish_data_source %in% commas_vec2)
+
+data_datab_all <- data_sp %>% #more duplications "datab-datab" vs "datab-datab"
+                    group_by(b_scientific_name, b_impact, eez_codes)  %>% 
+                    filter(n() > 1)
+
+if (dim(data_dupl)[1] > 0 ) {
+  duplications1 <- rbind(data_dupl, data_eez_all)
+} else {
+  duplications1 <- data_eez_all
+}
+
+#Delete duplicated values from database
+#dat3 <- dat[duplicated(dat$AGE),]
 
 #4.Save a cleaner database
 write.csv(data, row.names = F, "data/biblio_databse1.csv")
