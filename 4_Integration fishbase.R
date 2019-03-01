@@ -1,7 +1,8 @@
 ##R code for FISH base and Database Review integration
 ##Author: Elena ojea
 ##Date: April 7th 2017
-##output: two csv files with stock and species data (ReviewDatst.csv", "ReviewDatsp.csv")
+##Updated March 1st 2019
+
 
 #install libraries
 library(rfishbase)
@@ -16,27 +17,8 @@ library(data.table)
 
 #open data: reviewdatabase
 
-ReviewDat <- read.csv("data/biblio_database.csv", stringsAsFactors=FALSE, header=T, sep = ",")
+ReviewDat <- read.csv("data/biblio_database3.csv", stringsAsFactors=FALSE, header=T, sep = ",")
 
-##CLEAN DATABASE
-####Subset of biblio_database without duplicated data
-##ReviewDat<- ReviewDat%>%
-##  filter(ReviewDat$duplicate=="1")
-##delete blank columns
-colnames(ReviewDat)
-#detele blank spaces in Species scientific name to match review_database-fishbase_database
-trim.trailing <- function (x) sub("\\s+$", "", x)
-ReviewDat$b_scientific_name <- trim.trailing(ReviewDat$b_scientific_name )
-##Check spp names to match review_database-fishbase_database
-ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Atheresthes\240stomias"] <- "Atheresthes stomias"##??
-ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Lepidopsetta\240polyxystra"] <- "Lepidopsetta polyxystra"##??
-ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Clupea pallasii"] <- "Clupea pallasii pallasii"
-ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Loligo pealeii"] <- "Doryteuthis pealeii"
-ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Loligo opalescens"] <- "Doryteuthis opalescens"
-ReviewDat$b_scientific_name[ReviewDat$b_scientific_name=="Litopenaeus setiferus"] <- "Penaeus setiferus" 
-## We dodn´t update the name of this specie (Litopenaeus setiferus) because we miss one match-sp. But we should keep it in mind to show with the final results
-ReviewDat$rfishbase_species_code[ReviewDat$rfishbase_species_code=="322"] <- "308"
-ReviewDat$rfishbase_species_code[ReviewDat$rfishbase_species_code=="3"] <- NA
 
 ##Create a list of our species scientific names
 SpReviewOriginal <- unique(as.character(ReviewDat$b_scientific_name)) # Review_database. list of species from original database (145)
