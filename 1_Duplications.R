@@ -104,12 +104,12 @@ commas_vec <- unlist(strsplit(commas_str, ",")) #split EEZ names
 commas_vec
 
 data_dupl <- data_sp %>% #single duplications: "eez" vs "eez-eez"
-  group_by(b_scientific_name, b_impact) %>% 
-  filter(eez_codes %in% commas_vec)
+              group_by(b_scientific_name, b_impact) %>% 
+              filter(eez_codes %in% commas_vec)
 
 data_eez_all <- data_sp %>% #more duplications "eez-eez" vs "eez-eez"
-  group_by(b_scientific_name, b_impact, eez_codes)  %>% 
-  filter(n() > 1)
+                  group_by(b_scientific_name, b_impact, eez_codes)  %>% 
+                  filter(n() > 1)
 
 if (dim(data_dupl)[1] > 0 ) {
   duplications1 <- rbind(data_dupl, data_eez_all)
@@ -118,7 +118,28 @@ if (dim(data_dupl)[1] > 0 ) {
 }
 
 #5.3. Select rows with database duplications
+commas2 <- duplications1 %>% 
+            filter(str_detect(fish_data_source, ",")) #rows with more than one database
 
+commas_str2 <- as.character(commas2$fish_data_source)  #save names of these databases 
+
+commas_str2 <- unique(commas_str2) #keep one repetition of each database
+
+commas_vec2 <- unlist(strsplit(commas_str2, ",")) #split databases names
+
+data_dupl2 <- duplications %>% #single duplications: "datab" vs "datab-datab"
+                group_by(b_scientific_name, b_impact) %>% 
+                filter(fish_data_source %in% commas_vec2)
+
+data_datab_all <- data_sp %>% #more duplications "datab-datab" vs "datab-datab"
+                    group_by(b_scientific_name, b_impact, eez_codes)  %>% 
+                    filter(n() > 1)
+
+if (dim(data_dupl)[1] > 0 ) {
+  duplications1 <- rbind(data_dupl, data_eez_all)
+} else {
+  duplications1 <- data_eez_all
+}
 
 #Delete duplicated values from database
 #dat3 <- dat[duplicated(dat$AGE),]
