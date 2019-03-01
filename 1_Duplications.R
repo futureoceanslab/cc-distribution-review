@@ -6,7 +6,7 @@
 library(tidyverse)
 
 #1. Open database
-data <- read.table("data/biblio_database.csv", header = T, sep = ",")
+data <- read.csv("data/biblio_database.csv", sep = ";")
 
 #2. Change species names  (to match with fishbase database)
 #detele blank spaces in Species scientific name to match review_database-fishbase_database
@@ -73,7 +73,41 @@ levels(data$cc) <- c("AMO", #10
                      "sst", #2
                      "sst,bt,AMO", #2,3,10
                      "sst,bt", #2,3
-                     "bt") #3
+                     "bt",#3
+                     "ssta", #13
+                     "sst, AMO") #2,10
+
+#2. Find duplications
+#2.1 Select rows with same species 
+data_sp <- data %>% 
+  group_by(b_scientific_name) %>% 
+  filter(n() > 1)
+
+#TABLA PRUEBAS
+#id <- c(1,1,3,4,5,6,7,8,9)
+#foo <- c("a.b","a.b","a.b","b","c","c","d","e","e")
+#dt <- as.data.frame(cbind(id, foo))
+###############
+
+#2.2. Select rows with same EEZ and impact response
+commas <- data_sp %>% 
+  filter(str_detect(eez_codes, ","))
+
+commas_str <- as.character(commas$eez_codes)          
+
+commas_str <- unique(commas_str)
+
+commas_str
+
+commas_vec <- unlist(strsplit(commas_str, ","))
+
+dat2 <- data_sp %>% 
+  group_by(b_scientific_name, b_impact) %>% 
+  filter(eez_codes %in% commas_vec)
+
+dat3 <- dat[duplicated(dat$AGE),]
+
+inner_join(dat2,dat3)
 
 #4.Save a cleaner database
 write.csv(data, row.names = F, "data/biblio_databse1.csv")
