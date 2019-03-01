@@ -1,6 +1,8 @@
 ##Run Data SAU if needed to upload Final_SAU_FE
 ##OPEN FE DATA (from Data_SAU.R using list_FE.csv)
 #Read input file: the FE species catched
+##Elenaupdated March 2019
+
 library(tidyverse)
 
 Final_SAU_FE <- read.csv("data/Final_SAU_FE.csv", stringsAsFactors=FALSE)
@@ -38,9 +40,9 @@ a<-unique(ReviewDatFB_SAU3$area_name)
 b<-unique(ReviewDatFB_SAU3$scientific_name)
 c<-unique(tonlandFEsp$area_name)
 d<-unique(tonlandFEsp$scientific_name)
-a %in% c#checking EEZ names match, all TRUE -> they all macth
-spmiss<-b[which(!b %in% d)]## list of unmatching(lost) species,29 spp no macth, 116 spp macthed (total:145spp)
-write.csv(spmiss, file="data/3listspmiss.csv") ##list of lost species
+a %in% c    #checking EEZ names match, all TRUE -> they all macth
+spmiss<-b[which(!b %in% d)]   ## list of unmatching(lost) species, 29 spp no macth, 116 spp macthed (total:142spp)
+#write.csv(spmiss, file="data/3listspmiss.csv") ##list of lost species
 
 #total catch per species for Fishing entities (sum across species and eezs)
 tonlandFEspT<- tonlandFEsp %>%
@@ -74,45 +76,45 @@ Biblio_data <- merge(ReviewDatFB_SAU5, tonlandFEEZ, by=c("fishing_entity", "area
 #Database_full: Biblio_data with SAU data on EEZ and FE:
 
 
-#CATCH DEPENDENCY OF FISHING ENTITIES
+#2. CATCH DEPENDENCY OF FISHING ENTITIES
 
-#3. Species catch dependency on the area
+#2.1. Species catch dependency on the area
 Biblio_data$catchdepFEsp <- Biblio_data$tonnesFEsp/Biblio_data$tonnesFEspT #the dependence of the country species catches on the EEZ species catches
 Biblio_data$landdepFEsp <-  Biblio_data$landedvalueFEsp/Biblio_data$landedvalueFEspT #the dependence of the country total SP Value on the EEZ SP catch value 
 
 range(Biblio_data$catchdepFEsp, na.rm=TRUE)
 range(Biblio_data$landdepFEsp, na.rm=TRUE) #is the same relation
 
-#4. Country dependency on the species in the area
+#2.2. Country dependency on the species in the area
 
 Biblio_data$catchdepFE <- Biblio_data$tonnesFEsp/Biblio_data$tonnesFE #the dependence of the country species catches on the EEZ species catches
 range(Biblio_data$catchdepFE, na.rm=TRUE)
 
-#5. Country dependency on the area
+#2.3. Country dependency on the area
 
 Biblio_data$catchdepFEEZ <- Biblio_data$tonnesFEEZ/Biblio_data$tonnesEEZ 
 range(Biblio_data$catchdepFEEZ, na.rm=TRUE)
 
-##VALUE OF SPECIES FOR FISHING ENTITIES
+##3VALUE OF SPECIES FOR FISHING ENTITIES
 
-###Species VAlue in FE: landed value/tonnes
+###3.1 Species VAlue in FE: landed value/tonnes
 
 Biblio_data$spvalueFE  <- Biblio_data$landedvalueFEsp/Biblio_data$tonnesFEsp
 range(Biblio_data$spvalueFE, na.rm=TRUE)
 quantile(Biblio_data$spvalueFE, na.rm=TRUE)
 
-##CATCH PRESSURE IN EEZ
+##4. CATCH PRESSURE IN EEZ
 
 Biblio_data$catchpresEEZsp <- Biblio_data$tonnesEEZsp/Biblio_data$tonnesEEZ
 Biblio_data$landpresEEZsp <- Biblio_data$landedvalueEEZsp/Biblio_data$landedvalueEEZ
 
 range(Biblio_data$catchpresEEZsp, na.rm=TRUE)
 
-#prices in EEZs (value of 1 tone species in EEZ, is it ok?)
+#4.1 prices in EEZs (value of 1 tone species in EEZ, is it ok?)
 Biblio_data$spvalueEEZ <- Biblio_data$landedvalueEEZsp /Biblio_data$tonnesEEZsp
 range(Biblio_data$spvalueEEZ, na.rm=TRUE)
 quantile(Biblio_data$spvalueEEZ, na.rm=TRUE)
 
-##6. OUTPUT FILES###
-#write.csv(Biblio_data, file = "data/Biblio_database_full.csv", row.names = F)
+##5. OUTPUT FILE###
+write.csv(Biblio_data, file = "data/Biblio_database_full.csv", row.names = F)
 
