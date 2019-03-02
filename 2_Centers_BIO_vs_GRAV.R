@@ -15,7 +15,7 @@ library(tidyverse)
 
 #lat+long, long not done
 
-data <- read.table("data/biblio_databse1.csv", header = T, sep = ",")
+data <- read.table("data/biblio_database1.csv", sep = ";")
 
 #FOR LATITUDE: 
 data$b_impact_i <- as.factor(data$b_impact_i)

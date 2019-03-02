@@ -83,35 +83,35 @@ data_sp <- data %>%
   group_by(b_scientific_name) %>% 
   filter(n() > 1)
 
-#TABLA PRUEBAS
+#TABLA PARA ENTENDER EL PROCESO, PRUEBAS
 #b_impact <- c("lat","lat","lat","lat","lon","lon","lon","bound","bound")
 #eez_codes <- c("1,2","1,2",1,3,4,5,6,7,8)
 #b_scientific_name <- c("a b","a b","a b","b","c","c","d","e","e")
-#data_sp <- as.data.frame(cbind(b_impact, b_scientific_name,eez_codes))
+#fish_data_source <- c("A,B", "A,C", "A,B", "A", "B", "C", "C", "A,C", "A,D")
+#b_years <- c(1,1,1,1,1,1,2,2,2)
+#ID <- c(1:9)
+#data_sp <- as.data.frame(cbind(b_impact, b_scientific_name,eez_codes, 
+#                               fish_data_source, b_years, ID))
 #data_sp$eez_codes <- as.character(data_sp$eez_codes)
 ###############
 
 #5.2. Select rows with same EEZ and impact response
 commas <- data_sp %>% 
   filter(str_detect(eez_codes, ",")) #rows with more than one EEZ
-commas
+
 commas_str <- as.character(commas$eez_codes)  #save names of these EEZs  
-
 commas_str <- unique(commas_str) #keep one repetition of each EEZ
-commas_str
-
 commas_vec <- unlist(strsplit(commas_str, ",")) #split EEZ names
-commas_vec
 
 data_dupl <- data_sp %>% #single duplications: "eez" vs "eez-eez"
-              group_by(b_scientific_name, b_impact) %>% 
+              group_by(b_scientific_name, b_impact, b_years) %>% 
               filter(eez_codes %in% commas_vec)
 
 data_eez_all <- data_sp %>% #more duplications "eez-eez" vs "eez-eez"
-                  group_by(b_scientific_name, b_impact, eez_codes)  %>% 
+                  group_by(b_scientific_name, b_impact, eez_codes, b_years)  %>% 
                   filter(n() > 1)
 
-if (dim(data_dupl)[1] > 0 ) {
+if (dim(data_dupl)[1] > 0 ) { #merge duplicates
   duplications1 <- rbind(data_dupl, data_eez_all)
 } else {
   duplications1 <- data_eez_all
@@ -122,27 +122,30 @@ commas2 <- duplications1 %>%
             filter(str_detect(fish_data_source, ",")) #rows with more than one database
 
 commas_str2 <- as.character(commas2$fish_data_source)  #save names of these databases 
-
 commas_str2 <- unique(commas_str2) #keep one repetition of each database
-
 commas_vec2 <- unlist(strsplit(commas_str2, ",")) #split databases names
 
-data_dupl2 <- duplications %>% #single duplications: "datab" vs "datab-datab"
-                group_by(b_scientific_name, b_impact) %>% 
+data_dupl2 <- duplications1 %>% #single duplications: "datab" vs "datab-datab"
+                group_by(b_scientific_name, b_impact, b_years) %>% 
                 filter(fish_data_source %in% commas_vec2)
 
-data_datab_all <- data_sp %>% #more duplications "datab-datab" vs "datab-datab"
-                    group_by(b_scientific_name, b_impact, eez_codes)  %>% 
+data_datab_all <- duplications1 %>% #more duplications "datab-datab" vs "datab-datab"
+                    group_by(b_scientific_name, b_impact, fish_data_source, b_years)  %>% 
                     filter(n() > 1)
 
-if (dim(data_dupl)[1] > 0 ) {
-  duplications1 <- rbind(data_dupl, data_eez_all)
+if (dim(data_dupl2)[1] > 0 ) { #merge duplications
+  duplications2 <- rbind(data_dupl2, data_datab_all)
 } else {
-  duplications1 <- data_eez_all
+  duplications2 <- data_datab_all
 }
 
-#Delete duplicated values from database
-#dat3 <- dat[duplicated(dat$AGE),]
+#ME HE ATASCADO AQUÍ, no sé cómo eliminar los duplicados, seguramente sea en el paso anterior?
+write.csv(duplications2, "data/duplications.csv")
+a <- duplications2 %>%
+      group_by(b_scientific_name)
 
-#4.Save a cleaner database
-write.csv(data, row.names = F, "data/biblio_databse1.csv")
+#Delete duplicated values from database
+#data_end <- dat[duplicated(dat$AGE),]
+
+#6.Save a "cleaner" database
+write.csv(data_end, row.names = F, "data/biblio_databse1.csv")
