@@ -18,9 +18,7 @@ library(ggrepel)
 data <- read.csv("data/Biblio_database_full.csv", stringsAsFactors = FALSE)
 
 ##PREPARETION OF VARIABLES: Subsets of the impacts
-
 data$b_impact <- as.factor(data$b_impact)
-
 levels(data$b_impact)
 levels(data$b_impact) <- c("mean lat shift", "mean lat shift", 
                            "depth shift", "boundary lat shift", 
@@ -230,8 +228,6 @@ grid.arrange(P3,P4,P7,P8, nrow = 2, ncol=2)
 
 ######### FIGURE 5: IMPACTS AND FE DEPENDENCY ON SHIFTING STOCKS #################
 
-
-
 ##PAPER Fig.5
 grid.arrange(P9, P10, nrow = 1, ncol=2)
 
@@ -240,8 +236,34 @@ grid.arrange(P9, P10, nrow = 1, ncol=2)
 ######### FIGURE 6: RELATIONAL DEPENDENCY between FISHING ENTITIES AND EEZ (T AND $) #####################
 
 ##CREATION OF VARIABLES for DEPEDENCE
+# A) CATCH DEPENDENCY OF FISHING ENTITIES
+# B) VALUE OF SPECIES FOR FISHING ENTITIES
+# C) CATCH PRESSURE IN EEZ
+
+# A) CATCH DEPENDENCY OF FISHING ENTITIES
+#1. Species catch dependency on the area
+data$catchdepFEsp <- data$tonnesFEsp/data$tonnesFEspT #the dependence of the country species catches on the EEZ species catches
+data$landdepFEsp <-  data$landedvalueFEsp/data$landedvalueFEspT #the dependence of the country total SP Value on the EEZ SP catch value 
+range(data$catchdepFEsp, na.rm=TRUE)
+range(data$landdepFEsp, na.rm=TRUE) #is the same relation
+#2. Country dependency on the species in the area
+data$catchdepFE <- data$tonnesFEsp/data$tonnesFE #the dependence of the country species catches on the EEZ species catches
+range(data$catchdepFE, na.rm=TRUE)
+#3. Country dependency on the area
 data$catchdepFEEZ <- data$tonnesFEEZ/data$tonnesEEZ 
 range(data$catchdepFEEZ, na.rm=TRUE)
+a<-filter(data,catchdepFEEZ>1)
+
+# B) VALUE OF SPECIES FOR FISHING ENTITIES
+###Species VAlue in FE: landed value/tonnes
+data$spvalueFE  <- data$landedvalueFEsp/data$tonnesFEsp
+range(data$spvalueFE, na.rm=TRUE)
+quantile(data$spvalueFE, na.rm=TRUE)
+
+# C) CATCH PRESSURE IN EEZ
+data$catchpresEEZsp <-data$tonnesEEZsp/data$tonnesEEZ
+data$landpresEEZsp <- data$landedvalueEEZsp/data$landedvalueEEZ
+range(data$catchpresEEZsp, na.rm=TRUE)
 
 ##plot catch dependency
 P11<- ggplot(data, aes(x = area_name, y = fishing_entity, fill = catchdepFEEZ)) +
@@ -264,7 +286,6 @@ P12
 
 ##PAPER Fig.6 
 grid.arrange(P11,P12, nrow = 1, ncol=2)
-
 
 
 ##################################### SUPPLEMENTARY MATERIALS #############################################
