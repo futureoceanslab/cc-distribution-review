@@ -143,21 +143,23 @@ if (dim(data_dupl2)[1] > 0 ) { #merge duplications
 #write.csv(duplications2, "data/duplications.csv") #checking purpose
 #reemplazar P por duplications2!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #p <- read.csv("data/duplications.csv") #checking purpose, added "paper_stock" column
-duplications3 <- duplications2 %>% #papers with only 1 stock
+
+#5.4. Create final duplications database called "remove"
+duplications3 <- duplications2 %>% 
                     group_by(b_scientific_name) %>%
-                    filter(paper_stock == 0)
+                    filter(paper_stock == 0) #papers with only 1 stock
 
-remove1 <- duplications3 %>% #older papers' duplications
+remove1 <- duplications3 %>% 
               group_by(b_scientific_name) %>%
-              slice(which.max(study_year))
+              slice(which.max(study_year)) #older papers' duplications
 
-remove2 <- duplications2 %>% #papers with more than 1 stock
+remove2 <- duplications2 %>% 
               group_by(b_scientific_name) %>%
-              filter(paper_stock == 1)
+              filter(paper_stock == 1) #papers with more than 1 stock
 
 remove <- rbind(remove1, remove2)
 
-#Delete duplicated values from original database
+#5.5. Delete duplicated values from original database
 data_end <- anti_join(data, remove, by = "id_obs")
 
 
