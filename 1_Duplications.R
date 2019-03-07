@@ -37,7 +37,7 @@ data$b_value <- as.numeric(as.character(data$b_value), na.omit = T)
 data$b_years <- as.numeric(as.character(data$b_years))
 
 #4. Change codes to a short description; in the original review center of grav separated from center of biomass
-data$b_impact_i <- data$b_impact
+data$b_impact_original <- data$b_impact
 levels(data$b_impact) <- c("lat shift center of grav", #1
                            "lat shift center of bio",  #2
                            "depth shift", #3
@@ -48,7 +48,7 @@ levels(data$b_impact) <- c("lat shift center of grav", #1
                            "lat and long shift center of grav", #9
                            "shift in area occupied") #11
 
-data$b_direction_i <- data$b_direction
+data$b_direction_original <- data$b_direction
 levels(data$b_direction) <- c("lat shift north center of grav", #1
                               "lat shift south center of grav", #2
                               "boundary lat shift north center of grav", #3
@@ -67,7 +67,7 @@ levels(data$b_direction) <- c("lat shift north center of grav", #1
                               "boundary lat shift east center of bio", #20
                               "boundary lat shift north center of bio") #21
 
-data$cc_i <- data$cc
+data$cc_original <- data$cc
 levels(data$cc) <- c("AMO", #10
                      "climate velocity", #11
                      "sst", #2
@@ -117,7 +117,8 @@ if (dim(data_dupl)[1] > 0 ) { #merge duplicates
   duplications1 <- data_eez_all
 }
 
-#5.3. Select rows with database duplications
+#5.3. Select rows already having same EEZ and impact response
+# but also having same database
 commas2 <- duplications1 %>% 
             filter(str_detect(fish_data_source, ",")) #rows with more than one database
 
@@ -139,13 +140,26 @@ if (dim(data_dupl2)[1] > 0 ) { #merge duplications
   duplications2 <- data_datab_all
 }
 
-#ME HE ATASCADO AQUÍ, no sé cómo eliminar los duplicados, seguramente sea en el paso anterior?
-write.csv(duplications2, "data/duplications.csv")
-a <- duplications2 %>%
-      group_by(b_scientific_name)
+#write.csv(duplications2, "data/duplications.csv") #checking purpose
+#reemplazar P por duplications2!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#p <- read.csv("data/duplications.csv") #checking purpose, added "paper_stock" column
+duplications3 <- duplications2 %>% #papers with only 1 stock
+                    group_by(b_scientific_name) %>%
+                    filter(paper_stock == 0)
 
-#Delete duplicated values from database
-#data_end <- dat[duplicated(dat$AGE),]
+remove1 <- duplications3 %>% #older papers' duplications
+              group_by(b_scientific_name) %>%
+              slice(which.max(study_year))
+
+remove2 <- duplications2 %>% #papers with more than 1 stock
+              group_by(b_scientific_name) %>%
+              filter(paper_stock == 1)
+
+remove <- rbind(remove1, remove2)
+
+#Delete duplicated values from original database
+data_end <- anti_join(data, remove, by = "id_obs")
+
 
 #6.Save a "cleaner" database
 write.csv(data_end, row.names = F, "data/biblio_databse1.csv")
