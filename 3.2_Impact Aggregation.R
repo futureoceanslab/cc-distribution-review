@@ -22,7 +22,7 @@ library(tidyr)
 
 #Open database (Biblio_database.csv)
 
-ReviewDat <- read.csv("data/biblio_database2.csv", stringsAsFactors=FALSE, header=T, sep = ",", fileEncoding="latin1")
+ReviewDat <- read.csv("data/biblio_database2.csv", stringsAsFactors=FALSE)
 
 
 ##AGGREGATION OF IMPACTS (EEZ, Species name, impact type)
@@ -94,10 +94,4 @@ ddd$duplications[ddd$duplications==2] <- 1
 #Now I merge the subsets of non-duplications (ddc) and with duplications removed/averaged (ddd)
 
 ReviewDat <- merge(ddc, ddd, all=TRUE)
-write.csv(ReviewDat, "data/biblio_databse3.csv")
-
-
-
-
-
-
+write.csv(ReviewDat, row.names = F, "data/biblio_databse3.csv")

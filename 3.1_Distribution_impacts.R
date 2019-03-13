@@ -9,28 +9,29 @@ library(ggplot2)
 library(tidyverse)
 library(tidyr)
 library(reshape2) #melt function
+library(cowplot)
 
 #open dataset
-table<-read.table("data/biblio_database.csv", header= T, sep= ",")
+table <- read.csv("data/biblio_database2.csv")
 
 #Factors
-table$researcher<-as.factor(table$researcher)
-table$id_study<-as.factor(table$id_study)
-table$cc<-as.factor(table$cc)
-table$b_impact<-as.factor(table$b_impact)
-table$b_direction<-as.factor(table$b_direction)
+table$researcher <- as.factor(table$researcher)
+table$id_study <- as.factor(table$id_study)
+table$cc <- as.factor(table$cc)
+table$b_impact <- as.factor(table$b_impact)
+table$b_direction <- as.factor(table$b_direction)
 
 #Numeric
-table$b_value<-as.numeric(as.character(table$b_value), na.omit=TRUE)
-table$b_years<-as.numeric(as.character(table$b_years))
+table$b_value <- as.numeric(as.character(table$b_value), na.omit=TRUE)
+table$b_years <- as.numeric(as.character(table$b_years))
 
 #SUBSETS COMBINE
-lat<-subset (table, b_impact_combine=="lat shift")
-depth<-subset (table, b_impact_combine=="depth shift")
-boundary<-subset (table, b_impact_combine== "boundary lat shift")
-area<-subset (table, b_impact_combine== "shift in area occupied")
-lat_long<-subset (table, b_impact_combine== "lat and long shift")
-long<-subset (table, b_impact_combine== "long shift")
+lat <- subset (table, b_impact_combine=="lat shift")
+depth <- subset (table, b_impact_combine=="depth shift")
+boundary <- subset (table, b_impact_combine== "boundary lat shift")
+area <- subset (table, b_impact_combine== "shift in area occupied")
+lat_long <- subset (table, b_impact_combine== "lat and long shift")
+long <- subset (table, b_impact_combine== "long shift")
 
 #################################################
 # Figure 3. CLIMATE CHANGE VARIABLES PER IMPACT #
@@ -49,7 +50,7 @@ data1 <- melt(dat)
 colnames(data1)[2] <- "impacts"
 
 ggplot(data = data1, aes(x = impacts, y = value, fill = factor(cc))) + 
-  geom_bar(stat="identity", alpha=0.8) + scale_fill_manual(values=c("darkgreen", "chartreuse3", "yellow", "orange", "orangered", "red3")) +
+  geom_bar(stat="identity", alpha=0.8) + scale_fill_manual(values=c("darkgreen", "chartreuse3", "yellow", "orange", "orangered", "red3", "blue", "pink")) +
   labs( y = "Number of Observations", x = "", fill = "Climate Change variables")+ theme(panel.background = element_rect(fill = 'whitesmoke', colour = 'black'), legend.position= "left")
 
 
@@ -57,7 +58,7 @@ ggplot(data = data1, aes(x = impacts, y = value, fill = factor(cc))) +
 data2 <- subset (data1,  ! cc == "climate velocity") # same dataset without climate velocity
 
 ggplot(data = data2, aes(x = impacts, y = value, fill = factor(cc))) + 
-  geom_bar(stat="identity", alpha=0.8) + scale_fill_manual(values=c("darkgreen", "chartreuse3", "yellow", "orange", "orangered", "red3")) +
+  geom_bar(stat="identity", alpha=0.8) + scale_fill_manual(values=c("darkgreen", "chartreuse3", "yellow", "orange", "orangered", "red3", "blue")) +
   labs( y = "Number of Observations", x = "", fill = "Climate Change variables")+ theme(panel.background = element_rect(fill = 'whitesmoke', colour = 'black'), legend.position= "left",axis.text=element_text(size=12),axis.title=element_text(size=12),legend.text=element_text(size=12))
 
 

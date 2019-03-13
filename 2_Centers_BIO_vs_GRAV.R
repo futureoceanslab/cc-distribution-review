@@ -15,40 +15,40 @@ library(tidyverse)
 
 #lat+long, long not done
 
-data <- read.table("data/biblio_database1.csv", sep = ";")
+data <- read.csv("data/biblio_database1.csv")
 
 #FOR LATITUDE: 
-data$b_impact_i <- as.factor(data$b_impact_i)
+data$b_impact_original <- as.factor(data$b_impact_original)
 data$b_years <- as.numeric(as.character(data$b_years))
 
-latitude1 <- subset(data, b_impact_i == "1", select = c(b_value, b_impact_i)) #center of grav
-latitude2 <- subset(data, b_impact_i == "2", select = c(b_value, b_impact_i)) #center of bio
+latitude1 <- subset(data, b_impact_original == "1", select = c(b_value, b_impact_original)) #center of grav
+latitude2 <- subset(data, b_impact_original == "2", select = c(b_value, b_impact_original)) #center of bio
 latitude <- rbind(latitude1,latitude2)
-latitude$b_impact_i <- factor(latitude$b_impact_i)
+latitude$b_impact_original <- factor(latitude$b_impact_original)
 
-tapply(latitude$b_value, latitude$b_impact_i, mean)
-tapply(latitude$b_value, latitude$b_impact_i, var)
+tapply(latitude$b_value, latitude$b_impact_original, mean)
+tapply(latitude$b_value, latitude$b_impact_original, var)
 
-boxplot(latitude$b_value ~ latitude$b_impact_i)
+boxplot(latitude$b_value ~ latitude$b_impact_original)
 
 #Normality and Homocedasticity
 hist(latitude$b_value) #Kinda of N distribution
 hist(log(latitude$b_value)) #More N distribution
 
-tapply(latitude$b_value, latitude$b_impact_i, shapiro.test) # NO NORMAL DISTRI
-bartlett.test(latitude$b_value, latitude$b_impact_i) #HOMOCEDASTICITY 
+tapply(latitude$b_value, latitude$b_impact_original, shapiro.test) # NO NORMAL DISTRI
+bartlett.test(latitude$b_value, latitude$b_impact_original) #HOMOCEDASTICITY 
 
-boxplot(latitude$b_value ~ latitude$b_impact_i)
-boxplot(log(latitude$b_value + 1) ~ latitude$b_impact_i)
+boxplot(latitude$b_value ~ latitude$b_impact_original)
+boxplot(log(latitude$b_value + 1) ~ latitude$b_impact_original)
 
 #NO PARAMETRIC TEST - not very strong test
-kruskal.test(b_value ~ b_impact_i, data = latitude) # < 0.05
+kruskal.test(b_value ~ b_impact_original, data = latitude) # < 0.05
 
 #RUNNING ANOVAS NO TRANS AND LOG TRANS
-m1 <- aov(latitude$b_value ~ latitude$b_impact_i)
+m1 <- aov(latitude$b_value ~ latitude$b_impact_original)
 b_value_transformed <- log(102 + latitude$b_value) #get rid of negative values we add a constant
 
-m2<-aov(b_value_transformed ~ latitude$b_impact_i)
+m2<-aov(b_value_transformed ~ latitude$b_impact_original)
 
 summary(m1)
 summary(m2) #No significant differences. OK to combine them
@@ -81,4 +81,4 @@ levels(data$b_direction_combine)[levels(data$b_direction_combine) == "boundary l
 
 
 #####NEW DATABASE
-write.csv(data, "data/biblio_database2.csv")
+write.csv(data, row.names = F, "data/biblio_database2.csv")

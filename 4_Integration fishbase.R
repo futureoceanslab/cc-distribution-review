@@ -17,7 +17,7 @@ library(data.table)
 
 #open data: reviewdatabase
 
-ReviewDat <- read_csv("data/biblio_databse3.csv")
+ReviewDat <- read.csv("data/biblio_databse3.csv")
 
 ##Create a list of our species scientific names
 SpReviewOriginal <- unique(as.character(ReviewDat$b_scientific_name)) # Review_database. list of species from original database (145)
