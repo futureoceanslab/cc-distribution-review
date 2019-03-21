@@ -6,7 +6,7 @@
 library(tidyverse)
 
 #1. Open database
-data <- read.csv("data/biblio_database.csv")
+data <- read.csv("data/biblio_database.csv", sep = ";")
 
 #2. Change species names  (to match with fishbase database)
 #detele blank spaces in Species scientific name to match review_database-fishbase_database
@@ -46,7 +46,9 @@ levels(data$b_impact) <- c("lat shift center of grav", #1
                            "long shift center of grav", #7
                            "long shift center of bio", #8
                            "lat and long shift center of grav", #9
-                           "shift in area occupied") #11
+                           "shift in area occupied", #11
+                           "depth range", #12
+                           "latitude range") #13
 
 data$b_direction_original <- data$b_direction
 levels(data$b_direction) <- c("lat shift north center of grav", #1
@@ -65,7 +67,11 @@ levels(data$b_direction) <- c("lat shift north center of grav", #1
                               "shift northeastwards center of grav", #14
                               "shift westwards center of grav", #19
                               "boundary lat shift east center of bio", #20
-                              "boundary lat shift north center of bio") #21
+                              "boundary lat shift north center of bio", #21
+                              "depth range expansion", #22
+                              "depth range contraction", #23
+                              "lat range expansion center of grav", #24
+                              "lat range contraction center of grav") #25
 
 data$cc_original <- data$cc
 levels(data$cc) <- c("AMO", #10
