@@ -78,14 +78,12 @@ ddd2 <- ddd %>%
 colnames(ddd2) #change column name to have b_value aggregated and be able to merge with non duplicated data
 colnames(ddd2)[which(names(ddd2) == "b_value")] <- "b_value_original"
 colnames(ddd2)[which(names(ddd2) == "b_value_x")] <- "b_value"
-colnames(ddd2)[which(names(ddd2) == "total")] <- "duplications"
-colnames(ddc)[which(names(ddc) == "total")] <- "duplications"
+colnames(ddd2)[which(names(ddd2) == "total")] <- "duplicated_times"
+colnames(ddc)[which(names(ddc) == "total")] <- "duplicated_times"
 colnames(ddc)[which(names(ddc) == "b_value")] <- "b_value_original"
 
-ddc$duplications[ddc$duplications == 1] <- 0
-ddd2$duplications[ddd2$duplications >= 2] <- 1
-
-ddc$id_obs <- as.character(ddc$id_obs)
+ddc$duplicated_times[ddc$duplicated_times == 1] <- 0
+ddd2$duplicated_times[ddd2$duplicated_times >= 2] <- 1
 
 #Now I merge the subsets of non-duplications (ddc) and with duplications removed/averaged (ddd)
 data_end <- merge(ddc, ddd2, all = T)
