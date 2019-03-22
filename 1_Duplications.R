@@ -87,19 +87,7 @@ levels(data$cc) <- c("AMO", #10
 #5.1 Select rows with same species 
 data_sp <- data %>% 
   group_by(b_scientific_name) %>% 
-  filter(n() > 1)
-
-#TABLA PARA ENTENDER EL PROCESO, PRUEBAS
-#b_impact <- c("lat","lat","lat","lat","lon","lon","lon","bound","bound")
-#eez_codes <- c("1,2","1,2",1,3,4,5,6,7,8)
-#b_scientific_name <- c("a b","a b","a b","b","c","c","d","e","e")
-#fish_data_source <- c("A,B", "A,C", "A,B", "A", "B", "C", "C", "A,C", "A,D")
-#b_years <- c(1,1,1,1,1,1,2,2,2)
-#ID <- c(1:9)
-#data_sp <- as.data.frame(cbind(b_impact, b_scientific_name,eez_codes, 
-#                               fish_data_source, b_years, ID))
-#data_sp$eez_codes <- as.character(data_sp$eez_codes)
-###############
+  filter(n() > 1) #more than 1 observation per species
 
 #5.2. Select rows with same EEZ and impact response
 commas <- data_sp %>% 
@@ -146,10 +134,6 @@ if (dim(data_dupl2)[1] > 0 ) { #merge duplications
   duplications2 <- data_datab_all
 }
 
-#write.csv(duplications2, "data/duplications.csv") #checking purpose
-#reemplazar P por duplications2!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#p <- read.csv("data/duplications.csv") #checking purpose, added "paper_stock" column
-
 #5.4. Create final duplications database called "remove"
 duplications3 <- duplications2 %>% 
                     group_by(b_scientific_name) %>%
@@ -157,7 +141,7 @@ duplications3 <- duplications2 %>%
 
 remove1 <- duplications3 %>% 
               group_by(b_scientific_name) %>%
-              slice(which.max(study_year)) #older papers' duplications
+              slice(which.min(study_year)) #older papers' duplications
 
 remove2 <- duplications2 %>% 
               group_by(b_scientific_name) %>%
@@ -169,5 +153,5 @@ remove <- rbind(remove1, remove2)
 data_end <- anti_join(data, remove, by = "id_obs")
 
 
-#6.Save a "cleaner" database
+#6. Save a "cleaner" database
 write.csv(data_end, row.names = F, "data/biblio_database1.csv")
