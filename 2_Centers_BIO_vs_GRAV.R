@@ -7,7 +7,7 @@ library(rockchalk)
 library(tidyverse)
 
 ##############
-# Statistics #
+#1. Statistics #
 ##############
 #depth and area are all observations from center of biomass
 
@@ -55,7 +55,7 @@ summary(m2) #No significant differences. OK to combine them
 
 
 #############
-#COMBINATION
+#2. COMBINATION
 #############
 #new colums with center of grav combined with center of biomass
 data["b_impact_combine"] <- data$b_impact
@@ -77,8 +77,77 @@ levels(data$b_direction_combine)[levels(data$b_direction_combine) == "shift west
 levels(data$b_direction_combine)[levels(data$b_direction_combine) == "boundary lat shift east center of bio"] <- "boundary lat shift east"
 
 
+#############
+#3. DUPLICATIONS
+#############
+#3.1 Select rows with same species 
+data_sp <- data %>% 
+  group_by(b_scientific_name) %>% 
+  filter(n() > 1)
+
+#3.2. Select rows with same EEZ and impact response
+commas <- data_sp %>% 
+  filter(str_detect(eez_codes, ",")) #rows with more than one EEZ
+
+commas_str <- as.character(commas$eez_codes)  #save names of these EEZs  
+commas_str <- unique(commas_str) #keep one repetition of each EEZ
+commas_vec <- unlist(strsplit(commas_str, ",")) #split EEZ names
+
+data_dupl <- data_sp %>% #single duplications: "eez" vs "eez-eez"
+  group_by(b_scientific_name, b_impact_combine, b_years) %>% 
+  filter(eez_codes %in% commas_vec)
+
+data_eez_all <- data_sp %>% #more duplications "eez-eez" vs "eez-eez"
+  group_by(b_scientific_name, b_impact_combine, eez_codes, b_years)  %>% 
+  filter(n() > 1)
+
+if (dim(data_dupl)[1] > 0 ) { #merge duplicates
+  duplications1 <- rbind(data_dupl, data_eez_all)
+} else {
+  duplications1 <- data_eez_all
+}
+
+#3.3. Select rows already having same EEZ and impact response
+# but also having same database
+commas2 <- duplications1 %>% 
+  filter(str_detect(fish_data_source, ",")) #rows with more than one database
+
+commas_str2 <- as.character(commas2$fish_data_source)  #save names of these databases 
+commas_str2 <- unique(commas_str2) #keep one repetition of each database
+commas_vec2 <- unlist(strsplit(commas_str2, ",")) #split databases names
+
+data_dupl2 <- duplications1 %>% #single duplications: "datab" vs "datab-datab"
+  group_by(b_scientific_name, b_impact_combine, b_years) %>% 
+  filter(fish_data_source %in% commas_vec2)
+
+data_datab_all <- duplications1 %>% #more duplications "datab-datab" vs "datab-datab"
+  group_by(b_scientific_name, b_impact_combine, fish_data_source, b_years)  %>% 
+  filter(n() > 1)
+
+if (dim(data_dupl2)[1] > 0 ) { #merge duplications
+  duplications2 <- rbind(data_dupl2, data_datab_all)
+} else {
+  duplications2 <- data_datab_all
+}
+
+#3.4. Create final duplications database called "remove"
+duplications3 <- duplications2 %>% 
+  group_by(b_scientific_name) %>%
+  filter(paper_stock == 0) #papers with only 1 stock
+
+remove1 <- duplications3 %>% 
+  group_by(b_scientific_name) %>%
+  slice(which.max(study_year)) #older papers' duplications
+
+remove2 <- duplications2 %>% 
+  group_by(b_scientific_name) %>%
+  filter(paper_stock == 1) #papers with more than 1 stock
+
+remove <- rbind(remove1, remove2)
+
+#3.5. Delete duplicated values from original database
+data_end <- anti_join(data, remove, by = "id_obs")
 
 
-
-#####NEW DATABASE
-write.csv(data, row.names = F, "data/biblio_database2.csv")
+#4. NEW DATABASE
+write.csv(data_end, row.names = F, "data/biblio_database2.csv")
