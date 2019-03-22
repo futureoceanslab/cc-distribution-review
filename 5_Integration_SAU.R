@@ -3,19 +3,12 @@
 ##INPUT FILES: data_EEZ_SAU/, ReviewDatsp.csv, data_FE_SAU/
 ##OUTPUT FILES: Biblio_database_full.csv
 
-
-#libraries
-library(dplyr)
-library(tidyr)
-library(ggplot2)
 library(tidyverse)
-
 
 ########1. Download SAU Database EEZ ("data_EEZ_SAU/")
 
 ########2. DATA ON SAU EEZs
 
-library(tidyverse)
 path <- "data/data_EEZ_SAU/"
 l <- list.files(path, pattern=".csv")
 
@@ -36,12 +29,12 @@ for (n in l1) {
 } 
 
 ##FILTER SAU DATASETS: 5 last years, landings, NAs
-Final_SAU_EEZ <- filter(final, year > 2009, catch_type=="Landings")
+Final_SAU_EEZ <- filter(final, year > 2009, catch_type == "Landings")
 
 ########3. MERGE BIBLIO WITH SAU_EEZ
 
 ##3.1. OPEN our review database with the fishbase inputs
-ReviewDatFB <- read.csv("data/ReviewDatsp.csv", stringsAsFactors=FALSE, header=T) ## biblio_database + fishbase from script integration_fishbase.R
+ReviewDatFB <- read.csv("data/ReviewDatsp.csv", stringsAsFactors = F) ## biblio_database + fishbase from script integration_fishbase.R
 
 ##3.2. MATCH SPECIES NAMES IN REVIEW AND SAU####
 ##Check list of un-matchig names
