@@ -47,8 +47,8 @@ levels(data$b_impact) <- c("lat shift center of grav", #1
                            "long shift center of bio", #8
                            "lat and long shift center of grav", #9
                            "shift in area occupied", #11
-                           "depth range", #12
-                           "latitude range") #13
+                           "depth range shift", #12
+                           "latitude range shift") #13
 
 data$b_direction_original <- data$b_direction
 levels(data$b_direction) <- c("lat shift north center of grav", #1
