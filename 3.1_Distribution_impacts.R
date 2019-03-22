@@ -5,9 +5,7 @@
 
 #libraries
 library(rockchalk)
-library(ggplot2) 
 library(tidyverse)
-library(tidyr)
 library(reshape2) #melt function
 library(cowplot)
 
