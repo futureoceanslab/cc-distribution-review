@@ -86,7 +86,7 @@ ggplot(data = data1, aes(x = impacts, y = value, fill = factor(cc))) +
 ############
 
 #histogram
-lat$sign <- ifelse(lat$b_value > 0,"North", "South") #there are no zeros sum(lat$b_value == 0)
+lat$sign <- ifelse(lat$b_value > 0,"Polewards (+)", "Towards equator (-)") #there are no zeros sum(lat$b_value == 0)
 
 Fig2.lat <- lat %>% 
               ggplot() +
@@ -95,15 +95,15 @@ Fig2.lat <- lat %>%
                 scale_x_continuous(name = "Mean Latitude Shift Rate (km/decade)") + 
                 scale_y_continuous(name = "Number of Observations") +
                 scale_colour_manual(name = "Shift direction", 
-                                    values = c("North" = "skyblue", 
-                                               "South" = "royalblue4"), 
-                                    labels = c("North" = "North", 
-                                               "South" = "South")) +
+                                    values = c("Polewards (+)" = "skyblue", 
+                                               "Towards equator (-)" = "royalblue4"), 
+                                    labels = c("Polewards (+)" = "Polewards (+)", 
+                                               "Towards equator (-)" = "Towards equator (-)")) +
                 scale_fill_manual(name = "Shift direction", 
-                                  values = c("North" = "skyblue", 
-                                             "South"="royalblue4"), 
-                                  labels = c("North"="North", 
-                                             "South"="South")) +
+                                  values = c("Polewards (+)" = "skyblue", 
+                                             "Towards equator (-)"="royalblue4"), 
+                                  labels = c("Polewards (+)" = "Polewards (+)", 
+                                             "Towards equator (-)" = "Towards equator (-)")) +
                 theme(panel.background = element_rect(fill = 'whitesmoke',
                                                       colour = 'black'),
                       legend.position = c(.85, .75)) +
@@ -138,7 +138,7 @@ lat.barplot <- ggplot(lat, aes(tax_group, b_value, fill = tax_group)) +
 #########
 # DEPTH #
 #########
-depth$sign <- ifelse(depth$b_value > 0, "Shallower", "Deeper")# there are no zeros sum(depth$b_value == 0)
+depth$sign <- ifelse(depth$b_value > 0, "Shallower (+)", "Deeper (-)")# there are no zeros sum(depth$b_value == 0)
 
 Fig2.depth <- depth %>%
                 ggplot()+
@@ -147,16 +147,16 @@ Fig2.depth <- depth %>%
                   scale_x_continuous(name = "Depth Shift Rate (m/decade)") + 
                   scale_y_continuous(name = "Number of Observations")+
                   scale_colour_manual(name = "Shift direction", 
-                                      values = c("Deeper" = "royalblue4", 
-                                                 "Shallower"="skyblue"), 
-                                      labels = c("Deeper" = "Deeper", 
-                                                 "Shallower" = "Shallower"),
+                                      values = c("Deeper (-)" = "royalblue4", 
+                                                 "Shallower (+)"="skyblue"), 
+                                      labels = c("Deeper (-)" = "Deeper (-)", 
+                                                 "Shallower (+)" = "Shallower (+)"),
                                       guide = guide_legend(reverse = T)) +
                   scale_fill_manual(name = "Shift direction", 
-                                    values = c("Deeper" = "royalblue4", 
-                                               "Shallower" = "skyblue"), 
-                                    labels = c("Deeper" = "Deeper", 
-                                               "Shallower" = "Shallower"),
+                                    values = c("Deeper (-)" = "royalblue4", 
+                                               "Shallower (+)" = "skyblue"), 
+                                    labels = c("Deeper (-)" = "Deeper (-)", 
+                                               "Shallower (+)" = "Shallower (+)"),
                                     guide = guide_legend(reverse = T)) +
                   theme(panel.background = element_rect(fill = 'whitesmoke', 
                                                         colour = 'black'),
@@ -174,14 +174,14 @@ depth.barplot <- ggplot(depth, aes(tax_group, b_value, fill = tax_group)) +
                     geom_boxplot(data = subset(depth, b_value < 0), 
                                  aes(tax_group, b_value),  
                                  na.rm = T, outlier.shape = 1, outlier.size = 0.1) +
-                    geom_hline(yintercept=c(0), linetype = "dotted")+
+                    geom_hline(yintercept = c(0), linetype = "dotted")+
                     scale_y_continuous(name ="m/decade", breaks = seq(-80, 60, by = 20)) +
                     xlab(NULL) +
-                    theme(axis.text.x =element_blank()) +
-                    scale_fill_brewer(palette="Blues") +
+                    theme(axis.text.x = element_blank()) +
+                    scale_fill_brewer(palette = "Blues") +
                     theme_bw() +
                     scale_x_discrete(labels = my.labels2) +
-                    theme(legend.position="none")
+                    theme(legend.position = "none")
 
 join.lat.depth <- plot_grid(lat.barplot, Fig2.lat, depth.barplot, Fig2.depth, labels = c("A", "B", "C", "D"), align="hv")
 #ggsave("join_lat_depth.jpeg")
