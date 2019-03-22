@@ -8,7 +8,6 @@ library(tidyverse)
 ########1. Download SAU Database EEZ ("data_EEZ_SAU/")
 
 ########2. DATA ON SAU EEZs
-
 path <- "data/data_EEZ_SAU/"
 l <- list.files(path, pattern=".csv")
 
@@ -19,7 +18,6 @@ func <- function(i){
 
 l1 <- lapply(1:length(l), func)
 final <- bind_rows(l1)
-
 
 #verification number of EEZ names and number of rows
 unique(final$area_name)
