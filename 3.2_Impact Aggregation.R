@@ -73,7 +73,8 @@ ddd2 <- ddd %>%
                     b_direction_combine = paste(b_direction_combine, collapse = "-"),
                     b_value = paste(b_value, collapse = "-"),
                     rfishbase_species_code = unique(rfishbase_species_code),
-                    total = mean(total))
+                    total = mean(total),
+                    b_value_x = mean(b_value_x))
 
 colnames(ddd2) #change column name to have b_value aggregated and be able to merge with non duplicated data
 colnames(ddd2)[which(names(ddd2) == "b_value")] <- "b_value_original"
@@ -84,6 +85,8 @@ colnames(ddc)[which(names(ddc) == "b_value")] <- "b_value_original"
 
 ddc$duplicated_times[ddc$duplicated_times == 1] <- 0
 ddd2$duplicated_times[ddd2$duplicated_times >= 2] <- 1
+
+ddc$b_value <- ddc$b_value_original
 
 #Now I merge the subsets of non-duplications (ddc) and with duplications removed/averaged (ddd)
 data_end <- merge(ddc, ddd2, all = T)
