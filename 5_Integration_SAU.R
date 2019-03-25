@@ -13,11 +13,14 @@ l <- list.files(path, pattern=".csv")
 
 func <- function(i){
   df <- read.csv(paste0(path,l[i]))
+  if (length(df) == 17) {
+  df <- df[-which(names(df) == "end_use_type")]  
+  }
   return(df)
 }
 
 l1 <- lapply(1:length(l), func)
-final <- bind_rows(l1)
+final <- do.call(rbind, l1)
 
 #verification number of EEZ names and number of rows
 unique(final$area_name)
@@ -28,6 +31,7 @@ for (n in l1) {
 
 ##FILTER SAU DATASETS: 5 last years, landings, NAs
 Final_SAU_EEZ <- filter(final, year > 2009, catch_type == "Landings")
+rm(final, l, l1, suma, path, func, n)
 
 ########3. MERGE BIBLIO WITH SAU_EEZ
 
@@ -56,52 +60,54 @@ EEZ_ReviewDatFB  <- unique(ReviewDatFB$area_name) #final list of EEZs in the Rev
 EEZ_SAU <- unique(Final_SAU_EEZ$area_name)
 EEZ_ReviewDatFB %in% EEZ_SAU
 #EEZs of the review are now the same as in the SAU database
-identical(sort(unique(ReviewDatFB$area_name)),sort(unique(Final_SAU_EEZ$area_name)))
+identical(sort(unique(ReviewDatFB$area_name)),sort(unique(as.character(Final_SAU_EEZ$area_name))))
 
 ##3.4 MERGE: ADD TOTAL CATCH AND LANDINGS BY EEZ####
 #check observations for EEZ data
 counts <- Final_SAU_EEZ %>%
-  group_by(area_name, year) %>%
-  tally
+            group_by(area_name, year) %>%
+            tally
+rm(counts, EEZ_ReviewDatFB, EEZ_SAU, matchsp, Sp_SAU)
 
 #dataframe total EEZ catch 
 #sum all catches per area_name and year
-tonlandEEZyear<-Final_SAU_EEZ %>%
-  group_by(area_name,year) %>%
-  summarise(tonnesEEZyear=sum(tonnes,na.rm = T),
-            landedvalueEEZyear=sum(landed_value,na.rm = T))
-#take mean value across years (2010-2014)    
-tonlandEEZ<- tonlandEEZyear %>%
-  group_by(area_name) %>%
-  summarise(tonnesEEZ=mean(tonnesEEZyear,na.rm = T),
-            landedvalueEEZ=mean(landedvalueEEZyear,na.rm = T))          
+tonlandEEZyear <- Final_SAU_EEZ %>%
+                    group_by(area_name,year) %>%
+                    summarise(tonnesEEZyear = sum(tonnes, na.rm = T),
+                              landedvalueEEZyear = sum(landed_value, na.rm = T))
+                  #take mean value across years (2010-2014)    
+tonlandEEZ <- tonlandEEZyear %>%
+                group_by(area_name) %>%
+                summarise(tonnesEEZ = mean(tonnesEEZyear, na.rm = T),
+                          landedvalueEEZ = mean(landedvalueEEZyear, na.rm = T))          
 #merge
-ReviewDatFB_SAU1 <- merge(ReviewDatFB, tonlandEEZ, by=c("area_name"), all.x=TRUE)
-
+ReviewDatFB_SAU1 <- merge(ReviewDatFB, tonlandEEZ, by = c("area_name"), all.x = T)
+rm(tonlandEEZyear, tonlandEEZ, ReviewDatFB)
 
 ##3.5. MERGE: ADD TOTAL CATCH AND LANDINGS BY EEZ AND SP####
 #gives mean value across years (2010-2014 ) annual tonnes (2010-2014) 
-tonlandEEZspyear<-Final_SAU_EEZ %>%
-  group_by(area_name, year, scientific_name) %>%
-  summarise(tonnesEEZspyear=sum(tonnes,na.rm = T),
-            landedvalueEEZspyear=sum(landed_value,na.rm = T))
-tonlandEEZsp<-tonlandEEZspyear %>%
-  group_by(area_name, scientific_name) %>%
-  summarise(tonnesEEZsp=mean(tonnesEEZspyear,na.rm = T),
-            landedvalueEEZsp=mean(landedvalueEEZspyear,na.rm = T))
+tonlandEEZspyear <- Final_SAU_EEZ %>%
+                      group_by(area_name, year, scientific_name) %>%
+                      summarise(tonnesEEZspyear = sum(tonnes, na.rm = T),
+                                landedvalueEEZspyear = sum(landed_value, na.rm = T))
+tonlandEEZsp <- tonlandEEZspyear %>%
+                  group_by(area_name, scientific_name) %>%
+                  summarise(tonnesEEZsp = mean(tonnesEEZspyear, na.rm = T),
+                            landedvalueEEZsp = mean(landedvalueEEZspyear, na.rm = T))
 #merge: add total EEZ catches and landings per SP to ReviewDat
 ReviewDatFB_SAU2 <- merge(ReviewDatFB_SAU1, tonlandEEZsp, by=c("area_name","scientific_name"), all.x=TRUE)
-
 
 ##3.6 Doble-check
 ##Species name match - tonlandEEZsp
 splist <- unique(tonlandEEZsp$scientific_name)
-matchsp2<- Sp_ReviewDatFB %in% splist
+matchsp2 <- Sp_ReviewDatFB %in% splist
 table(matchsp2) ## 33 spp no macth, 109 spp macthed (total:142spp). Same resultas above
-spmiss2 <- Sp_ReviewDatFB[matchsp2==FALSE] ## list of unmatching(lost) species
+spmiss2 <- Sp_ReviewDatFB[matchsp2 == FALSE] ## list of unmatching(lost) species
 ##To chek the matches among lists and edit the list of spp lost
 identical(spmiss1,spmiss2)
 #write.csv(spmiss2, file="data/2listspmiss.csv") ##list of lost species
+
+rm(ReviewDatFB_SAU1, tonlandEEZspyear, tonlandEEZsp, Sp_ReviewDatFB)
 
 #check missing species in tonnesEEZsp and landedvalueEEZsp
 #Not all the species have data for all the years/EEZs
@@ -110,11 +116,13 @@ table(na1) #we miss 200 observations, False 395, True 200
 na2 <- is.na(ReviewDatFB_SAU2$landedvalueEEZsp)
 table(na2) #we miss 200 observations, False 395, True 200
 
+rm(na1, na2, spmiss1, spmiss2, matchsp2, splist)
 
 ##3.7. list of FE
 list_FE <- unique(Final_SAU_EEZ$fishing_entity)
+write.csv(list_FE, row.names = F, "data/list_FE.csv")
 
-
+rm(Final_SAU_EEZ, list_FE)
 
 ########4. Download SAU Database FE ("data_EEZ_SAU.csv")
 
