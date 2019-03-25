@@ -87,17 +87,18 @@ ddc$duplicated_times[ddc$duplicated_times == 1] <- 0
 ddd2$duplicated_times[ddd2$duplicated_times >= 2] <- 1
 
 ddc$b_value <- ddc$b_value_original
-ddc$verification_b_dir <- 0
 
-#select observations with opposite b_directions
+#determine observations with opposite b_directions
+ddc$verification_b_dir <- 0 #same direction
+
 a <- ddd2 %>%
       filter(str_detect(b_direction_combine, "deeper.*shallower"))
 b <- ddd2 %>%
       filter(str_detect(b_direction_combine, "north.*south"))
 dirs <- rbind(a, b)
 
-ddd2$verification_b_dir <- 0
-ddd2[ddd2$id_obs %in% dirs$id_obs, 12] <- 1
+ddd2$verification_b_dir <- 0 #same direction
+ddd2[ddd2$id_obs %in% dirs$id_obs, 12] <- 1 #opposite directions
 
 #Now I merge the subsets of non-duplications (ddc) and with duplications removed/averaged (ddd)
 data_end <- merge(ddc, ddd2, all = T)
