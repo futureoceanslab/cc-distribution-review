@@ -15,7 +15,7 @@ library(grid)
 library(ggrepel)
 
 #Open Biblio_data with SAU data on EEZ and FE:
-data <- read.csv("data/Biblio_database_full.csv", stringsAsFactors = FALSE)
+data <- read.csv("data/biblio_database_full.csv", stringsAsFactors = FALSE)
 
 ##PREPARETION OF VARIABLES: Subsets of the impacts
 data$b_impact <- as.factor(data$b_impact)
