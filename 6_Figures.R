@@ -15,21 +15,23 @@ library(grid)
 library(ggrepel)
 
 #Open Biblio_data with SAU data on EEZ and FE:
-data <- read.csv("data/Biblio_database_full.csv", stringsAsFactors = FALSE)
+data <- read.csv("data/biblio_database_full.csv", stringsAsFactors = FALSE)
 
 ##PREPARETION OF VARIABLES: Subsets of the impacts
-data$b_impact <- as.factor(data$b_impact)
-levels(data$b_impact)
-levels(data$b_impact) <- c("mean lat shift", "mean lat shift", 
-                           "depth shift", "boundary lat shift", 
-                           "boundary lat shift", "mean lon shift", 
-                           "mean lon shift", "mean lat and lon shift", 
-                           "area occupied")
+data$b_impact_combine <- as.factor(data$b_impact_combine)
+levels(data$b_impact_combine)
 
-latitude <- subset (data, b_impact =="mean lat shift")
-depth    <- subset (data, b_impact=="depth shift")
-range    <- subset (data, b_impact== "boundary lat shift")
-area     <- subset (data, b_impact == "area occupied")
+latitude <- subset (data, b_impact_combine =="lat shift")
+depth <- subset (data, b_impact_combine=="depth shift")
+long <- subset (data, b_impact_combine=="long shift")
+lat_long <- subset (data, b_impact_combine=="lat and long shift")
+
+area <- subset (data, b_impact_combine == "shift in area occupied")
+
+lat_range    <- subset (data, b_impact_combine== "latitude range shift")
+depth_range    <- subset (data, b_impact_combine== "depth range shift")
+
+lat_boundary    <- subset (data, b_impact_combine== "boundary lat shift")
 
 
 ########### FIGURES 3 and 4: CATCH and PRICE CATEGORY IMPACTS ###########
