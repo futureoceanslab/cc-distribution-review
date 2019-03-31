@@ -25,13 +25,10 @@ latitude <- subset (data, b_impact_combine =="lat shift")
 depth <- subset (data, b_impact_combine=="depth shift")
 long <- subset (data, b_impact_combine=="long shift")
 lat_long <- subset (data, b_impact_combine=="lat and long shift")
-
 area <- subset (data, b_impact_combine == "shift in area occupied")
-
-lat_range    <- subset (data, b_impact_combine== "latitude range shift")
-depth_range    <- subset (data, b_impact_combine== "depth range shift")
-
-lat_boundary    <- subset (data, b_impact_combine== "boundary lat shift")
+lat_range <- subset (data, b_impact_combine== "latitude range shift")
+depth_range <- subset (data, b_impact_combine== "depth range shift")
+lat_boundary <- subset (data, b_impact_combine== "boundary lat shift")
 
 
 ########### FIGURES 3 and 4: CATCH and PRICE CATEGORY IMPACTS ###########
@@ -225,7 +222,6 @@ P8
 grid.arrange(P1, P2, P5, P6, nrow = 2, ncol=2)
 ##PAPER Fig.4
 grid.arrange(P3,P4,P7,P8, nrow = 2, ncol=2)
-
 
 
 ######### FIGURE 5: IMPACTS AND FE DEPENDENCY ON SHIFTING STOCKS #################
