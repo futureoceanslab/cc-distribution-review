@@ -256,4 +256,4 @@ range(Biblio_data$spvalueEEZ, na.rm = T)
 quantile(Biblio_data$spvalueEEZ, na.rm = T)
 
 ##5. OUTPUT FILE###
-write.csv(Biblio_data, file = "data/Biblio_database_full.csv", row.names = F)
+write.csv(Biblio_data, file = "data/biblio_database_full.csv", row.names = F)
