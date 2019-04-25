@@ -65,9 +65,9 @@ my.labels <- c("Mean \n Latitude",
 
 ggplot(data = data1, aes(x = impacts, y = value, fill = factor(cc))) + 
   geom_bar(stat="identity", alpha=0.8) + 
-  scale_fill_manual(values=c("darkgreen", "chartreuse3", "yellow", 
-                             "orange", "orangered", "red3", "blue", 
-                             "pink")) +
+  scale_fill_manual(values = c("darkgreen", "chartreuse3", "orange", 
+                               "yellow", "grey", "red3", "blue", 
+                               "deeppink4", "pink", "lightblue")) +
   labs(y = "Number of Observations", 
       x = "", 
       fill = "Climate Change variables") + 
@@ -184,4 +184,5 @@ depth.barplot <- ggplot(depth, aes(tax_group, b_value, fill = tax_group)) +
                     theme(legend.position = "none")
 
 join.lat.depth <- plot_grid(lat.barplot, Fig2.lat, depth.barplot, Fig2.depth, labels = c("A", "B", "C", "D"), align="hv")
+plot(join.lat.depth)
 #ggsave("join_lat_depth.jpeg")

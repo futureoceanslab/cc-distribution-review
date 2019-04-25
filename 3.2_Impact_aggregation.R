@@ -6,7 +6,7 @@
 library(tidyverse)
 
 #Open database (Biblio_database.csv)
-data <- read.csv("data/biblio_database2.csv", stringsAsFactors=FALSE)
+data <- read.csv("data/biblio_database2.csv", stringsAsFactors = F)
 
 
 ##AGGREGATION OF IMPACTS (EEZ, Species name, impact type)

@@ -6,7 +6,7 @@
 library(tidyverse)
 
 #1. Open database
-data <- read.csv("data/biblio_database.csv", sep = ";")
+data <- read.csv("data/biblio_database.csv")
 
 #2. Change species names  (to match with fishbase database)
 #detele blank spaces in Species scientific name to match review_database-fishbase_database
@@ -74,14 +74,17 @@ levels(data$b_direction) <- c("lat shift north center of grav", #1
                               "lat range contraction center of grav") #25
 
 data$cc_original <- data$cc
-levels(data$cc) <- c("AMO", #10
+levels(data$cc) <- c("AMO,NAO,CO2", #10,12,16
                      "climate velocity", #11
-                     "sst", #2
-                     "sst,bt,AMO", #2,3,10
-                     "sst,bt", #2,3
-                     "bt",#3
                      "ssta", #13
-                     "sst, AMO") #2,10
+                     "composite index", #15
+                     "sst", #2
+                     "sst,CO2", #2,16
+                     "sst,bt", #2,3
+                     "sst,bt,AMO,NAO,biomass", #2,3,10,12,14
+                     "sst, AMO", #2,10
+                     "bt") #3
+                      
 
 #5. Find duplications
 #5.1 Select rows with same species 
