@@ -6,7 +6,7 @@
 library(tidyverse)
 
 #1. Open database
-data <- read.table("data/exploited_ccshifts_database(original).csv", header= T, sep=";")
+data <- read.table("data/biblio_database.csv", header= T, sep=";")
 
 #2. Change species names  (to match with fishbase database)
 #detele blank spaces in Species scientific name to match review_database-fishbase_database
@@ -105,4 +105,4 @@ data_end <- anti_join(data, remove, by = "id_obs")
 
 
 #5. Save a "cleaner" database
-write.csv(data_end, row.names = F, "exploited_ccshifts_database.csv")
+write.csv(data_end, row.names = F, "biblio_database1.csv")

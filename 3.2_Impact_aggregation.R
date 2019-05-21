@@ -5,7 +5,7 @@
 
 library(tidyverse)
 
-data <- read.table("data/exploited_ccshifts_database.csv", header= T, sep=",")
+data <- read.table("data/biblio_database1.csv", header= T, sep=",")
 
 
 ##AGGREGATION OF IMPACTS (EEZ, Species name, impact type)
@@ -101,4 +101,4 @@ ddd2[ddd2$id_obs %in% dirs$id_obs, 12] <- 1 #opposite directions
 
 #Now I merge the subsets of non-duplications (ddc) and with duplications removed/averaged (ddd)
 data_end <- merge(ddc, ddd2, all = T)
-write.csv(data_end, row.names = F, "exploited_ccshifts_database(aggregated).csv")
+write.csv(data_end, row.names = F, "biblio_database3.csv")

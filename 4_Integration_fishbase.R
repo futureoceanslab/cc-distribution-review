@@ -8,7 +8,7 @@ library(tidyverse)
 
 #open data
 
-ReviewDat <- read.table("data/exploited_ccshifts_database(aggregated).csv", header= T, sep=",")
+ReviewDat <- read.table("data/biblio_database3.csv", header= T, sep=",")
 
 ##Create a list of our species scientific names
 SpReviewOriginal <- unique(as.character(ReviewDat$scientific_name)) # Review_database. list of species from original database (203)
