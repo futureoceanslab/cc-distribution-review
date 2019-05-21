@@ -11,7 +11,7 @@ library(cowplot)
 
 
 #open dataset
-data <- read.table("data/exploited_ccshifts_database.csv", header= T, sep=",")
+data <- read.table("exploited_ccshifts_database.csv", header= T, sep=",")
 
 #Factors
 data$id_study <- as.factor(data$id_study)
@@ -104,11 +104,13 @@ lat.barplot <- ggplot(lat, aes(taxa, decadal_change, fill = taxa)) +
 # DEPTH #
 #########
 depth <- subset (data, response == "depth")
-depth$sign <- ifelse(depth$decadal_change > 0, "Shallower (-)", "Deeper (+)")# there are no zeros sum(depth$decadal_change == 0)
+depth$sign <- ifelse(depth$decadal_change < 0, "Shallower (-)", "Deeper (+)")# there are no zeros sum(depth$decadal_change == 0)
+
+depth$decadal_change_reversed <- (-1)*depth$decadal_change
 
 Fig2.depth <- depth %>%
   ggplot()+
-  geom_histogram(aes(decadal_change, fill = sign, colour = sign), 
+  geom_histogram(aes(decadal_change_reversed, fill = sign, colour = sign), 
                  alpha = 0.7, binwidth = 4) +
   scale_x_continuous(name = "Depth Shift Rate (m/decade)") + 
   scale_y_continuous(name = "Number of Observations")+
