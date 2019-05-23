@@ -31,7 +31,7 @@ speciesDat <- species(SpReview) #for all  fishbase data
 
 ##INCLUDE SPECIES DATA into the REVIEW DATABASE
 #ID variable -SpecCode - to join the databases REVIEW and SPECIESDAT
-colnames(ReviewDat)[which(names(ReviewDat) == "rfishbase_species_code")] <- "SpecCode"  #to put the same variable name in both databases to join them
+colnames(ReviewDat)[which(names(ReviewDat) == "fishbase_id_species")] <- "SpecCode"  #to put the same variable name in both databases to join them
 
 ##MERGING
 #Review+speciesdat
@@ -39,8 +39,8 @@ ReviewDat$SpecCode <- as.integer(ReviewDat$SpecCode)
 ReviewDatsp <- left_join(ReviewDat, speciesDat, by = "SpecCode")
 
 #Select relevant fishbase data
-ReviewDatsp <-  subset(ReviewDatsp, select = c(id_obs, id_study, eez_countries, b_scientific_name, 
-                                               cc, b_impact_combine, b_value, SpecCode, duplicated_times, b_value_original, 
+ReviewDatsp <-  subset(ReviewDatsp, select = c(id_obs, id_study, stock_EEZ_country, scientific_name, 
+                                               cc_driver_detail, b_impact_combine, b_value, SpecCode, duplicated_times, b_value_original, 
                                                DemersPelag, Importance, PriceCateg, PriceReliability, MainCatchingMethod))
 
 #Save the selected data (speciesdat) of fishbase with our reviewdata
