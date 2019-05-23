@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1558601969161.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "4B32AFF0",
+    "lastKnownWriteTime" : 1558601623,
+    "last_content_update" : 1558601623,
+    "path" : "~/github/cc-distribution-review/3.1_Distribution_impacts.R",
+    "project_path" : "3.1_Distribution_impacts.R",
+    "properties" : {
+        "cursorPosition" : "0,0",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
