@@ -8,7 +8,7 @@ library(tidyverse)
 
 #open data
 
-ReviewDat <- read.table("data/biblio_database3.csv", header= T, sep=",")
+ReviewDat <- read.table("data/biblio_database2.csv", header= T, sep=",")
 
 ##Create a list of our species scientific names
 SpReviewOriginal <- unique(as.character(ReviewDat$scientific_name)) # Review_database. list of species from original database (203)
@@ -44,4 +44,4 @@ ReviewDatsp <-  subset(ReviewDatsp, select = c(id_obs, id_study, eez_countries, 
                                                DemersPelag, Importance, PriceCateg, PriceReliability, MainCatchingMethod))
 
 #Save the selected data (speciesdat) of fishbase with our reviewdata
-write.csv(ReviewDatsp, file = "data/ReviewDatsp.csv")
+write.csv(ReviewDatsp, file = "data/biblio_database3.csv")
