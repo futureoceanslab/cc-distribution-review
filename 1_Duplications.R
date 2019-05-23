@@ -6,7 +6,7 @@
 library(tidyverse)
 
 #1. Open database
-data <- read.table("data/biblio_database.csv", header= T, sep=";")
+data <- read.csv("data/biblio_database.csv")
 
 #2. Change species names  (to match with fishbase database)
 #detele blank spaces in Species scientific name to match review_database-fishbase_database
@@ -19,7 +19,7 @@ data$scientific_name[data$scientific_name == "Clupea pallasii"] <- "Clupea palla
 data$scientific_name[data$scientific_name == "Loligo pealeii"] <- "Doryteuthis pealeii"
 data$scientific_name[data$scientific_name == "Loligo opalescens"] <- "Doryteuthis opalescens"
 data$scientific_name[data$scientific_name == "Litopenaeus setiferus"] <- "Penaeus setiferus" 
-## We dodnÂ´t update the name of this specie (Litopenaeus setiferus) because we miss one match-sp. But we should keep it in mind to show with the final results
+## We didn´t update the name of this specie (Litopenaeus setiferus) because we miss one match-sp. But we should keep it in mind to show with the final results
 data$fishbase_id_species[data$fishbase_id_species == "322"] <- "308"
 data$fishbase_id_species[data$fishbase_id_species == "3"] <- NA
 
@@ -105,4 +105,4 @@ data_end <- anti_join(data, remove, by = "id_obs")
 
 
 #5. Save a "cleaner" database
-write.csv(data_end, row.names = F, "biblio_database1.csv")
+write.csv(data_end, row.names = F, "data/biblio_database1.csv")

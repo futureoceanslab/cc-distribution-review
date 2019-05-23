@@ -11,7 +11,7 @@ library(cowplot)
 
 
 #open dataset
-data <- read.table("biblio_database1.csv", header= T, sep=",")
+data <- read.csv("data/biblio_database1.csv")
 
 #Factors
 data$id_study <- as.factor(data$id_study)
