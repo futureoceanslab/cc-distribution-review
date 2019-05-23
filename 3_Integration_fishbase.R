@@ -40,7 +40,8 @@ ReviewDatsp <- left_join(ReviewDat, speciesDat, by = "SpecCode")
 
 #Select relevant fishbase data
 ReviewDatsp <-  subset(ReviewDatsp, select = c(id_obs, id_study, stock_EEZ_country, scientific_name, 
-                                               cc_driver_detail, b_impact_combine, b_value, SpecCode, duplicated_times, b_value_original, 
+                                               cc_driver_detail, response, decadal_change, SpecCode, duplicated_times,
+                                               decadal_change_original,
                                                DemersPelag, Importance, PriceCateg, PriceReliability, MainCatchingMethod))
 
 #Save the selected data (speciesdat) of fishbase with our reviewdata
