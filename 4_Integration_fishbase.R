@@ -6,13 +6,13 @@
 library(rfishbase)
 library(tidyverse)
 
-#open data
+#open data: reviewdatabase
 
-ReviewDat <- read.table("data/biblio_database3.csv", header= T, sep=",")
+ReviewDat <- read.csv("data/biblio_database3.csv")
 
 ##Create a list of our species scientific names
-SpReviewOriginal <- unique(as.character(ReviewDat$scientific_name)) # Review_database. list of species from original database (203)
-SpCodes <- as.vector(unique(ReviewDat$fishbase_id_species)) #Fishbase-spp codes. there are MISSING CODES (122 sp-codes included here) ( there is 1 NA)
+SpReviewOriginal <- unique(as.character(ReviewDat$b_scientific_name)) # Review_database. list of species from original database (145)
+SpCodes <- as.vector(unique(ReviewDat$rfishbase_species_code)) #Fishbase-spp codes. there are MISSING CODES (122 sp-codes included here) ( there is 1 NA)
 SpReview <- unlist(species_names(SpCodes)[,2]) #Fishbase-spp names. only select the species where we have SpCodes (122 spp names matched)
 spdiff <- SpReviewOriginal %in% SpReview
 table(spdiff) # Synthesis of matches and mismatches between review-fishbase (122 true, 23 false)
@@ -40,8 +40,8 @@ ReviewDatsp <- left_join(ReviewDat, speciesDat, by = "SpecCode")
 
 #Select relevant fishbase data
 ReviewDatsp <-  subset(ReviewDatsp, select = c(id_obs, id_study, eez_countries, b_scientific_name, 
-                                               cc, b_impact_combine, b_value, SpecCode, duplicated_times, b_value_original, 
-                                               DemersPelag, Importance, PriceCateg, PriceReliability, MainCatchingMethod))
+                                           cc, b_impact_combine, b_value, SpecCode, duplicated_times, b_value_original, 
+                                           DemersPelag, Importance, PriceCateg, PriceReliability, MainCatchingMethod))
 
 #Save the selected data (speciesdat) of fishbase with our reviewdata
 write.csv(ReviewDatsp, file = "data/ReviewDatsp.csv")
