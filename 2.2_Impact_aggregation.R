@@ -68,10 +68,9 @@ ddd2 <- ddd %>%
   summarise(id_obs = paste(id_obs, collapse = "-"), #all values of id_obs
             id_study = paste(id_study, collapse = "-"),
             cc_driver_detail = paste(cc_driver_detail, collapse = "-"),
-            #response = paste(response, collapse = "-"),   # ERROR
             decadal_change = paste(decadal_change, collapse = "-"),
             direction = paste(direction, collapse = "-"),  # ME adding this 
-            #fishbase_id_species = unique(fishbase_id_species), # ERROR
+            fishbase_id_species = paste(fishbase_id_species, collapse = "-"),
             total = mean(total),
             decadal_change_x = mean(decadal_change_x))
 
@@ -85,7 +84,7 @@ colnames(ddc)[which(names(ddc) == "decadal_change")] <- "decadal_change_original
 ddc$duplicated_times[ddc$duplicated_times == 1] <- 0
 ddd2$duplicated_times[ddd2$duplicated_times >= 2] <- 1
 
-ddc$decadal_change <- ddc$decadal_change
+ddc$decadal_change <- ddc$decadal_change_original
 
 #determine observations with opposite b_directions
 ddc$verification_dir <- 0 #same direction
