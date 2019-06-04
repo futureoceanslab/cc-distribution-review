@@ -45,4 +45,4 @@ ReviewDatsp <-  subset(ReviewDatsp, select = c(id_obs, id_study, stock_EEZ_count
                                                DemersPelag, Importance, PriceCateg, PriceReliability, MainCatchingMethod))
 
 #Save the selected data (speciesdat) of fishbase with our reviewdata
-write.csv(ReviewDatsp, file = "data/biblio_database3.csv")
+write.csv(ReviewDatsp, row.names = F, file = "data/biblio_database3.csv")

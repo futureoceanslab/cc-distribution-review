@@ -36,7 +36,7 @@ rm(final, l, l1, suma, path, func, n)
 ########3. MERGE BIBLIO WITH SAU_EEZ
 
 ##3.1. OPEN our review database with the fishbase inputs
-ReviewDatFB <- read.csv("data/biblio_database3", stringsAsFactors = F) ## biblio_database + fishbase from script integration_fishbase.R
+ReviewDatFB <- read.csv("data/biblio_database3.csv", stringsAsFactors = F) ## biblio_database + fishbase from script integration_fishbase.R
 
 ##3.2. MATCH SPECIES NAMES IN REVIEW AND SAU####
 ##Check list of un-matchig names
@@ -52,10 +52,14 @@ spmiss1 <- Sp_ReviewDatFB[matchsp == F] ## list of unmatching(lost) species
 ##3.3 MATCH COLUMNS and EEZ NAMES IN REVIEW AND SAU (area_name)####
 
 #recode colnames in ReviewDatFB to match Final_SAU_EEZ names
-colnames(ReviewDatFB)[which(names(ReviewDatFB) == "b_scientific_name")] <- "scientific_name"
-colnames(ReviewDatFB)[which(names(ReviewDatFB) == "eez_countries")] <- "area_name"
+colnames(ReviewDatFB)[which(names(ReviewDatFB) == "stock_EEZ_country")] <- "area_name"
 
 ##Check list of un-matchig EEZs
+EEZ_ReviewDatFB  <- unique(ReviewDatFB$area_name) #final list of EEZs in the Review dataset
+EEZ_SAU <- unique(Final_SAU_EEZ$area_name)
+EEZ_ReviewDatFB %in% EEZ_SAU
+ReviewDatFB[ReviewDatFB$area_name == "Portugal (mailand)", 3] <- "Portugal (mainland)" 
+ReviewDatFB[ReviewDatFB$area_name == "United Kindgom (UK)", 3] <- "United Kingdom (UK)" 
 EEZ_ReviewDatFB  <- unique(ReviewDatFB$area_name) #final list of EEZs in the Review dataset
 EEZ_SAU <- unique(Final_SAU_EEZ$area_name)
 EEZ_ReviewDatFB %in% EEZ_SAU

@@ -31,12 +31,12 @@ sp_EEZ_impact <- ReviewDat %>%
   group_by(stock_EEZ_country, scientific_name, response) %>%
   summarise(n())
 
-colnames(sp_EEZ_impact) <- c("stock_EEZ_country", "scientific_name", "response", "N")
+colnames(sp_EEZ_impact)[4] <- "N"
 
 #SUBSET with the species and EEZs where we have duplicates
 repeated_sp_EEZ_impact <- subset(sp_EEZ_impact, N > 1) 
 
-#N review dat species in EEZs -> 665
+#N review dat species in EEZs -> 551
 #dim(sp_EEZ_impact)
 #N species repeated in a EEZ -> 85
 #dim(repeated_sp_EEZ_impact)
@@ -57,7 +57,7 @@ df <- ReviewDat %>%
 ddc <- df[df$total == 1,] #subsets those without duplicates
 ddd <- df[df$total >= 2,] #subsets those with duplicates
 
-#here I combine b_value to calculate the mean (to get 1 b_impact value per eez):
+#here I combine decadal_change to calculate the mean (to get 1 impact value per eez):
 ddd <- ddd %>% 
   group_by(stock_EEZ_country, scientific_name, response) %>% 
   mutate(decadal_change_x = mean(decadal_change, na.rm = T))  #mean value of decadal change in eez-sp-impact

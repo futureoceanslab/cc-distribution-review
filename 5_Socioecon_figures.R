@@ -1,5 +1,5 @@
 ##R code for figures
-##Author: FOL
+##reference: FOL
 ##Date: March, 1st 2019
 
 ##calling libraries
@@ -15,20 +15,14 @@ library(grid)
 library(ggrepel)
 
 #Open Biblio_data with SAU data on EEZ and FE:
-data <- read.csv("data/biblio_database_full.csv", stringsAsFactors = FALSE)
+data <- read.csv("data/biblio_database_full.csv")
 
 ##PREPARETION OF VARIABLES: Subsets of the impacts
-data$b_impact_combine <- as.factor(data$b_impact_combine)
-levels(data$b_impact_combine)
+data$response <- as.factor(data$response)
+levels(data$response)
 
-latitude <- subset (data, b_impact_combine =="lat shift")
-depth <- subset (data, b_impact_combine=="depth shift")
-long <- subset (data, b_impact_combine=="long shift")
-lat_long <- subset (data, b_impact_combine=="lat and long shift")
-area <- subset (data, b_impact_combine == "shift in area occupied")
-lat_range <- subset (data, b_impact_combine== "latitude range shift")
-depth_range <- subset (data, b_impact_combine== "depth range shift")
-lat_boundary <- subset (data, b_impact_combine== "boundary lat shift")
+latitude <- subset (data, response == "latitude")
+depth <- subset (data, response == "depth")
 
 
 ########### FIGURES 3 and 4: CATCH and PRICE CATEGORY IMPACTS ###########
@@ -38,7 +32,7 @@ latitude$area_name <- as.factor(latitude$area_name)
 #Impacts by EEZ and Landings (Catch t)
 seq(min(latitude$tonnesEEZsp, na.rm=T),max(latitude$tonnesEEZsp, na.rm=T), by = 250000)
 
-P1<- ggplot(latitude, aes(area_name, b_value)) +
+P1<- ggplot(latitude, aes(area_name, decadal_change)) +
   geom_point(aes(color = tonnesEEZsp, size = tonnesEEZsp), alpha = 0.6) +
   scale_colour_gradient(low="blue", high="red",guide="legend", 
                         breaks = c(0.5e+5,5.0e+5, 7.5e+5, 1.0e+6, 1.3e+6))+
@@ -61,7 +55,7 @@ P1
 #Impacts by EEZ and Landings (Landings $)
 seq(min(latitude$landedvalueEEZsp, na.rm=T),max(latitude$landedvalueEEZsp, na.rm=T), by = 250000000)
 
-P2<- ggplot(latitude, aes(area_name, b_value)) +
+P2<- ggplot(latitude, aes(area_name, decadal_change)) +
   geom_point(aes(color = landedvalueEEZsp, size = landedvalueEEZsp), alpha = 0.6) +
   scale_colour_gradient(low="blue", high="red",guide="legend", 
                         breaks = c(0.5e+8,5.0e+8, 1.0e+9, 1.3e+9))+
@@ -82,7 +76,7 @@ P2<- ggplot(latitude, aes(area_name, b_value)) +
 P2
 
 #Impacts by Price category and Catch (Catch t)
-P3<- ggplot(latitude, aes(PriceCateg, b_value)) +
+P3<- ggplot(latitude, aes(PriceCateg, decadal_change)) +
   geom_point(aes(color = tonnesEEZsp, size = tonnesEEZsp), alpha = 0.6) +
   scale_colour_gradient(low="blue", high="red",guide="legend", 
                         breaks = c(0.5e+5,5.0e+5, 7.5e+5, 1.0e+6, 1.3e+6))+
@@ -104,7 +98,7 @@ P3<- ggplot(latitude, aes(PriceCateg, b_value)) +
 P3
 
 #Impacts by Price Category and Landings (Landings $)
-P4<- ggplot(latitude, aes(PriceCateg, b_value)) +
+P4<- ggplot(latitude, aes(PriceCateg, decadal_change)) +
   geom_point(aes(color = landedvalueEEZsp, size = landedvalueEEZsp), alpha = 0.6) +
   scale_colour_gradient(low="blue", high="red",guide="legend", 
                         breaks = c(1.3e+6,7.5e+8, 1.0e+9, 1.25e+9, 1.5e+9))+
@@ -131,7 +125,7 @@ depth$area_name <- as.factor(depth$area_name)
 #Impacts by EEZ and Catch (Catch t)
 seq(min(depth$tonnesEEZsp, na.rm=T),max(depth$tonnesEEZsp, na.rm=T), by = 250000)
 
-P5<- ggplot(depth, aes(area_name, b_value)) +
+P5<- ggplot(depth, aes(area_name, decadal_change)) +
   geom_point(aes(color = tonnesEEZsp, size = tonnesEEZsp), alpha = 0.6) +
   scale_colour_gradient(low="blue", high="red",guide="legend", 
                         breaks = c(0.5e+5,5.0e+5, 7.5e+5, 1.0e+6, 1.3e+6))+
@@ -154,7 +148,7 @@ P5
 #Impacts by EEZ and Landings (Landings $)
 seq(min(depth$landedvalueEEZsp, na.rm=T),max(depth$landedvalueEEZsp, na.rm=T), by = 250000000)
 
-P6<- ggplot(depth, aes(area_name, b_value)) +
+P6<- ggplot(depth, aes(area_name, decadal_change)) +
   geom_point(aes(color = landedvalueEEZsp, size = landedvalueEEZsp), alpha = 0.6) +
   scale_colour_gradient(low="blue", high="red",guide="legend", 
                         breaks = c(0.5e+8,5.0e+8, 1.0e+9, 1.3e+9))+
@@ -175,7 +169,7 @@ P6<- ggplot(depth, aes(area_name, b_value)) +
 P6
 
 #Impacts by Price Category and Catch (Catch t)
-P7<- ggplot(depth, aes(PriceCateg, b_value)) +
+P7<- ggplot(depth, aes(PriceCateg, decadal_change)) +
   geom_point(aes(color = tonnesEEZsp, size = tonnesEEZsp), alpha = 0.6) +
   scale_colour_gradient(low="blue", high="red",guide="legend", 
                         breaks = c(0.5e+5,5.0e+5, 7.5e+5, 1.0e+6, 1.3e+6))+
@@ -197,7 +191,7 @@ P7<- ggplot(depth, aes(PriceCateg, b_value)) +
 P7
 
 #Impacts by Price Category and Landings (Landings $)
-P8<- ggplot(depth, aes(PriceCateg, b_value)) +
+P8<- ggplot(depth, aes(PriceCateg, decadal_change)) +
   geom_point(aes(color = landedvalueEEZsp, size = landedvalueEEZsp), alpha = 0.6) +
   scale_colour_gradient(low="blue", high="red",guide="legend", 
                         breaks = c(1.3e+6,7.5e+8, 1.0e+9, 1.25e+9, 1.5e+9))+
@@ -309,33 +303,33 @@ names(mybiblio_database)
 glimpse( mybiblio_database)
 
 ##1st graph : obersvations-papers-duration of studies
-mybiblio_database$categoriesbyyears[mybiblio_database$b_years==10]<-"0-25"
-mybiblio_database$categoriesbyyears[mybiblio_database$b_years==15]<-"0-25"
-mybiblio_database$categoriesbyyears[mybiblio_database$b_years==17]<-"0-25"
-mybiblio_database$categoriesbyyears[mybiblio_database$b_years==23]<-"0-25"
-mybiblio_database$categoriesbyyears[mybiblio_database$b_years==24]<-"0-25"
-mybiblio_database$categoriesbyyears[mybiblio_database$b_years==25]<-"0-25"
-mybiblio_database$categoriesbyyears[mybiblio_database$b_years==27]<-"26-35"
-mybiblio_database$categoriesbyyears[mybiblio_database$b_years==28]<-"26-35"
-mybiblio_database$categoriesbyyears[mybiblio_database$b_years==30]<-"26-35"
-mybiblio_database$categoriesbyyears[mybiblio_database$b_years==31]<-"26-35"
-mybiblio_database$categoriesbyyears[mybiblio_database$b_years==35]<-"26-35"
-mybiblio_database$categoriesbyyears[mybiblio_database$b_years==38]<-"35-45"
-mybiblio_database$categoriesbyyears[mybiblio_database$b_years==39]<-"35-45"
-mybiblio_database$categoriesbyyears[mybiblio_database$b_years==40]<-"35-45"
-mybiblio_database$categoriesbyyears[mybiblio_database$b_years==41]<-"35-45"
-mybiblio_database$categoriesbyyears[mybiblio_database$b_years==42]<-"35-45"
-mybiblio_database$categoriesbyyears[mybiblio_database$b_years==75]<-"75-80"
-mybiblio_database$categoriesbyyears[mybiblio_database$b_years==77]<-"75-80"
-mybiblio_database$categoriesbyyears[mybiblio_database$b_years==78]<-"75-80"
-mybiblio_database$categoriesbyyears[mybiblio_database$b_years==80]<-"75-80"
+mybiblio_database$categoriesbyyears[mybiblio_database$years_data==10]<-"0-25"
+mybiblio_database$categoriesbyyears[mybiblio_database$years_data==15]<-"0-25"
+mybiblio_database$categoriesbyyears[mybiblio_database$years_data==17]<-"0-25"
+mybiblio_database$categoriesbyyears[mybiblio_database$years_data==23]<-"0-25"
+mybiblio_database$categoriesbyyears[mybiblio_database$years_data==24]<-"0-25"
+mybiblio_database$categoriesbyyears[mybiblio_database$years_data==25]<-"0-25"
+mybiblio_database$categoriesbyyears[mybiblio_database$years_data==27]<-"26-35"
+mybiblio_database$categoriesbyyears[mybiblio_database$years_data==28]<-"26-35"
+mybiblio_database$categoriesbyyears[mybiblio_database$years_data==30]<-"26-35"
+mybiblio_database$categoriesbyyears[mybiblio_database$years_data==31]<-"26-35"
+mybiblio_database$categoriesbyyears[mybiblio_database$years_data==35]<-"26-35"
+mybiblio_database$categoriesbyyears[mybiblio_database$years_data==38]<-"35-45"
+mybiblio_database$categoriesbyyears[mybiblio_database$years_data==39]<-"35-45"
+mybiblio_database$categoriesbyyears[mybiblio_database$years_data==40]<-"35-45"
+mybiblio_database$categoriesbyyears[mybiblio_database$years_data==41]<-"35-45"
+mybiblio_database$categoriesbyyears[mybiblio_database$years_data==42]<-"35-45"
+mybiblio_database$categoriesbyyears[mybiblio_database$years_data==75]<-"75-80"
+mybiblio_database$categoriesbyyears[mybiblio_database$years_data==77]<-"75-80"
+mybiblio_database$categoriesbyyears[mybiblio_database$years_data==78]<-"75-80"
+mybiblio_database$categoriesbyyears[mybiblio_database$years_data==80]<-"75-80"
 
 ##Re-order the axis from alphabetical to dataframe's order
-mybiblio_database$author <- reorder( mybiblio_database$author, mybiblio_database$article_year)
+mybiblio_database$reference <- reorder( mybiblio_database$reference, mybiblio_database$article_year)
 
 ##Tailoring data for next plotting
-mybiblio_database$b_years_pattern<- factor( mybiblio_database$b_years_pattern, levels=c("1","2"),
-                                            labels=c("Continuous","Discontinuous"))
+mybiblio_database$years_data_pattern<- factor( mybiblio_database$years_data_pattern, levels=c("1","2"),
+                                            labels=c("Continuous","Discontinuous")) 
 
 mybiblio_database$data_type<- factor( mybiblio_database$data_type, levels=c("1","4"),
                                       labels=c("Data collected","Biological surveys"))
@@ -351,7 +345,7 @@ ggplot(data = mybiblio_database, aes(x = categoriesbyyears, y = observations, fi
   theme(panel.background = element_rect(fill = 'whitesmoke', colour = 'black'), legend.position= "left")
 
 ##2d figure: Table with general information.
-## Plotting a table including following variables: author, article_year, b_years, b_years_patern, data_type and statistical_methodology 
+## Plotting a table including following variables: reference, article_year, years_data, years_data_patern, data_type and statistical_methodology 
 #creating a new subset
 mytable<-mybiblio_database[,c(3,4,6,7,8,9,10)]
 mytable
@@ -370,4 +364,3 @@ Mytable<- as.data.frame(Mytable)
 pdf(file = "data/Description of database.pdf", height = 11, width = 13)
 grid.table(Mytable, rows=NULL)
 dev.off() 
-
