@@ -36,7 +36,7 @@ rm(final, l, l1, suma, path, func, n)
 ########3. MERGE BIBLIO WITH SAU_EEZ
 
 ##3.1. OPEN our review database with the fishbase inputs
-ReviewDatFB <- read.csv("data/biblio_database3.csv", stringsAsFactors = F) ## biblio_database + fishbase from script integration_fishbase.R
+ReviewDatFB <- read.csv("data/biblio_database2.csv", stringsAsFactors = F) ## biblio_database + fishbase from script integration_fishbase.R
 
 ##3.2. MATCH SPECIES NAMES IN REVIEW AND SAU####
 ##Check list of un-matchig names
