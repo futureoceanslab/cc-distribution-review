@@ -221,7 +221,12 @@ Biblio_data <- merge(ReviewDatFB_SAU5, tonlandFEEZ, by=c("fishing_entity", "area
 
 
 #2. CATCH DEPENDENCY OF FISHING ENTITIES
+##CREATION OF VARIABLES for DEPEDENCE
+# A) CATCH DEPENDENCY OF FISHING ENTITIES
+# B) VALUE OF SPECIES FOR FISHING ENTITIES
+# C) CATCH PRESSURE IN EEZ
 
+# A) CATCH DEPENDENCY OF FISHING ENTITIES
 #2.1. Species catch dependency on the area
 Biblio_data$catchdepFEsp <- Biblio_data$tonnesFEsp/Biblio_data$tonnesFEspT #the dependence of the country species catches on the EEZ species catches
 Biblio_data$landdepFEsp <-  Biblio_data$landedvalueFEsp/Biblio_data$landedvalueFEspT #the dependence of the country total SP Value on the EEZ SP catch value 
@@ -238,8 +243,9 @@ range(Biblio_data$catchdepFE, na.rm = T)
 
 Biblio_data$catchdepFEEZ <- Biblio_data$tonnesFEEZ/Biblio_data$tonnesEEZ 
 range(Biblio_data$catchdepFEEZ, na.rm = T)
+a<-filter(data,catchdepFEEZ>1) # why > 1?????????
 
-##3VALUE OF SPECIES FOR FISHING ENTITIES
+### B) VALUE OF SPECIES FOR FISHING ENTITIES
 
 ###3.1 Species VAlue in FE: landed value/tonnes
 
@@ -247,6 +253,7 @@ Biblio_data$spvalueFE  <- Biblio_data$landedvalueFEsp/Biblio_data$tonnesFEsp
 range(Biblio_data$spvalueFE, na.rm = T)
 quantile(Biblio_data$spvalueFE, na.rm = T)
 
+# C) CATCH PRESSURE IN EEZ
 ##4. CATCH PRESSURE IN EEZ
 
 Biblio_data$catchpresEEZsp <- Biblio_data$tonnesEEZsp/Biblio_data$tonnesEEZ
