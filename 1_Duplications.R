@@ -20,7 +20,7 @@ data$scientific_name[data$scientific_name == "Loligo pealeii"] <- "Doryteuthis p
 data$scientific_name[data$scientific_name == "Loligo opalescens"] <- "Doryteuthis opalescens"
 data$scientific_name[data$scientific_name == "Litopenaeus setiferus"] <- "Penaeus setiferus" 
 ## We didn´t update the name of this specie (Litopenaeus setiferus) because we miss one match-sp. But we should keep it in mind to show with the final results
-data$fishbase_id_species[data$fishbase_id_species == "322"] <- "308"
+data$fishbase_id_species[data$fishbase_id_species == "322"] <- "308" #!!!WARNING porque esta la base de datos sin acabar!!
 data$fishbase_id_species[data$fishbase_id_species == "3"] <- NA
 
 #3. Change formats
@@ -31,7 +31,7 @@ data$year_publication <- as.factor(data$year_publication)
 
 
 #Numeric
-data$years_data <- as.numeric(as.character(data$years_data), na.omit = T)
+data$years_data <- as.numeric(as.character(data$years_data), na.omit = T) #!!!!!!WARNING porque hay texto en algunas casillas "unclear."
 
 
 #4. Find duplications

@@ -8,6 +8,7 @@ library(rockchalk)
 library(tidyverse)
 library(reshape2) #melt and dcast function
 library(cowplot)
+source("function_multiplot.R")
 
 
 #open dataset
@@ -31,16 +32,16 @@ counts <- dcast(data, response ~ cc_driver_detail, fun.aggregate = length)
 
 cc_driver.counts <- gather(counts,"cc_driver", "counts", 2:8)
 
-ggplot(cc_driver.counts, aes(x = response, y= counts , fill = cc_driver)) + 
-  geom_bar(stat="identity", alpha=0.8) + 
-  scale_fill_manual(values = c("darkgreen", "grey", "lightblue", 
-                               "yellow", "deeppink4", "black", "red")) +
-  labs(y = "Number of Observations", 
-       x = "", 
-       fill = "Climate Change variables") + 
-  theme(panel.background = element_rect(fill = 'whitesmoke', 
-                                        colour = 'black'), 
-        legend.position= "left") 
+ssmm <-ggplot(cc_driver.counts, aes(x = response, y= counts , fill = cc_driver)) + 
+          geom_bar(stat="identity", alpha=0.8) + 
+          scale_fill_manual(values = c("darkgreen", "grey", "lightblue", 
+                                       "yellow", "deeppink4", "black", "red")) +
+          labs(y = "Number of Observations", 
+               x = "", 
+               fill = "Climate Change variables") + 
+          theme(panel.background = element_rect(fill = 'whitesmoke', 
+                                                colour = 'black'), 
+                legend.position= "left") 
 
 
 ############################
@@ -75,7 +76,8 @@ Fig2.lat <- lat %>%
                                         colour = 'black'),
         legend.position = c(.85, .75)) +
   coord_flip() +
-  theme_bw() 
+  theme_bw() +
+  ggtitle("b)")
 
 #taxa barplot
 my.labels2 <- c("Benthic \n crustacea",
@@ -98,7 +100,8 @@ lat.barplot <- ggplot(lat, aes(taxa, decadal_change, fill = taxa)) +
   scale_fill_brewer(palette = "Blues") +
   theme_bw() +
   scale_x_discrete(labels = my.labels2) +
-  theme(legend.position="none")
+  theme(legend.position="none") +
+  ggtitle("a)")
 
 #########
 # DEPTH #
@@ -130,7 +133,8 @@ Fig2.depth <- depth %>%
                                         colour = 'black'),
         legend.position = c(.85, .75)) +
   coord_flip() +
-  theme_bw()
+  theme_bw() +
+  ggtitle("d)")
 
 #taxa barplot depth
 depth.barplot <- ggplot(depth, aes(taxa, decadal_change, fill = taxa)) +
@@ -147,8 +151,25 @@ depth.barplot <- ggplot(depth, aes(taxa, decadal_change, fill = taxa)) +
   scale_fill_brewer(palette = "Blues") +
   theme_bw() +
   scale_x_discrete(labels = my.labels2) +
-  theme(legend.position = "none")
+  theme(legend.position = "none") +
+  ggtitle("c)")
 
-join.lat.depth <- plot_grid(lat.barplot, Fig2.lat, depth.barplot, Fig2.depth, labels = c("A", "B", "C", "D"), align="hv")
-plot(join.lat.depth)
-#ggsave("join_lat_depth.jpeg")
+#saving figures
+#join.lat.depth <- plot_grid(lat.barplot, Fig2.lat, depth.barplot, Fig2.depth, labels = c("A", "B", "C", "D"), align="hv")
+#plot(join.lat.depth)
+#ggsave("paper_figures/join_lat_depth.jpeg")
+
+png(file = "paper_figures/figure_2ab.png", 
+    width = 16, height = 7, units = 'in', res = 600)
+multiplot(lat.barplot, Fig2.lat, cols = 2)
+dev.off()
+
+png(file = "paper_figures/figure_2cd.png", 
+    width = 16, height = 7, units = 'in', res = 600)
+multiplot(depth.barplot, Fig2.depth, cols = 2)
+dev.off()
+
+png(file = "paper_figures/ssmm_1.png", 
+    width = 10, height = 7, units = 'in', res = 600)
+multiplot(ssmm)
+dev.off()
