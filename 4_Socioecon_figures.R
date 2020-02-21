@@ -3,15 +3,9 @@
 ##Date: March, 1st 2019
 
 ##calling libraries
-library(stats)
-library(base)
-library(RColorBrewer)
+library(RColorBrewer)#brewer.pal
 library(tidyverse)
-library(gridExtra)
-library(data.table)
-library(grid)
-library(ggrepel)
-library(xlsx)
+library(ggrepel)#geom_text_repel
 source("function_multiplot.R")
 
 #Open Biblio_data with SAU data on EEZ and FE:
@@ -47,20 +41,14 @@ P2
 ## If we want to modify scale, code here: ", limits=c(0,1250000), breaks=seq(0,1250000, by=1000000)"
 
 ##PAPER Fig3 
-#png(file = "paper_figures/figure_3ab.png", 
-    #width = 16, height = 7, units = 'in', res = 600)
-
-png(file = "figure_3ab.png", 
+png(file = "paper_figures/figure_3ab.png", 
     width = 16, height = 7, units = 'in', res = 600)
 F3 <- multiplot(P1, P2, cols = 2)
 dev.off()
 
 
 ###FIGURE FISHING ENTITIES CATCH DEPENDENCY
-
-
 ##LATITUDE
-
 P3 <- ggplot(latitude, aes(catchdepFE, decadal_change, colour=decadal_change, label = scientific_name)) +
   geom_point(aes(colour = decadal_change, size = tonnesEEZsp), alpha = 0.4) +
   geom_text_repel(data=subset(latitude, latitude$catchdepFE>0.07), aes(color=decadal_change), size=3, 
@@ -82,8 +70,6 @@ P3 <- ggplot(latitude, aes(catchdepFE, decadal_change, colour=decadal_change, la
 P3
 
 ##DEPTH
-
-
 P4 <- ggplot(depth, aes(catchdepFE, decadal_change, colour=decadal_change, label = scientific_name)) +
   geom_point(aes(colour = decadal_change, size = tonnesEEZsp), alpha = 0.4) +
   geom_text_repel(data=subset(depth, depth$catchdepFE>0.10), aes(color=decadal_change), size=3, 
@@ -104,22 +90,15 @@ P4 <- ggplot(depth, aes(catchdepFE, decadal_change, colour=decadal_change, label
        y = "depth shift")
 P4
 
-
 ##Paper Fig 4. IMpact and Catch dependency
-
-#png(file = "paper_figures/figure_4ab.png", 
-   # width = 16, height = 7, units = 'in', res = 600)
-
-png(file = "figure_4ab.png", 
+png(file = "paper_figures/figure_4ab.png", 
  width = 16, height = 7, units = 'in', res = 600)
 F4 <- multiplot(P3, P4, cols = 2)
 dev.off()
 
 
 ##Fishing entities impact catch dependency in value
-
 ##LATITUDE
-
 latitude$landdepFE <- latitude$landedvalueFEsp/latitude$landedvalueFE   #fishing entity dependency on EEZ for economic landings of that species
 latitude$landedvalueEEZsp <- latitude$landedvalueEEZsp/1000000   #convert landedvalues to million $
 
@@ -144,7 +123,6 @@ P5 <- ggplot(latitude, aes(landdepFE, decadal_change, colour=decadal_change, lab
 P5
 
 ##DEPTH
-
 depth$landdepFE <- depth$landedvalueFEsp/depth$landedvalueFE   #fishing entity dependency on EEZ for economic landings of that species
 depth$landedvalueEEZsp <- depth$landedvalueEEZsp/1000000   #convert landedvalues to million $
 
@@ -170,38 +148,28 @@ P6 <- ggplot(depth, aes(landdepFE, decadal_change, colour=decadal_change, label 
        y = "depth shift")
 P6
 
-
 ##Paper Fig 5. IMpact and Catch dependency - landed value
-
-#png(file = "paper_figures/figure_5ab.png", 
-# width = 16, height = 7, units = 'in', res = 600)
-
-png(file = "figure_5ab.png", 
+png(file = "paper_figures/figure_5ab.png", 
     width = 16, height = 7, units = 'in', res = 600)
 F5 <- multiplot(P5, P6, cols = 2)
 dev.off()
 
 
-
 ####FINAL TABLE of most vulnerable countries
 
-
 ##Latitude
-
 LatitudeTable <- subset(latitude, latitude$catchdepFE>0.05)
 colnames(LatitudeTable)
 LatitudeTable <- LatitudeTable[ , c(3, 2, 8, 1, 31)]
 
-write.xlsx(LatitudeTable, "latitudetable.xlsx")
+write.csv(LatitudeTable, "paper_tables/latitudetable.csv")
 
 ##Depth
-
 DepthTable <- subset(depth, depth$catchdepFE>0.04)
 colnames(DepthTable)
 DepthTable <- DepthTable[ , c(3, 2, 8, 1, 31)]
 
-
-write.xlsx(DepthTable, "depthtable.xlsx")
+write.csv(DepthTable, "paper_tables/depthtable.csv")
 
 
 ##################################### SUPPLEMENTARY MATERIALS #############################################
@@ -254,14 +222,12 @@ P3s2 <- ggplot(latitude, aes(catchdepFE, decadal_change, colour=decadal_change, 
 P3s2
 
 
-png(file = "figure_3s.png", 
+png(file = "paper_figures/figure_3s.png", 
     width = 16, height = 7, units = 'in', res = 600)
 F3s <- multiplot(P3s1, P3s2, cols = 2)
 dev.off()
 
 ###DEPTH with catched and fishing entity labels
-
-
 P4s1 <- ggplot(depth, aes(catchdepFE, decadal_change, colour=decadal_change, label = fishing_entity)) +
   geom_point(aes(colour = decadal_change, size = tonnesEEZsp), alpha = 0.4) +
   geom_text_repel(data=subset(depth, depth$catchdepFE>0.10), aes(color=decadal_change), size=3, 
@@ -303,18 +269,15 @@ P4s2 <- ggplot(depth, aes(catchdepFE, decadal_change, colour=decadal_change, lab
        y = "depth shift")
 P4s2
 
-png(file = "figure_4s.png", 
+png(file = "paper_figures/figure_4s.png", 
     width = 16, height = 7, units = 'in', res = 600)
 F4s <- multiplot(P4s1, P4s2, cols = 2)
 dev.off()
 
 
-
 ###for fishing landed values
 
-
 ##LATITUDE and landings and fishing entities as labels
-
 latitude$landdepFE <- latitude$landedvalueFEsp/latitude$landedvalueFE   #fishing entity dependency on EEZ for economic landings of that species
 latitude$landedvalueEEZsp <- latitude$landedvalueEEZsp/1000000   #convert landedvalues to million $
 
@@ -340,7 +303,6 @@ P5s1
 
 
 ##LATITUDE and landings and EEZ as labels
-
 latitude$landdepFE <- latitude$landedvalueFEsp/latitude$landedvalueFE   #fishing entity dependency on EEZ for economic landings of that species
 latitude$landedvalueEEZsp <- latitude$landedvalueEEZsp/1000000   #convert landedvalues to million $
 
@@ -364,15 +326,13 @@ P5s2 <- ggplot(latitude, aes(landdepFE, decadal_change, colour=decadal_change, l
        y = "latitude shift")
 P5s2
 
-png(file = "figure_5s.png", 
+png(file = "paper_figures/figure_5s.png", 
     width = 16, height = 7, units = 'in', res = 600)
 F5s <- multiplot(P5s1, P5s2, cols = 2)
 dev.off()
 
 
-
 ##DEPTH with fishing entity labels
-
 depth$landdepFE <- depth$landedvalueFEsp/depth$landedvalueFE   #fishing entity dependency on EEZ for economic landings of that species
 depth$landedvalueEEZsp <- depth$landedvalueEEZsp/1000000   #convert landedvalues to million $
 
@@ -399,7 +359,6 @@ P6s1 <- ggplot(depth, aes(landdepFE, decadal_change, colour=decadal_change, labe
 P6s1
 
 ##DEPTH with EEZ labels
-
 P6s2 <- ggplot(depth, aes(landdepFE, decadal_change, colour=decadal_change, label = area_name)) +
   geom_point(aes(colour = decadal_change, size = landedvalueEEZsp), alpha = 0.4) +
   geom_text_repel(data=subset(depth, depth$landdepFE>0.10), aes(color=decadal_change), size=3, 
@@ -422,14 +381,10 @@ P6s2 <- ggplot(depth, aes(landdepFE, decadal_change, colour=decadal_change, labe
        y = "depth shift")
 P6s2
 
-
-png(file = "figure_6s.png", 
+png(file = "paper_figures/figure_6s.png", 
     width = 16, height = 7, units = 'in', res = 600)
 F6s <- multiplot(P6s1, P6s2, cols = 2)
 dev.off()
-
-
-
 
 
 
