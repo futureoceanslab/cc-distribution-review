@@ -73,12 +73,12 @@ ddd2 <- ddd %>%
 colnames(ddd2) #change column name to have decadal_change aggregated and be able to merge with non duplicated data
 colnames(ddd2)[which(names(ddd2) == "decadal_change")] <- "decadal_change_original"
 colnames(ddd2)[which(names(ddd2) == "decadal_change_x")] <- "decadal_change"
-colnames(ddd2)[which(names(ddd2) == "total")] <- "duplicated_times"
-colnames(ddc)[which(names(ddc) == "total")] <- "duplicated_times"
+colnames(ddd2)[which(names(ddd2) == "total")] <- "duplicated_origin"
+colnames(ddc)[which(names(ddc) == "total")] <- "duplicated_origin"
 colnames(ddc)[which(names(ddc) == "decadal_change")] <- "decadal_change_original"
 
-ddc$duplicated_times[ddc$duplicated_times == 1] <- 0
-ddd2$duplicated_times[ddd2$duplicated_times >= 2] <- 1
+ddc$duplicated_origin[ddc$duplicated_origin == 1] <- 0
+ddd2$duplicated_origin[ddd2$duplicated_origin >= 2] <- 1
 
 ddc$decadal_change <- ddc$decadal_change_original
 
