@@ -2,14 +2,10 @@
 ##Author: Alba Aguion, Iratxe Rubio
 ##Date: August 20th 2017
 
-
 #libraries
-library(rockchalk)
 library(tidyverse)
-library(reshape2) #melt and dcast function
-library(cowplot)
+library(reshape2) #dcast function
 source("function_multiplot.R")
-
 
 #open dataset
 data <- read.csv("data/biblio_database1.csv")
@@ -19,10 +15,8 @@ data$id_study <- as.factor(data$id_study)
 data$id_obs <- as.factor(data$id_obs)
 data$year_publication <- as.factor(data$year_publication)
 
-
 #Numeric
 data$years_data <- as.numeric(as.character(data$years_data), na.omit = T)
-
 
 ##############################################
 # Figure CLIMATE CHANGE VARIABLES PER IMPACT #
@@ -43,7 +37,6 @@ ssmm <-ggplot(cc_driver.counts, aes(x = response, y= counts , fill = cc_driver))
                                                 colour = 'black'), 
                 legend.position= "left") 
 
-
 ############################
 # Figure IMPACTS MAGNITUDE #
 ############################
@@ -58,7 +51,7 @@ lat$sign <- ifelse(lat$decadal_change > 0,"Polewards (+)", "Towards equator (-)"
 
 Fig2.lat <- lat %>% 
   ggplot() +
-  geom_histogram(aes(decadal_change, fill = sign, colour = sign),
+  geom_histogram(aes(decadal_change, fill = sign),
                  alpha = 0.7, binwidth = 9) +
   scale_x_continuous(name = "Mean Latitude Shift Rate (km/decade)") + 
   scale_y_continuous(name = "Number of Observations") +
@@ -86,7 +79,7 @@ my.labels2 <- c("Benthic \n crustacea",
                 "Cephalopode",
                 "Non-bony \n fish")
 
-lat.barplot <- ggplot(lat, aes(taxa, decadal_change, fill = taxa)) + 
+lat.barplot <- ggplot(lat, aes(taxa, decadal_change)) + 
   geom_boxplot(data = subset(lat, decadal_change >= 0), 
                aes(taxa, decadal_change),  
                na.rm = T, outlier.shape = 1, outlier.size = 0.1) +
@@ -96,8 +89,7 @@ lat.barplot <- ggplot(lat, aes(taxa, decadal_change, fill = taxa)) +
   geom_hline(yintercept = c(0), linetype = "dotted") +
   scale_y_continuous(name = "km/decade", breaks = seq(-100, 200, by = 50)) +
   xlab(NULL)+
-  theme(axis.text.x =element_blank()) +
-  scale_fill_brewer(palette = "Blues") +
+  theme(axis.text.x = element_blank()) +
   theme_bw() +
   scale_x_discrete(labels = my.labels2) +
   theme(legend.position="none") +
@@ -113,7 +105,7 @@ depth$decadal_change_reversed <- (-1)*depth$decadal_change
 
 Fig2.depth <- depth %>%
   ggplot()+
-  geom_histogram(aes(decadal_change_reversed, fill = sign, colour = sign), 
+  geom_histogram(aes(decadal_change_reversed, fill = sign), 
                  alpha = 0.7, binwidth = 4) +
   scale_x_continuous(name = "Depth Shift Rate (m/decade)") + 
   scale_y_continuous(name = "Number of Observations")+
@@ -137,7 +129,7 @@ Fig2.depth <- depth %>%
   ggtitle("d)")
 
 #taxa barplot depth
-depth.barplot <- ggplot(depth, aes(taxa, decadal_change, fill = taxa)) +
+depth.barplot <- ggplot(depth, aes(taxa, decadal_change)) +
   geom_boxplot(data = subset(depth, decadal_change >= 0), 
                aes(taxa, decadal_change),  
                na.rm = T, outlier.shape = 1, outlier.size = 0.1) +
@@ -148,7 +140,6 @@ depth.barplot <- ggplot(depth, aes(taxa, decadal_change, fill = taxa)) +
   scale_y_continuous(name ="m/decade", breaks = seq(-80, 60, by = 20)) +
   xlab(NULL) +
   theme(axis.text.x = element_blank()) +
-  scale_fill_brewer(palette = "Blues") +
   theme_bw() +
   scale_x_discrete(labels = my.labels2) +
   theme(legend.position = "none") +
