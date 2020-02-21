@@ -36,17 +36,17 @@ rm(final, l, l1, suma, path, func, n)
 ########3. MERGE BIBLIO WITH SAU_EEZ
 
 ##3.1. OPEN our review database with the fishbase inputs
-ReviewDatFB <- read.csv("data/biblio_database2.csv", stringsAsFactors = F) ## biblio_database + fishbase from script integration_fishbase.R
+ReviewDatFB <- read.csv("data/biblio_database2.csv", stringsAsFactors = F) ## biblio_database without duplicates with EEZ structure
 
 ##3.2. MATCH SPECIES NAMES IN REVIEW AND SAU####
 ##Check list of un-matchig names
-Sp_ReviewDatFB <- as.character(unique(ReviewDatFB$b_scientific_name))  #list species in review
-Sp_SAU <- as.character(unique(Final_SAU_EEZ$scientific_name))      #list species in SAU
+Sp_ReviewDatFB <- as.character(unique(ReviewDatFB$scientific_name)) #list species in review
+Sp_SAU <- as.character(unique(Final_SAU_EEZ$scientific_name)) #list species in SAU
 
 #compare species in Review and SAU
 matchsp <- Sp_ReviewDatFB %in% Sp_SAU
-table(matchsp) ## 33 spp no macth, 109 spp macthed (total:142spp) *will be updated with new code March 2019
-spmiss1 <- Sp_ReviewDatFB[matchsp == F] ## list of unmatching(lost) species
+table(matchsp) ## 78 spp no macth, 128 spp macthed (total:206spp) *will be updated with new observations
+spmiss1 <- Sp_ReviewDatFB[matchsp == F] ## list of unmatching(lost) species 78!!!
 
 
 ##3.3 MATCH COLUMNS and EEZ NAMES IN REVIEW AND SAU (area_name)####
@@ -65,6 +65,7 @@ EEZ_SAU <- unique(Final_SAU_EEZ$area_name)
 EEZ_ReviewDatFB %in% EEZ_SAU
 #EEZs of the review are now the same as in the SAU database
 identical(sort(unique(ReviewDatFB$area_name)), sort(unique(as.character(Final_SAU_EEZ$area_name))))
+#result needs to be TRUE
 
 ##3.4 MERGE: ADD TOTAL CATCH AND LANDINGS BY EEZ####
 #check observations for EEZ data
@@ -76,7 +77,7 @@ rm(counts, EEZ_ReviewDatFB, EEZ_SAU, matchsp, Sp_SAU)
 #dataframe total EEZ catch 
 #sum all catches per area_name and year
 tonlandEEZyear <- Final_SAU_EEZ %>%
-                    group_by(area_name,year) %>%
+                    group_by(area_name, year) %>%
                     summarise(tonnesEEZyear = sum(tonnes, na.rm = T),
                               landedvalueEEZyear = sum(landed_value, na.rm = T))
                   #take mean value across years (2010-2014)    
@@ -116,13 +117,13 @@ rm(ReviewDatFB_SAU1, tonlandEEZspyear, tonlandEEZsp, Sp_ReviewDatFB)
 #check missing species in tonnesEEZsp and landedvalueEEZsp
 #Not all the species have data for all the years/EEZs
 na1 <- is.na(ReviewDatFB_SAU2$tonnesEEZsp)
-table(na1) #we miss 200 observations, False 395, True 200
+table(na1) #we miss 176 observations, False 375, True 176
 na2 <- is.na(ReviewDatFB_SAU2$landedvalueEEZsp)
-table(na2) #we miss 200 observations, False 395, True 200
+table(na2) #we miss 176 observations, False 375, True 176
 
 rm(na1, na2, spmiss1, spmiss2, matchsp2, splist)
 
-##3.7. list of FE
+##3.7. list of FE (to download FE data from SAU)
 list_FE <- unique(Final_SAU_EEZ$fishing_entity)
 write.csv(list_FE, row.names = F, "data/list_FE.csv")
 
@@ -149,8 +150,6 @@ func <- function(i){
 l1 <- lapply(1:length(l), func)
 # here we combine all dataframes together
 Final_SAU_FE <- do.call(rbind.data.frame, l1) #combine the datasets on fishing entities total catch
-
-
 
 
 ########6. MERGE BIBLIO-EEZ with DATA FE
@@ -182,12 +181,12 @@ tonlandFEsp <- tonlandFEspyear %>% #borrar bis
 ReviewDatFB_SAU3  <- merge(ReviewDatFB_SAU2, tonlandFEsp, by = c("area_name","scientific_name"), all.x = T)
 
 #Verification of EEZ names and species
-#a<-unique(ReviewDatFB_SAU3$area_name)
-#b<-unique(ReviewDatFB_SAU3$scientific_name)
-#c<-unique(tonlandFEsp$area_name)
-#d<-unique(tonlandFEsp$scientific_name)
-#a %in% c    #checking EEZ names match, all TRUE -> they all macth
-#spmiss<-b[which(!b %in% d)]   ## list of unmatching(lost) species, 29 spp no macth, 116 spp macthed (total:142spp)
+# a<-unique(ReviewDatFB_SAU3$area_name)
+# b<-unique(ReviewDatFB_SAU3$scientific_name)
+# c<-unique(tonlandFEsp$area_name)
+# d<-unique(tonlandFEsp$scientific_name)
+# a %in% c    #checking EEZ names match, all TRUE -> they all macth
+# spmiss<-b[which(!b %in% d)]   ## list of unmatching(lost) species, 29 spp no macth, 116 spp macthed (total:142spp)
 
 #total catch per species for Fishing entities (sum across species and eezs)
 tonlandFEspT<- tonlandFEsp %>%
@@ -243,7 +242,7 @@ range(Biblio_data$catchdepFE, na.rm = T)
 
 Biblio_data$catchdepFEEZ <- Biblio_data$tonnesFEEZ/Biblio_data$tonnesEEZ 
 range(Biblio_data$catchdepFEEZ, na.rm = T)
-a<-filter(data,catchdepFEEZ>1) # why > 1?????????
+a <- Biblio_data[Biblio_data$catchdepFEEZ > 1, ] # why > 1?????????
 
 ### B) VALUE OF SPECIES FOR FISHING ENTITIES
 
