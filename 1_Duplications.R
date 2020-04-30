@@ -10,13 +10,8 @@ library(magrittr) #for the %<>% operator
 #1. Open database
 data <- read_xlsx("data/biblio_database.xlsx", sheet = 1)
 
-#2. Change species names  (to match with fishbase database)
-##Check spp names to match review_database-fishbase_database
-data$scientific_name[data$scientific_name == "Clupea pallasii"] <- "Clupea pallasii pallasii"
-data$scientific_name[data$scientific_name == "Loligo pealeii"] <- "Doryteuthis pealeii"
-data$scientific_name[data$scientific_name == "Loligo opalescens"] <- "Doryteuthis opalescens"
-data$scientific_name[data$scientific_name == "Litopenaeus setiferus"] <- "Penaeus setiferus" 
-## We didn´t update the name of this specie (Litopenaeus setiferus) because we miss one match-sp. But we should keep it in mind to show with the final results
+#2. Check species number  (to verify number in script 3)
+unique(data$scientific_name)#207 species
 
 #typo correction
 data$direction[data$direction == "towards de equator"] <- "towards the equator"
