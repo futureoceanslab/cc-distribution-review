@@ -1,8 +1,14 @@
-##This script looks for species names matches between SAU EEZ database
-#and our biblio_database using Worms database as a reference for species names
-##INPUT FILES: SAU_dataset_EEZ.csv, biblio_database2.csv
-##OUTPUT: names to be corrected in script 1 and biblio_database3 with some species
-#transformed to genus
+##################################################################
+##### This script looks for species names matches between SAU EEZ 
+##### database and our biblio_database using Worms database as a
+##### as a reference for species names
+##### database
+##### 30/03/2020
+##### INPUT FILES: SAU_dataset_EEZ.csv, biblio_database2.csv
+##### OUTPUT FILES: biblio_database3.csv and names to be corrected 
+##### in script 1 and biblio_database3 with some species transformed 
+##### to genus
+##################################################################
 
 library(tidyverse)
 library(worrms) #functions to match species names in worms database 

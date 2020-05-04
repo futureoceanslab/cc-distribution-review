@@ -1,8 +1,11 @@
-##R code for the ecological analysis of our review
-##Author: Alba Aguion, Iratxe Rubio
-##Date: August 20th 2017
+##################################################################
+##### This script includes the code for the ecological analysis 
+##### of our review and produces manuscript figures
+##### 20/08/2017
+##### INPUT FILES: biblio_database1.csv
+##### OUTPUT FILES: manuscript Figures XXXXXXXX
+##################################################################
 
-#libraries
 library(tidyverse)
 library(reshape2) #dcast function
 source("function_multiplot.R")

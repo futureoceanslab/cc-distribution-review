@@ -1,6 +1,12 @@
-##This script creates 1 SAU database for EEZs
-##INPUT FILES: data_EEZ_SAU/
-##OUTPUT FILES: SAU_dataset_EEZ.csv
+##################################################################
+##### This script creates 1 SAU database for EEZs in our original
+##### database. It also creates a EEZ_list (R object) to know
+##### which EEZs need to be downloaded.
+##### 04/05/2019
+##### INPUT FILES: biblio_database2.csv, data_EEZ_SAU/ (SAU data 
+##### files downloaded from website)
+##### OUTPUT FILES: SAU_dataset_EEZ.csv
+##################################################################
 
 library(tidyverse)
 

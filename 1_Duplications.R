@@ -1,7 +1,10 @@
-#################################
-##### FOL
+##################################################################
+##### This script corrects typos (species names, direction…) and
+##### removes duplicated observations from the original database
 ##### 04/05/2019
-#################################
+##### INPUT FILES: biblio_database.xlsx
+##### OUTPUT FILES: biblio_database1.csv
+##################################################################
 
 library(tidyverse)
 library(readxl) #read_xlsx function

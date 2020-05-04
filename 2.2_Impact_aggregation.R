@@ -1,7 +1,20 @@
-#####################################
-# IMPACT AGGREGATION CODE ###########
-#FOL, February 28th 2019 #####
-#####################################
+##################################################################
+##### This script includes code to shape our review database into 
+##### EEZ format. Steps:
+##### - Divide observations to create 1 observation per EEZ 
+##### (because stock_eez_country can have several EEZs per observation).
+##### - Keep a few variables from the original database
+##### - Look for duplicates per EEZ and convert them into a single 
+##### observation by calculating the mean (original decadal change = 
+##### “decadal_change_original” and “decadal_change” = mean). 
+##### - New variable called “duplicated_original” to know whether the 
+##### final “decadal_change” comes from duplicated observations (mean).
+##### - Create a new variable to determine if there were observations  
+##### with opposite directions.
+##### 28/02/2019
+##### INPUT FILES: biblio_database1.csv
+##### OUTPUT FILES: biblio_database2.csv
+##################################################################
 
 library(tidyverse)
 

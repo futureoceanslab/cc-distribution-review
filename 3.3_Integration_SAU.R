@@ -1,20 +1,24 @@
-##Integration SAU
-##Elena Ojea, March 2019
-##INPUT FILES: SAU_dataset_EEZ.csv, data_FE_SAU/ files, biblio_database3.csv
-##OUTPUT FILES: Biblio_database_full.csv
+##################################################################
+##### This script integrates our database with SAU EEZ and Fishing  
+##### Entity (FE) databases. It also creates a FE-list to know which 
+##### FEs should be downloaded from the SAU website.
+##### database
+##### 03/2019
+##### INPUT FILES: SAU_dataset_EEZ.csv, biblio_database3.csv,
+##### data_FE_SAU/ files, FE_list.csv
+##### OUTPUT FILES: Biblio_database_full.csv
+##################################################################
 
 library(tidyverse)
 
-########1. Read SAU Database EEZ####
+########1. Read databases####
+#SAU Database EEZ
 Final_SAU_EEZ <- read.csv("data/SAU_dataset_EEZ.csv")
-
-########3. MERGE BIBLIO WITH SAU_EEZ####
-##3.1. OPEN our review database with the fishbase inputs####
+##Our review database 
 ReviewDatFB <- read.csv("data/biblio_database3.csv", stringsAsFactors = F) ## biblio_database without duplicates with EEZ structure
 
-
-##3.3 MATCH COLUMNS and EEZ NAMES IN REVIEW AND SAU (area_name)####
-
+########2. Verify EEZ names####
+##MATCH COLUMNS and EEZ NAMES IN REVIEW AND SAU (area_name)
 #recode colnames in ReviewDatFB to match Final_SAU_EEZ names
 colnames(ReviewDatFB)[which(names(ReviewDatFB) == "stock_EEZ_country")] <- "area_name"
 
@@ -23,7 +27,6 @@ EEZ_ReviewDatFB  <- unique(ReviewDatFB$area_name) #final list of EEZs in the Rev
 EEZ_SAU <- unique(Final_SAU_EEZ$area_name)
 EEZ_ReviewDatFB %in% EEZ_SAU
 ReviewDatFB[ReviewDatFB$area_name == "Portugal (mailand)", 3] <- "Portugal (mainland)" 
-ReviewDatFB[ReviewDatFB$area_name == "United Kindgom (UK)", 3] <- "United Kingdom (UK)" 
 EEZ_ReviewDatFB  <- unique(ReviewDatFB$area_name) #final list of EEZs in the Review dataset
 EEZ_SAU <- unique(Final_SAU_EEZ$area_name)
 EEZ_ReviewDatFB %in% EEZ_SAU
@@ -31,7 +34,8 @@ EEZ_ReviewDatFB %in% EEZ_SAU
 identical(sort(unique(ReviewDatFB$area_name)), sort(unique(as.character(Final_SAU_EEZ$area_name))))
 #result needs to be TRUE
 
-##3.4 MERGE: ADD TOTAL CATCH AND LANDINGS BY EEZ####
+########3. MERGE BIBLIO WITH SAU_EEZ####
+##3.1 MERGE: ADD TOTAL CATCH AND LANDINGS BY EEZ####
 #check observations for EEZ data
 counts <- Final_SAU_EEZ %>%
             group_by(area_name, year) %>%
@@ -39,6 +43,8 @@ counts <- Final_SAU_EEZ %>%
 rm(counts, EEZ_ReviewDatFB, EEZ_SAU)
 
 #dataframe total EEZ catch 
+ReviewDatFB$area_name <- as.factor(ReviewDatFB$area_name)
+Final_SAU_EEZ$scientific_name <- as.character(Final_SAU_EEZ$scientific_name)
 #sum all catches per area_name and year
 tonlandEEZyear <- Final_SAU_EEZ %>%
                     group_by(area_name, year) %>%
@@ -50,10 +56,10 @@ tonlandEEZ <- tonlandEEZyear %>%
                 summarise(tonnesEEZ = mean(tonnesEEZyear, na.rm = T),
                           landedvalueEEZ = mean(landedvalueEEZyear, na.rm = T))          
 #merge
-ReviewDatFB_SAU1 <- merge(ReviewDatFB, tonlandEEZ, by = c("area_name"), all.x = T)
-rm(tonlandEEZyear, tonlandEEZ, ReviewDatFB)
+ReviewDatFB_SAU1 <- left_join(ReviewDatFB, tonlandEEZ, by = c("area_name"))
+rm(tonlandEEZyear, tonlandEEZ)
 
-##3.5. MERGE: ADD TOTAL CATCH AND LANDINGS BY EEZ AND SP####
+##3.2. MERGE: ADD TOTAL CATCH AND LANDINGS BY EEZ AND SP####
 #gives mean value across years (2010-2014 ) annual tonnes (2010-2014) 
 tonlandEEZspyear <- Final_SAU_EEZ %>%
                       group_by(area_name, year, scientific_name) %>%
@@ -64,38 +70,38 @@ tonlandEEZsp <- tonlandEEZspyear %>%
                   summarise(tonnesEEZsp = mean(tonnesEEZspyear, na.rm = T),
                             landedvalueEEZsp = mean(landedvalueEEZspyear, na.rm = T))
 #merge: add total EEZ catches and landings per SP to ReviewDat
-ReviewDatFB_SAU2 <- merge(ReviewDatFB_SAU1, tonlandEEZsp, by = c("area_name","scientific_name"), all.x = T)
+ReviewDatFB_SAU2 <- left_join(ReviewDatFB_SAU1, tonlandEEZsp, by = c("area_name","scientific_name"))
 
-##3.6 Doble-check
+########4. Species Doble-check####
 ##Species name match - tonlandEEZsp
 splist <- unique(tonlandEEZsp$scientific_name)
-matchsp2 <- Sp_ReviewDatFB %in% splist
-table(matchsp2) ## 33 spp no macth, 109 spp macthed (total:142spp). Same resultas above
-spmiss2 <- Sp_ReviewDatFB[matchsp2 == F] ## list of unmatching(lost) species
-##To chek the matches among lists and edit the list of spp lost
-identical(spmiss1,spmiss2)
-#write.csv(spmiss2, file = "data/2listspmiss.csv") ##list of lost species
-
-rm(ReviewDatFB_SAU1, tonlandEEZspyear, tonlandEEZsp, Sp_ReviewDatFB)
+matchsp <- unique(ReviewDatFB$scientific_name) %in% splist
+table(matchsp) ## 46 spp no macth, 147 spp macthed (total:193spp). Same results
+spmiss0 <- unique(ReviewDatFB$scientific_name)[matchsp==F]
+  
+rm(ReviewDatFB_SAU1, tonlandEEZspyear, tonlandEEZsp)
 
 #check missing species in tonnesEEZsp and landedvalueEEZsp
 #Not all the species have data for all the years/EEZs
 na1 <- is.na(ReviewDatFB_SAU2$tonnesEEZsp)
-table(na1) #we miss 176 observations, False 375, True 176
+table(na1) #we miss 142 observations, False 407, True 142
 na2 <- is.na(ReviewDatFB_SAU2$landedvalueEEZsp)
-table(na2) #we miss 176 observations, False 375, True 176
+table(na2) #we miss 142 observations, False 407, True 142
 
-rm(na1, na2, spmiss1, spmiss2, matchsp2, splist)
+rm(na1, na2, splist, matchsp)
 
-##3.7. list of FE (to download FE data from SAU)
+
+########5. list of FE (to download FE data from SAU)####
 list_FE <- unique(Final_SAU_EEZ$fishing_entity)
 write.csv(list_FE, row.names = F, "data/list_FE.csv")
 
 rm(Final_SAU_EEZ, list_FE)
 
-########4. Download SAU Database FE ("data_EEZ_SAU.csv")
+########6. Download SAU Databases FE ("data_EEZ_SAU.csv")####
+#Download manually from the SAU website the fishing entities (FEs)'s databases
+#from list_FE
 
-########5. DATA ON SAU FISHING ENTITIES
+########7. DATA ON SAU FISHING ENTITIES####
 #the downloaded files are merged in one database with this code:
 
 path <- "data/data_FE_SAU/"
@@ -114,9 +120,9 @@ func <- function(i){
 l1 <- lapply(1:length(l), func)
 # here we combine all dataframes together
 Final_SAU_FE <- do.call(rbind.data.frame, l1) #combine the datasets on fishing entities total catch
+rm(l1, l, func, path)
 
-
-########6. MERGE BIBLIO-EEZ with DATA FE
+########8. MERGE BIBLIO-EEZ with DATA FE####
 
 ##FILTER SAU DATASETS: 5 last years, landings, NAs
 Final_SAU_FE <- filter(Final_SAU_FE, year > 2009, catch_type == "Landings")
@@ -125,10 +131,9 @@ Final_SAU_FE <- filter(Final_SAU_FE, year > 2009, catch_type == "Landings")
 counts <- Final_SAU_FE %>%
             group_by(fishing_entity, year) %>%
             tally  
+rm(counts)
 
-
-# 1. FISHING ENTITIES#### 
-
+########9. FISHING ENTITIES#### 
 #add fishing entities landings and catches per species to ReviewDat 
 
 #Catches and Landings per fishing entity, EEZ and species (mean across years)
@@ -142,15 +147,17 @@ tonlandFEsp <- tonlandFEspyear %>% #borrar bis
                 summarise(tonnesFEsp = mean(tonnesFEspyear, na.rm = T),
                           landedvalueFEsp = mean(landedvalueFEspyear, na.rm = T))
 
-ReviewDatFB_SAU3  <- merge(ReviewDatFB_SAU2, tonlandFEsp, by = c("area_name","scientific_name"), all.x = T)
+ReviewDatFB_SAU3  <- left_join(ReviewDatFB_SAU2, tonlandFEsp, by = c("area_name","scientific_name"))
 
 #Verification of EEZ names and species
-# a<-unique(ReviewDatFB_SAU3$area_name)
-# b<-unique(ReviewDatFB_SAU3$scientific_name)
-# c<-unique(tonlandFEsp$area_name)
-# d<-unique(tonlandFEsp$scientific_name)
-# a %in% c    #checking EEZ names match, all TRUE -> they all macth
-# spmiss<-b[which(!b %in% d)]   ## list of unmatching(lost) species, 29 spp no macth, 116 spp macthed (total:142spp)
+a<-unique(ReviewDatFB_SAU3$area_name)
+b<-unique(ReviewDatFB_SAU3$scientific_name)
+c<-unique(tonlandFEsp$area_name)
+d<-unique(tonlandFEsp$scientific_name)
+a %in% c    #checking EEZ names match, all TRUE -> they all macth
+spmiss<-b[which(!b %in% d)]   ## list of unmatching(lost) species, 43 spp no macth, 3 new species!!
+spmiss0[which(spmiss0 %in% spmiss == F)]#three species that were not in EEZ SAU but are in FE SAU
+rm(a, b, c, d, spmiss, spmiss0)
 
 #total catch per species for Fishing entities (sum across species and eezs)
 tonlandFEspT<- tonlandFEsp %>%
