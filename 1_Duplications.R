@@ -10,8 +10,8 @@ library(magrittr) #for the %<>% operator
 #1. Open database
 data <- read_xlsx("data/biblio_database.xlsx", sheet = 1)
 
-#2. Check species number  (to verify number in script 3) and change names
-#changes to apply detected in scipt 3
+#2. Check species number  (to verify number in script 3.2)
+#Species names to correct detected in script 3.2
 length(unique(data$scientific_name))#207 species
 #change species names in our database
 data$scientific_name[grep("Dentex macropthalmus", data$scientific_name)] <- "Dentex macrophthalmus" #typo: Dentex macropthalmus

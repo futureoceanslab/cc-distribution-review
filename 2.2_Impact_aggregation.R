@@ -96,4 +96,10 @@ ddd2[ddd2$id_obs %in% dirs$id_obs, which(colnames(ddd2)=="verification_dir")] <-
 
 #Now I merge the subsets of non-duplications (ddc) and with duplications removed/averaged (ddd)
 data_end <- merge(ddc, ddd2, all = T)
+
+#EEZ names verification
+unique(data_end$stock_EEZ_country)
+#typo correction
+data_end$stock_EEZ_country[data_end$stock_EEZ_country == "United Kindgom (UK)"] <- "United Kingdom (UK)"
+
 write.csv(data_end, row.names = F, "data/biblio_database2.csv")
