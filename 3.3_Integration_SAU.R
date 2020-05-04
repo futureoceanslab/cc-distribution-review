@@ -1,5 +1,5 @@
 ##################################################################
-##### This script integrates our database with SAU EEZ and Fishing  
+##### This script integrates our database with the SAU EEZ and Fishing  
 ##### Entity (FE) databases. It also creates a FE-list to know which 
 ##### FEs should be downloaded from the SAU website.
 ##### database
