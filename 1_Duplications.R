@@ -10,8 +10,27 @@ library(magrittr) #for the %<>% operator
 #1. Open database
 data <- read_xlsx("data/biblio_database.xlsx", sheet = 1)
 
-#2. Check species number  (to verify number in script 3)
-unique(data$scientific_name)#207 species
+#2. Check species number  (to verify number in script 3) and change names
+#changes to apply detected in scipt 3
+length(unique(data$scientific_name))#207 species
+#change species names in our database
+data$scientific_name[grep("Dentex macropthalmus", data$scientific_name)] <- "Dentex macrophthalmus" #typo: Dentex macropthalmus
+data$scientific_name[grep("Dicologoglosa cuneata", data$scientific_name)] <- "Dicologlossa cuneata" #typo: Dicologoglosa cuneata
+data$scientific_name[grep("Ilex coindetii", data$scientific_name)] <- "Illex coindetii" #typo: Ilex coindetii
+data$scientific_name[grep("Psuedotolithus senegalensis",data$scientific_name)] <- "Pseudotolithus senegalensis" #typo: Psuedotolithus senegalensis
+data$scientific_name[grep("Amblyraha radiata", data$scientific_name)] <- "Amblyraja radiata" #typo: Amblyraha radiata
+data$scientific_name[grep("Illex coindetii", data$scientific_name)] <- "Illex illecebrosus" #replacement with worms sp
+data$scientific_name[grep("Zenopsis conchifera", data$scientific_name)] <- "Zenopsis conchifer" #replacement with worms sp
+data$scientific_name[grep("Atheresthes spp.", data$scientific_name)] <- "Atheresthes" #replacement with worms and SAU genus
+#identified from old scripts, species were manually checked
+data$scientific_name[grep("Loligo opalescens", data$scientific_name)] <- "Doryteuthis opalescens"
+data$scientific_name[grep("Loligo pealeii", data$scientific_name)] <- "Doryteuthis pealeii"
+data$scientific_name[grep("Clupea pallasii", data$scientific_name)] <- "Clupea pallasii pallasii"
+data$scientific_name[grep("Clupea pallasi", data$scientific_name)] <- "Clupea pallasii pallasii"
+#We don't update the name of this species (Litopenaeus setiferus) because it matches SAU
+
+#number of species:
+length(unique(data$scientific_name))#202 species
 
 #typo correction
 data$direction[data$direction == "towards de equator"] <- "towards the equator"

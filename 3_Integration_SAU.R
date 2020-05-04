@@ -41,27 +41,29 @@ ReviewDatFB <- read.csv("data/biblio_database2.csv", stringsAsFactors = F) ## bi
 
 ##3.2. MATCH SPECIES NAMES IN REVIEW AND SAU####
 ##Check list of un-matchig names
-Sp_ReviewDatFB <- as.character(unique(ReviewDatFB$scientific_name)) #list species in review
+Sp_ReviewDatFB <- unique(ReviewDatFB$scientific_name) #list species in review
 Sp_SAU <- as.character(unique(Final_SAU_EEZ$scientific_name)) #list species in SAU
 
 #compare species in Review and SAU
 matchsp <- Sp_ReviewDatFB %in% Sp_SAU
-table(matchsp) ## 80 spp no macth, 127 spp macthed (total:207spp) *will be updated with new observations
-spmiss1 <- Sp_ReviewDatFB[matchsp == F] ## list of unmatching(lost) species 78!!!
+table(matchsp) ##INITIAL round witout corrections: 80 spp no macth, 127 spp macthed 
+#(total:207spp) *will be updated with new observations
+#FINAL round (after applying names corrections): 70 spp no match, 132 matched (total 202 spp)
+spmiss1 <- Sp_ReviewDatFB[matchsp == F] ## list of unmatching(lost) species 80!!!
 
 #Errors detected after running the loop. The loop stops when there are species
 #that do not exist in Worms(*). To see the whole loop process the code 
 #in l.55-67 should not be run 
-spmiss1[53] <- "Dentex macrophthalmus" #typo(*): Dentex macropthalmus
-spmiss1[54] <- "Dicologlossa cuneata" #typo(*): Dicologoglosa cuneata
-spmiss1[57] <- "Illex coindetii" #typo(*): Ilex coindetii
-spmiss1[64] <- "Pseudotolithus senegalensis" #typo(*): Psuedotolithus senegalensis
-spmiss1[80] <- "Amblyraja radiata" #typo(*): Amblyraha radiata
-spmiss1[57] <- "Illex illecebrosus" #replacement with worms sp
-spmiss1[46] <- "Zenopsis conchifer" #replacement with worms sp
-
-c(spmiss1[53],spmiss1[54],spmiss1[57],spmiss1[64],spmiss1[80],
-  spmiss1[57],spmiss1[46]) %in% Sp_SAU #5 species detected from the loop
+# spmiss1[53] <- "Dentex macrophthalmus" #typo(*): Dentex macropthalmus
+# spmiss1[54] <- "Dicologlossa cuneata" #typo(*): Dicologoglosa cuneata
+# spmiss1[57] <- "Illex coindetii" #typo(*): Ilex coindetii
+# spmiss1[64] <- "Pseudotolithus senegalensis" #typo(*): Psuedotolithus senegalensis
+# spmiss1[80] <- "Amblyraja radiata" #typo(*): Amblyraha radiata
+# spmiss1[57] <- "Illex illecebrosus" #replacement with worms sp
+# spmiss1[46] <- "Zenopsis conchifer" #replacement with worms sp
+# 
+# c(spmiss1[53],spmiss1[54],spmiss1[57],spmiss1[64],spmiss1[80],
+#   spmiss1[57],spmiss1[46]) %in% Sp_SAU #5 species detected from the loop
 #they have multiple names, one of them matches with the one in SAU
 
 # spmiss1 <- spmiss1[-c(20,23)]#Atheresthes spp.; Chionoecetes hybrid
@@ -100,26 +102,27 @@ c(spmiss1[53],spmiss1[54],spmiss1[57],spmiss1[64],spmiss1[80],
 # wm_records_name("Zenopsis conchifera")[10] #accepted name
 # "Zenopsis conchifer" %in% Sp_SAU #verification
 
-#compare species in Review and SAU, a second time, after corrections found thanks to the loop
-Sp_ReviewDatFB[grep("Dentex macropthalmus", Sp_ReviewDatFB)] <- "Dentex macrophthalmus" #typo: Dentex macropthalmus
-Sp_ReviewDatFB[grep("Dicologoglosa cuneata", Sp_ReviewDatFB)] <- "Dicologlossa cuneata" #typo: Dicologoglosa cuneata
-Sp_ReviewDatFB[grep("Ilex coindetii", Sp_ReviewDatFB)] <- "Illex coindetii" #typo: Ilex coindetii
-Sp_ReviewDatFB[grep("Psuedotolithus senegalensis",Sp_ReviewDatFB)] <- "Pseudotolithus senegalensis" #typo: Psuedotolithus senegalensis
-Sp_ReviewDatFB[grep("Amblyraha radiata", Sp_ReviewDatFB)] <- "Amblyraja radiata" #typo: Amblyraha radiata
-Sp_ReviewDatFB[grep("Ilex coindetii", Sp_ReviewDatFB)] <- "Illex illecebrosus" #replacement with worms sp
-Sp_ReviewDatFB[grep("Zenopsis conchifera", Sp_ReviewDatFB)] <- "Zenopsis conchifer" #replacement with worms sp
-#identified from old scripts, they were manually checked
-Sp_ReviewDatFB[grep("Loligo opalescens", Sp_ReviewDatFB)] <- "Doryteuthis opalescens"
-Sp_ReviewDatFB[grep("Loligo pealeii", Sp_ReviewDatFB)] <- "Doryteuthis pealeii"
-Sp_ReviewDatFB[grep("Clupea pallasi", Sp_ReviewDatFB)] <- "Clupea pallasii pallasii"
-#We don't update the name of this species (Litopenaeus setiferus) because it matches SAU
+# #compare species in Review and SAU, a second time, after corrections found thanks to the loop
+# Sp_ReviewDatFB[grep("Dentex macropthalmus", Sp_ReviewDatFB)] <- "Dentex macrophthalmus" #typo: Dentex macropthalmus
+# Sp_ReviewDatFB[grep("Dicologoglosa cuneata", Sp_ReviewDatFB)] <- "Dicologlossa cuneata" #typo: Dicologoglosa cuneata
+# Sp_ReviewDatFB[grep("Ilex coindetii", Sp_ReviewDatFB)] <- "Illex coindetii" #typo: Ilex coindetii
+# Sp_ReviewDatFB[grep("Psuedotolithus senegalensis",Sp_ReviewDatFB)] <- "Pseudotolithus senegalensis" #typo: Psuedotolithus senegalensis
+# Sp_ReviewDatFB[grep("Amblyraha radiata", Sp_ReviewDatFB)] <- "Amblyraja radiata" #typo: Amblyraha radiata
+# Sp_ReviewDatFB[grep("Illex coindetii", Sp_ReviewDatFB)] <- "Illex illecebrosus" #replacement with worms sp
+# Sp_ReviewDatFB[grep("Zenopsis conchifera", Sp_ReviewDatFB)] <- "Zenopsis conchifer" #replacement with worms sp
+# #identified from old scripts, they were manually checked
+# Sp_ReviewDatFB[grep("Loligo opalescens", Sp_ReviewDatFB)] <- "Doryteuthis opalescens"
+# Sp_ReviewDatFB[grep("Loligo pealeii", Sp_ReviewDatFB)] <- "Doryteuthis pealeii"
+# Sp_ReviewDatFB[grep("Clupea pallasii", Sp_ReviewDatFB)] <- "Clupea pallasii pallasii"
+# Sp_ReviewDatFB[grep("Clupea pallasi", Sp_ReviewDatFB)] <- "Clupea pallasii pallasii"
+# #We don't update the name of this species (Litopenaeus setiferus) because it matches SAU
 
 matchsp2 <- Sp_ReviewDatFB %in% Sp_SAU
-table(matchsp2) ## 78 spp no macth, 128 spp macthed (total:206spp) *will be updated with new observations
-spmiss2 <- Sp_ReviewDatFB[matchsp2 == F] ## list of unmatching(lost) species 78!!!
+table(matchsp2) ## from 80 to 70 lost species
+spmiss2 <- Sp_ReviewDatFB[matchsp2 == F] ## 
 
 #The next step is to try to match genus
-spmiss2[grep("Atheresthes spp.", spmiss2)] <- "Atheresthes"
+#spmiss2[grep("Atheresthes spp.", spmiss2)] <- "Atheresthes"
 spmiss2[grep("Chionoecetes hybrid", spmiss2)] <- NA #this species does not exist in Worms
 
 #this loop iterates through the missing spp of our database and finds matching genus
@@ -127,21 +130,24 @@ spmiss2[grep("Chionoecetes hybrid", spmiss2)] <- NA #this species does not exist
 cont <- 1
 cont2 <- 1
 genus_list <- list()
-for (ii in spmiss2) {
-  print(paste(wm_records_name(ii)[18] %in% Sp_SAU, cont, ii)) #column containing genus from worms
-  if(wm_records_name(ii)[18] %in% Sp_SAU == T) {
-    genus_list[cont2] <- wm_records_name(ii)[18]
+for (i in spmiss2) {
+  print(paste(wm_records_name(i)[18] %in% Sp_SAU, cont, i)) #column containing genus from worms
+  if(wm_records_name(i)[18] %in% Sp_SAU == T) {
+    genus_list[cont2] <- wm_records_name(i)[18] #genus name from worms
     cont2 <- cont2 + 1
   }
   cont <- cont + 1
 }
-#replace species names in spmiss2 by genus to count matching species with SAU
+#replace species names in spmiss2 by genus to match species with SAU
 genus_list <- as.character(genus_list)
 genus_list %in% Sp_SAU
 genus_list <- unique(genus_list)
 
+#add back the non-existent species we deleted for the loop
+spmiss2[is.na(spmiss2)] <- "Chionoecetes hybrid" #this species does not exist in Worms
+
 #loop to replace species by genus
-spmiss3 <- Sp_ReviewDatFB
+spmiss3 <- spmiss2
 for (i in 1:length(genus_list)) {
   for (j in 1:length(spmiss2)) {
    if(grepl(genus_list[i], spmiss2[j]) == T) {
@@ -151,18 +157,33 @@ for (i in 1:length(genus_list)) {
 }
 
 matchsp3 <- spmiss3 %in% Sp_SAU
-table(matchsp3) ## 78 spp no macth, 128 spp macthed (total:206spp) *will be updated with new observations
-spmiss3 <- Sp_ReviewDatFB[matchsp3 == F] ## list of unmatching(lost) species 78!!!
+table(matchsp3) ## FIRST round: 64 spp no macth, 143 spp macthed (total:207spp) *will be updated with new observations
+#FINAL round: 24 species/genus from 70 are now match
+#spmiss3 <- unique(spmiss3)#2 repeated species after correcting typos!
 
+#loop to replace species by genus within database
+#positions of unmatching cells within column
+pos <- which(ReviewDatFB$scientific_name %in% spmiss2)
+data <- ReviewDatFB#for verification purposes
 
-#change species names in our database
-# ##Check spp names to match review_database-fishbase_database
-# data$scientific_name[data$scientific_name == "Clupea pallasii"] <- "Clupea pallasii pallasii"
-# data$scientific_name[data$scientific_name == "Loligo pealeii"] <- "Doryteuthis pealeii"
-# data$scientific_name[data$scientific_name == "Loligo opalescens"] <- "Doryteuthis opalescens"
-# data$scientific_name[data$scientific_name == "Litopenaeus setiferus"] <- "Penaeus setiferus" 
+for (i in 1:length(genus_list)) {#loop to replace species in "pos" by genus
+  for (j in pos) {
+    if(grepl(genus_list[i], ReviewDatFB$scientific_name[j]) == T) {
+      ReviewDatFB$scientific_name[j] <- genus_list[i]
+    }
+  }
+}
 
-#final verification
+cont <- as.numeric(table(spmiss1 %in% unique(data$scientific_name[pos])))
+length(unique(genus_list))
+cont2 <- length(unique(spmiss3))
+table(unique(ReviewDatFB$scientific_name[pos]) %in% data$scientific_name[pos])#15 unmatch from genus changes
+table(unique(ReviewDatFB$scientific_name) %in% Sp_SAU)#46 vs 147 (193)
+i <- table(unique(ReviewDatFB$scientific_name) %in% Sp_SAU)#46 vs 147 (193)
+c(cont-cont2) == 202-as.numeric((i[1]+i[2])) #(202 is the species number)
+#if TRUE, OOOOK!!!!
+rm(spmiss1, spmiss2, spmiss3, matchsp, matchsp2, matchsp3, i, j, cont, cont2, pos, genus_list, data, Sp_SAU, Sp_ReviewDatFB)
+
 
 ##3.3 MATCH COLUMNS and EEZ NAMES IN REVIEW AND SAU (area_name)####
 
@@ -187,7 +208,7 @@ identical(sort(unique(ReviewDatFB$area_name)), sort(unique(as.character(Final_SA
 counts <- Final_SAU_EEZ %>%
             group_by(area_name, year) %>%
             tally
-rm(counts, EEZ_ReviewDatFB, EEZ_SAU, matchsp, Sp_SAU)
+rm(counts, EEZ_ReviewDatFB, EEZ_SAU)
 
 #dataframe total EEZ catch 
 #sum all catches per area_name and year
