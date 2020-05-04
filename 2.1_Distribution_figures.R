@@ -1,6 +1,6 @@
 ##################################################################
 ##### This script includes the code for the ecological analysis 
-##### of our review and produces manuscript figures
+##### of our review and produces manuscript figures.
 ##### 20/08/2017
 ##### INPUT FILES: biblio_database1.csv
 ##### OUTPUT FILES: manuscript Figures XXXXXXXX
