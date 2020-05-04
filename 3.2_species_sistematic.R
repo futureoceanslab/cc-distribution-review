@@ -17,7 +17,7 @@ library(worrms) #functions to match species names in worms database
 Final_SAU_EEZ <- read.csv("data/SAU_dataset_EEZ.csv")
 ReviewDatFB <- read.csv("data/biblio_database2.csv", stringsAsFactors = F) ## biblio_database without duplicates with EEZ structure
 
-##2. MATCH SPECIES NAMES IN REVIEW AND SAU####
+#2. MATCH SPECIES NAMES IN REVIEW AND SAU####
 ##Check list of un-matchig names
 Sp_ReviewDatFB <- unique(ReviewDatFB$scientific_name) #list species in review
 Sp_SAU <- as.character(unique(Final_SAU_EEZ$scientific_name)) #list species in SAU
@@ -125,6 +125,7 @@ genus_list <- unique(genus_list)
 #add back the non-existent species we deleted for the loop
 spmiss2[is.na(spmiss2)] <- "Chionoecetes hybrid" #this species does not exist in Worms
 
+#3. Replace new names within our database####
 #loop to replace species by genus
 spmiss3 <- spmiss2
 for (i in 1:length(genus_list)) {
