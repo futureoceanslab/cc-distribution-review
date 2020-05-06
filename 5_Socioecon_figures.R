@@ -96,7 +96,7 @@ ggplot(latitude, aes(catchpercapita, decadal_change, label = scientific_name)) +
 ##prueba grafico landed/gdp (catch)relative landed value)
 ggplot(latitude, aes(landedperGDP, decadal_change, label = scientific_name)) +
   geom_point(aes(color = landedvalueFEspT/1000000, size = 1.3, alpha = 0.6)) +
-  scale_colour_gradient(low = "blue", high = "red", name = "Catch\n(million t/year)") +
+  scale_colour_gradient(low = "blue", high = "red", name = "Value ($)") +
   theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 10),
         axis.text.y = element_text(size = 10),
         panel.background = element_rect(fill = "white"),
