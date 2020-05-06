@@ -11,26 +11,30 @@ library(ggrepel)#geom_text_repel
 source("function_multiplot.R")
 
 #Open Biblio_data with SAU data on FE
-data <- read.csv("data/biblio_database_full.csv")
+data_original <- read.csv("data/biblio_database_full.csv")
+length(unique(data_original$scientific_name)) #193, ok!
+data_original$ID <- 1:dim(data_original)[1]
+
 
 #####1. DATA TYDING ####
 # REMOVE NAS IN FISHING ENTITY
-data <- na.omit(data, cols = "fishing_entity")
-#we loose a lot of species again!!!!!!!! CONSULTAR
-length(unique(data$scientific_name))
-data <- data[!(data$fishing_entity == "Unknown Fishing Country"),]
-length(unique(data$scientific_name))
+remove <- filter(data_original, fishing_entity  == "Unknown Fishing Country")
+rm_id <- remove$ID
+data <- filter(data_original, !ID %in% rm_id)
+length(unique(data$scientific_name)) #193, ok!
 
-# REMOVE OUTLIERS in impact. remove decadal_change>300, one observation
-range(data$decadal_change)
-plot(data$decadal_change, data$id_obs) #to check for outliers
-data <- subset(data, data$decadal_change < 300)
+remove2 <- filter(data_original, is.na(fishing_entity) == T)
+rm_id <- remove2$ID
+data <- filter(data, !ID %in% rm_id)
+length(unique(data$scientific_name)) #
+#we loose a lot of species again!!
 
 # Subsets of the impacts depending on the response type lat or depth
 data$response <- as.factor(data$response)
 levels(data$response)
 latitude <- subset (data, response == "latitude")
 depth <- subset (data, response == "depth")
+
 
 #####2. FIGURE 3: RELATIONAL DEPENDENCY between FISHING ENTITIES AND EEZ (T AND $) ####
 ##plot catch dependency
@@ -61,65 +65,79 @@ F3 <- multiplot(P1, P2, cols = 2)
 dev.off()
 
 
-
+# REMOVE OUTLIERS in impact. remove decadal_change>300, one observation
+# range(data$decadal_change)
+# plot(data$decadal_change, data$id_obs) #to check for outliers
+# data <- subset(data, data$decadal_change < 300)
 
 #####3. FIGURE 4:
 
 ##prueba grafico percapita catch (relative catches)
 ggplot(latitude, aes(catchpercapita, decadal_change, label = scientific_name)) +
-  #geom_point(aes(color = decadal_change, size = tonnesEEZsp), alpha = 0.6) +
-  geom_point(aes(color = decadal_change, size = 1), alpha = 0.6) +
-  scale_colour_gradient(low="blue", high="red",guide="legend", 
-                        breaks = c(0.5e+8,5.0e+8, 1.0e+9, 1.3e+9))+
-  #scale_size_continuous("Species catch (tones/year)", range=c(2,15),breaks=c(250000, 500000, 750000, 1000000))+
-  theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 8),
-        axis.text.y = element_text(size = 8),
+  geom_point(aes(colour = tonnesFEspT/1000000, size = 1.3, alpha = 0.6)) +
+  scale_colour_gradient(low = "blue", high = "red", name = "Catch\n(million t/year)") +
+  theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 10),
+        axis.text.y = element_text(size = 10),
         panel.background = element_rect(fill = "white"),
         axis.line.x = element_line(colour = c("black")),
         axis.line.y = element_line(colour = c("black")),
-        legend.key=element_blank(),
-        axis.title.y = element_text(size=14),
-        axis.title.x = element_text(size=14)) +
+        axis.title.y = element_text(size = 14),
+        axis.title.x = element_text(size = 14)) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "grey") +
-  geom_text_repel(data=subset(latitude, latitude$catchpercapita>0.005), aes(color=decadal_change), size=3, 
-                  vjust=1) +
-  guides(color = guide_legend(title = "km/decade"), 
-         size = guide_legend(title = "Species catch (tonesyear)")) +
-  labs(x = "Fishing countries percapita catch",
+  geom_text_repel(data = subset(latitude, latitude$catchpercapita > 0.005), 
+                  aes(color = tonnesFEspT/1000000), size = 3, vjust = 1) +
+  guides(size = F,
+         alpha = F) +
+  labs(x = "fishing countries percapita catch",
        y = "latitude shift (km)") + 
-  facet_wrap(~fishing_entity)
+  facet_wrap(~ fishing_entity)
 
-
-latitude3 <- subset(latitude, landedperGDP>0.00005)
 
 ##prueba grafico landed/gdp (catch)relative landed value)
 ggplot(latitude, aes(landedperGDP, decadal_change, label = scientific_name)) +
-  #geom_point(aes(color = decadal_change, size = tonnesEEZsp), alpha = 0.6) +
-  geom_point(aes(color = decadal_change, size = 1), alpha = 0.6) +
-  scale_colour_gradient(low="blue", high="red",guide="legend", 
-                        breaks = c(0.5e+8,5.0e+8, 1.0e+9, 1.3e+9))+
-  #scale_size_continuous("Species catch (tones/year)", range=c(2,15),breaks=c(250000, 500000, 750000, 1000000))+
-  theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 8),
-        axis.text.y = element_text(size = 8),
+  geom_point(aes(color = landedvalueFEspT/1000000, size = 1.3, alpha = 0.6)) +
+  scale_colour_gradient(low = "blue", high = "red", name = "Catch\n(million t/year)") +
+  theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 10),
+        axis.text.y = element_text(size = 10),
         panel.background = element_rect(fill = "white"),
         axis.line.x = element_line(colour = c("black")),
         axis.line.y = element_line(colour = c("black")),
         legend.key=element_blank(),
-        axis.title.y = element_text(size=14),
-        axis.title.x = element_text(size=14)) +
+        axis.title.y = element_text(size = 14),
+        axis.title.x = element_text(size = 14)) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "grey") +
-  geom_text_repel(data=subset(latitude, latitude$landedperGDP>0.0002), aes(color=decadal_change), size=3, 
-                  vjust=1) +
-  guides(color = guide_legend(title = "km/decade"), 
-         size = guide_legend(title = "Species catch (tonesyear)")) +
+  geom_text_repel(data=subset(latitude, latitude$landedperGDP > 0.0002), 
+                  aes(color = landedvalueFEspT/1000000), size = 3, vjust = 1) +
+  guides(size = F,
+         alpha = F) +
   labs(x = "relative landed value",
        y = "latitude shift (km)") +
-  facet_wrap(~fishing_entity)
+  facet_wrap(~ fishing_entity)
 
 
 ##per capita impacts are higher for nordic countries, landed value importance at the country level more important for northern and african countries
 
 
+
+ggplot(latitude, aes(catchdepFE, decadal_change, label = scientific_name)) +
+  geom_point(aes(color = landedvalueFEsp/landedvalueFE, size = 1.3, alpha = 0.6)) +
+  scale_colour_gradient(low = "blue", high = "red", name = "Value dependency") +
+  theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 10),
+        axis.text.y = element_text(size = 10),
+        panel.background = element_rect(fill = "white"),
+        axis.line.x = element_line(colour = c("black")),
+        axis.line.y = element_line(colour = c("black")),
+        legend.key=element_blank(),
+        axis.title.y = element_text(size = 14),
+        axis.title.x = element_text(size = 14)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey") +
+  geom_text_repel(data=subset(latitude, catchdepFE > 0.1), 
+                  aes(color = landedvalueFEsp/landedvalueFE), size = 3, vjust = 1) +
+  guides(size = F,
+         alpha = F) +
+  labs(x = "catch dependency",
+       y = "latitude shift (km)") +
+  facet_wrap(~ fishing_entity)
 
 
 
