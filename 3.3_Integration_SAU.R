@@ -2,11 +2,10 @@
 ##### This script integrates our database with the SAU EEZ and Fishing  
 ##### Entity (FE) databases. It also creates a FE-list to know which 
 ##### FEs should be downloaded from the SAU website.
-##### database
 ##### 03/2019
 ##### INPUT FILES: SAU_dataset_EEZ.csv, biblio_database3.csv,
 ##### data_FE_SAU/ files, FE_list.csv
-##### OUTPUT FILES: Biblio_database_full.csv
+##### OUTPUT FILES: biblio_database_full.csv
 ##################################################################
 
 library(tidyverse)
@@ -168,4 +167,4 @@ range(Biblio_data$catchdepFEEZ, na.rm = T)
 which(Biblio_data$catchdepFEEZ > 1)
 
 ##5. OUTPUT FILE####
-write.csv(Biblio_data, file = "data/biblio_database_full.csv", row.names = F)
+write.csv(Biblio_data, file = "data/biblio_database_full0.csv", row.names = F)
