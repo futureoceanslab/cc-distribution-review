@@ -92,7 +92,7 @@ ggplot(latitude, aes(catchpercapita, decadal_change, label = scientific_name)) +
        y = "latitude shift (km)") + 
   facet_wrap(~ fishing_entity)
 
-
+library(ggforce)
 ##prueba grafico landed/gdp (catch)relative landed value)
 ggplot(latitude, aes(landedperGDP, decadal_change, label = scientific_name)) +
   geom_point(aes(color = landedvalueFEspT/1000000, size = 1.3, alpha = 0.6)) +
@@ -112,13 +112,13 @@ ggplot(latitude, aes(landedperGDP, decadal_change, label = scientific_name)) +
          alpha = F) +
   labs(x = "relative landed value",
        y = "latitude shift (km)") +
-  facet_wrap(~ fishing_entity)
+  facet_wrap(~ fishing_entity) 
 
 
 ##per capita impacts are higher for nordic countries, landed value importance at the country level more important for northern and african countries
 
 
-
+#dependency
 ggplot(latitude, aes(catchdepFE, decadal_change, label = scientific_name)) +
   geom_point(aes(color = landedvalueFEsp/landedvalueFE, size = 1.3, alpha = 0.6)) +
   scale_colour_gradient(low = "blue", high = "red", name = "Value dependency") +
@@ -139,6 +139,103 @@ ggplot(latitude, aes(catchdepFE, decadal_change, label = scientific_name)) +
        y = "latitude shift (km)") +
   facet_wrap(~ fishing_entity)
 
+
+#total (catch)
+latitude$catchcapita <- latitude$tonnesFEspT / latitude$pop
+latitude$valgdp <- latitude$landedvalueFEspT / latitude$gdp
+
+# a<-latitude %>%
+#   group_by(fishing_entity, scientific_name) %>%
+#   summarise(catchcapita = unique(catchcapita),
+#             decadal_change = mean(decadal_change, na.rm = T),
+#             n = n()) 
+# 
+# b <- filter(latitude, fishing_entity == "Russian Federation", 
+#             scientific_name == "Gadus morhua")
+
+ggplot(latitude, aes(catchcapita, decadal_change, label = scientific_name)) +#tonnesFEspT/pop
+  geom_point(aes(color = tonnesFEspT, size = 1.3, alpha = 0.4)) +
+  scale_colour_gradient(low = "blue", high = "red", name = "Total catch (t)") +
+  theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 10),
+        axis.text.y = element_text(size = 10),
+        panel.background = element_rect(fill = "white"),
+        axis.line.x = element_line(colour = c("black")),
+        axis.line.y = element_line(colour = c("black")),
+        legend.key=element_blank(),
+        axis.title.y = element_text(size = 14),
+        axis.title.x = element_text(size = 14)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey") +
+  geom_text_repel(data=subset(latitude, catchcapita > 0.4),
+                  aes(color = tonnesFEspT), size = 3, vjust = 1) +
+  guides(size = F,
+         alpha = F) +
+  labs(x = "catch per capita",
+       y = "latitude shift (km)") +
+  facet_wrap(~ fishing_entity) 
+
+
+#total (value)
+ggplot(latitude, aes(valgdp, decadal_change, label = scientific_name)) +#tonnesFEspT/pop
+  geom_point(aes(color = landedvalueFEspT, size = 1.3, alpha = 0.4)) +
+  scale_colour_gradient(low = "blue", high = "red", name = "Total value ($)") +
+  theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 10),
+        axis.text.y = element_text(size = 10),
+        panel.background = element_rect(fill = "white"),
+        axis.line.x = element_line(colour = c("black")),
+        axis.line.y = element_line(colour = c("black")),
+        legend.key=element_blank(),
+        axis.title.y = element_text(size = 14),
+        axis.title.x = element_text(size = 14)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey") +
+  geom_text_repel(data = subset(latitude, valgdp > 0.01),
+                  aes(color = landedvalueFEspT), size = 3, vjust = 1) +
+  guides(size = F,
+         alpha = F) +
+  labs(x = "value per gdp",
+       y = "latitude shift (km)") +
+  facet_wrap(~ fishing_entity) 
+
+
+#ALL!!!!!!!!!!!!!!!
+latitude2 <- latitude
+latitude2$fishing_entity <- as.character(latitude2$fishing_entity)
+unique(latitude2$fishing_entity)
+latitude2$fishing_entity[latitude2$fishing_entity == "Russian Federation"] <- "Russia"
+latitude2$fishing_entity[latitude2$fishing_entity == "Korea (South)"] <- "Korea"
+latitude2$fishing_entity[latitude2$fishing_entity == "Saint Pierre & Miquelon (France)"] <- "St P&M (Fr)"
+
+latitude2$area_name <- as.character(latitude2$area_name)
+unique(latitude2$area_name)
+latitude2$area_name[latitude2$area_name == "USA (East Coast)"] <- "USA (East)"
+latitude2$area_name[latitude2$area_name == "USA (West Coast)"] <- "USA (West)"
+latitude2$area_name[latitude2$area_name == "USA (Alaska, Subarctic)"] <- "USA (Alaska)"
+latitude2$area_name[latitude2$area_name == "Azores Isl. (Portugal)"] <- "Azores Isl"
+latitude2$area_name[latitude2$area_name == "Spain (mainland, Med and Gulf of Cadiz)"] <- "Spain (Med)"
+latitude2$area_name[latitude2$area_name == "South Africa (Atlantic and Cape)"] <- "South Africa (ATL,Cape)"
+latitude2$area_name[latitude2$area_name == "France (Atlantic Coast)"] <- "France (ATL Coast)"
+
+
+
+ggplot(latitude2, aes(area_name, decadal_change, label = scientific_name)) +#tonnesFEspT/pop
+  geom_point(aes(color = catchcapita, size = 2.5, alpha = 0.4)) +
+  scale_colour_gradient(low = "blue", high = "red", name = "Catchcapita") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.35, size = 8),
+        axis.text.y = element_text(size = 10),
+        panel.background = element_rect(fill = "white"),
+        axis.line.x = element_line(colour = c("black")),
+        axis.line.y = element_line(colour = c("black")),
+        legend.key=element_blank(),
+        axis.title.y = element_text(size = 14),
+        axis.title.x = element_text(size = 14)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey") +
+  geom_text_repel(data = subset(latitude2, decadal_change > 350),
+                   aes(color = catchcapita), size = 3, vjust = 1) +
+  guides(size = F,
+         alpha = F) +
+  labs(x = "EEZ",
+       y = "latitude shift (km)",
+       title = "Fishing countries") +
+  facet_wrap(~ fishing_entity) 
 
 
 ###FIGURE FISHING ENTITIES CATCH DEPENDENCY
