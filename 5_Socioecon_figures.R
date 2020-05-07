@@ -217,7 +217,7 @@ latitude2$area_name[latitude2$area_name == "France (Atlantic Coast)"] <- "France
 
 
 ggplot(latitude2, aes(area_name, decadal_change, label = scientific_name)) +#tonnesFEspT/pop
-  geom_point(aes(color = catchcapita, size = 2.5, alpha = 0.4)) +
+  geom_point(aes(color = catchpercapita, size = 2.5, alpha = 0.4)) +
   scale_colour_gradient(low = "blue", high = "red", name = "Catchcapita") +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.35, size = 8),
         axis.text.y = element_text(size = 10),
@@ -229,7 +229,7 @@ ggplot(latitude2, aes(area_name, decadal_change, label = scientific_name)) +#ton
         axis.title.x = element_text(size = 14)) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "grey") +
   geom_text_repel(data = subset(latitude2, decadal_change > 350),
-                   aes(color = catchcapita), size = 3, vjust = 1) +
+                   aes(color = catchpercapita), size = 3, vjust = 1) +
   guides(size = F,
          alpha = F) +
   labs(x = "EEZ",
