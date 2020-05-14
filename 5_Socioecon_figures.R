@@ -43,7 +43,11 @@ myP <- rev(brewer.pal(n = 8, name = 'RdBu'))
 P1<- ggplot(data, aes(x = area_name, y = fishing_entity, fill = catchdepFEEZ)) +
   geom_tile(data = subset(data, !is.na(fishing_entity))) +
   theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 11),
+        axis.text.y = element_text(size = 11),
+        title = element_text(size = 13),
+        legend.title = element_text(size = 13),
+        legend.text = element_text(size = 11)) +
   scale_fill_gradientn("Catch dependency\non EEZ (%)", 
                        colours = myP) + #c("blue","white","red")
   xlab("Economic Exclusive Zones") + ylab("Fishing entities") +
@@ -54,7 +58,11 @@ P1
 P2<- ggplot(data, aes(x = area_name, y = fishing_entity, fill = landedvalueFEEZ/landedvalueFE)) +
   geom_tile(data = subset(data, !is.na(fishing_entity))) +
   theme_bw() +
-  theme( axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 11),
+        axis.text.y = element_text(size = 11),
+        title = element_text(size = 13),
+        legend.title = element_text(size = 13),
+        legend.text = element_text(size = 11)) +
   scale_fill_gradientn("Value dependency\non EEZ (%)", 
                        colours = myP) + #c("blue","white","red")
   xlab("Economic Exclusive Zones") + ylab("Fishing entities") +
@@ -78,7 +86,7 @@ dev.off()
 #LAT
 P3 <- ggplot(latitude, aes(catchdepFE*100, decadal_change, label = scientific_name)) +
         geom_point(aes(color = (landedvalueFEsp/landedvalueFE)*100, alpha = 0.6), size = 5) +
-        scale_color_gradient("km/decade", low = "blue", high = "red")+
+        scale_colour_gradientn(colours = myP, name = "Value dependency\non species (%)") +
         theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 10),
               axis.text.y = element_text(size = 10),
               panel.background = element_rect(fill = "white"),
