@@ -68,11 +68,16 @@ Fig2.lat <- lat %>%
                                "Towards equator (-)"="royalblue4"), 
                     labels = c("Polewards (+)" = "Polewards", 
                                "Towards equator (-)" = "Towards equator")) +
-  theme(panel.background = element_rect(fill = 'whitesmoke',
-                                        colour = 'black'),
-        legend.position = c(.85, .75)) +
   coord_flip() +
   theme_bw() +
+  theme(legend.position = c(.85, .9),
+        axis.title.x = element_text(size = 16),
+        axis.title.y = element_text(size = 16),
+        axis.text.x = element_text(size = 14),
+        axis.text.y = element_text(size = 14),
+        title = element_text(size = 16),
+        legend.title = element_text(size = 16),
+        legend.text = element_text(size = 14)) +
   ggtitle("b)")
 
 #taxa barplot
@@ -95,7 +100,11 @@ lat.barplot <- ggplot(lat, aes(taxa, decadal_change)) +
   theme(axis.text.x = element_blank()) +
   theme_bw() +
   scale_x_discrete(labels = my.labels2) +
-  theme(legend.position="none") +
+  theme(legend.position="none",
+        axis.title.y = element_text(size = 16),
+        axis.text.x = element_text(size = 14),
+        axis.text.y = element_text(size = 14),
+        title = element_text(size = 16)) +
   ggtitle("a)")
 
 #########
@@ -124,11 +133,16 @@ Fig2.depth <- depth %>%
                     labels = c("Deeper (+)" = "Deeper", 
                                "Shallower (-)" = "Shallower"),
                     guide = guide_legend(reverse = T)) +
-  theme(panel.background = element_rect(fill = 'whitesmoke', 
-                                        colour = 'black'),
-        legend.position = c(.85, .75)) +
   coord_flip() +
   theme_bw() +
+  theme(legend.position = c(.85, .9),
+        axis.title.x = element_text(size = 16),
+        axis.title.y = element_text(size = 16),
+        axis.text.x = element_text(size = 14),
+        axis.text.y = element_text(size = 14),
+        title = element_text(size = 16),
+        legend.title = element_text(size = 16),
+        legend.text = element_text(size = 14)) +
   ggtitle("d)")
 
 #taxa barplot depth
@@ -145,7 +159,11 @@ depth.barplot <- ggplot(depth, aes(taxa, decadal_change)) +
   theme(axis.text.x = element_blank()) +
   theme_bw() +
   scale_x_discrete(labels = my.labels2) +
-  theme(legend.position = "none") +
+  theme(legend.position="none",
+        axis.title.y = element_text(size = 16),
+        axis.text.x = element_text(size = 14),
+        axis.text.y = element_text(size = 14),
+        title = element_text(size = 16)) +
   ggtitle("c)")
 
 #saving figures
