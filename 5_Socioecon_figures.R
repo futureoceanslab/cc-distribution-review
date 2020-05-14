@@ -35,6 +35,8 @@ levels(data$response)
 latitude <- subset (data, response == "latitude")
 depth <- subset (data, response == "depth")
 
+#Color palette
+myP <- rev(brewer.pal(n = 8, name = 'RdBu'))
 
 #####2. FIGURE 3: RELATIONAL DEPENDENCY between FISHING ENTITIES AND EEZ (T AND $) ####
 ##plot catch dependency
@@ -42,7 +44,8 @@ P1<- ggplot(data, aes(x = area_name, y = fishing_entity, fill = catchdepFEEZ)) +
   geom_tile(data = subset(data, !is.na(fishing_entity))) +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
-  scale_fill_gradientn("Dependency (t)", colours = rev(brewer.pal(9, "Spectral"))) +
+  scale_fill_gradientn("Catch dependency\non EEZ (%)", 
+                       colours = myP) + #c("blue","white","red")
   xlab("Economic Exclusive Zones") + ylab("Fishing entities") +
   ggtitle("a)")
 P1
@@ -52,7 +55,8 @@ P2<- ggplot(data, aes(x = area_name, y = fishing_entity, fill = landedvalueFEEZ/
   geom_tile(data = subset(data, !is.na(fishing_entity))) +
   theme_bw() +
   theme( axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
-  scale_fill_gradientn("Dependency ($)", colours = rev(brewer.pal(9, "Spectral"))) +
+  scale_fill_gradientn("Value dependency\non EEZ (%)", 
+                       colours = myP) + #c("blue","white","red")
   xlab("Economic Exclusive Zones") + ylab("Fishing entities") +
   ggtitle("b)")
 P2
@@ -71,279 +75,61 @@ dev.off()
 # data <- subset(data, data$decadal_change < 300)
 
 #####3. FIGURE 4:
+#LAT
+P3 <- ggplot(latitude, aes(catchdepFE*100, decadal_change, label = scientific_name)) +
+        geom_point(aes(color = (landedvalueFEsp/landedvalueFE)*100, alpha = 0.6), size = 5) +
+        scale_color_gradient("km/decade", low = "blue", high = "red")+
+        theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 10),
+              axis.text.y = element_text(size = 10),
+              panel.background = element_rect(fill = "white"),
+              axis.line.x = element_line(colour = c("black")),
+              axis.line.y = element_line(colour = c("black")),
+              legend.key=element_blank(),
+              axis.title.y = element_text(size = 14),
+              axis.title.x = element_text(size = 14)) +
+        geom_hline(yintercept = 0, linetype = "dashed", color = "grey") +
+        geom_text_repel(data = subset(latitude, catchdepFE*100 > 6), 
+                        aes(color = (landedvalueFEsp/landedvalueFE)*100), size = 3,
+                        vjust = -2.5, hjust = "inward", force = 3) +
+        guides(size = F,
+               alpha = F) +
+        labs(x = "Catch dependency on species (%)",
+             y = "Latitude shift (km)") +
+        facet_wrap(~ fishing_entity)
 
-##prueba grafico percapita catch (relative catches)
-ggplot(latitude, aes(catchpercapita, decadal_change, label = scientific_name)) +
-  geom_point(aes(colour = tonnesFEspT/1000000, size = 1.3, alpha = 0.6)) +
-  scale_colour_gradient(low = "blue", high = "red", name = "Catch\n(million t/year)") +
-  theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 10),
-        axis.text.y = element_text(size = 10),
-        panel.background = element_rect(fill = "white"),
-        axis.line.x = element_line(colour = c("black")),
-        axis.line.y = element_line(colour = c("black")),
-        axis.title.y = element_text(size = 14),
-        axis.title.x = element_text(size = 14)) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "grey") +
-  geom_text_repel(data = subset(latitude, latitude$catchpercapita > 0.005), 
-                  aes(color = tonnesFEspT/1000000), size = 3, vjust = 1) +
-  guides(size = F,
-         alpha = F) +
-  labs(x = "fishing countries percapita catch",
-       y = "latitude shift (km)") + 
-  facet_wrap(~ fishing_entity)
-
-library(ggforce)
-##prueba grafico landed/gdp (catch)relative landed value)
-ggplot(latitude, aes(landedperGDP, decadal_change, label = scientific_name)) +
-  geom_point(aes(color = landedvalueFEspT/1000000, size = 1.3, alpha = 0.6)) +
-  scale_colour_gradient(low = "blue", high = "red", name = "Value ($)") +
-  theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 10),
-        axis.text.y = element_text(size = 10),
-        panel.background = element_rect(fill = "white"),
-        axis.line.x = element_line(colour = c("black")),
-        axis.line.y = element_line(colour = c("black")),
-        legend.key=element_blank(),
-        axis.title.y = element_text(size = 14),
-        axis.title.x = element_text(size = 14)) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "grey") +
-  geom_text_repel(data=subset(latitude, latitude$landedperGDP > 0.0002), 
-                  aes(color = landedvalueFEspT/1000000), size = 3, vjust = 1) +
-  guides(size = F,
-         alpha = F) +
-  labs(x = "relative landed value",
-       y = "latitude shift (km)") +
-  facet_wrap(~ fishing_entity) 
-
-
-##per capita impacts are higher for nordic countries, landed value importance at the country level more important for northern and african countries
-
-
-#dependency
-ggplot(latitude, aes(catchdepFE, decadal_change, label = scientific_name)) +
-  geom_point(aes(color = landedvalueFEsp/landedvalueFE, size = 1.3, alpha = 0.6)) +
-  scale_colour_gradient(low = "blue", high = "red", name = "Value dependency") +
-  theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 10),
-        axis.text.y = element_text(size = 10),
-        panel.background = element_rect(fill = "white"),
-        axis.line.x = element_line(colour = c("black")),
-        axis.line.y = element_line(colour = c("black")),
-        legend.key=element_blank(),
-        axis.title.y = element_text(size = 14),
-        axis.title.x = element_text(size = 14)) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "grey") +
-  geom_text_repel(data=subset(latitude, catchdepFE > 0.1), 
-                  aes(color = landedvalueFEsp/landedvalueFE), size = 3, vjust = 1) +
-  guides(size = F,
-         alpha = F) +
-  labs(x = "catch dependency",
-       y = "latitude shift (km)") +
-  facet_wrap(~ fishing_entity)
-
-
-#total (catch)
-latitude$catchcapita <- latitude$tonnesFEspT / latitude$pop
-latitude$valgdp <- latitude$landedvalueFEspT / latitude$gdp
-
-# a<-latitude %>%
-#   group_by(fishing_entity, scientific_name) %>%
-#   summarise(catchcapita = unique(catchcapita),
-#             decadal_change = mean(decadal_change, na.rm = T),
-#             n = n()) 
-# 
-# b <- filter(latitude, fishing_entity == "Russian Federation", 
-#             scientific_name == "Gadus morhua")
-
-ggplot(latitude, aes(catchcapita, decadal_change, label = scientific_name)) +#tonnesFEspT/pop
-  geom_point(aes(color = tonnesFEspT, size = 1.3, alpha = 0.4)) +
-  scale_colour_gradient(low = "blue", high = "red", name = "Total catch (t)") +
-  theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 10),
-        axis.text.y = element_text(size = 10),
-        panel.background = element_rect(fill = "white"),
-        axis.line.x = element_line(colour = c("black")),
-        axis.line.y = element_line(colour = c("black")),
-        legend.key=element_blank(),
-        axis.title.y = element_text(size = 14),
-        axis.title.x = element_text(size = 14)) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "grey") +
-  geom_text_repel(data=subset(latitude, catchcapita > 0.4),
-                  aes(color = tonnesFEspT), size = 3, vjust = 1) +
-  guides(size = F,
-         alpha = F) +
-  labs(x = "catch per capita",
-       y = "latitude shift (km)") +
-  facet_wrap(~ fishing_entity) 
-
-
-#total (value)
-ggplot(latitude, aes(valgdp, decadal_change, label = scientific_name)) +#tonnesFEspT/pop
-  geom_point(aes(color = landedvalueFEspT, size = 1.3, alpha = 0.4)) +
-  scale_colour_gradient(low = "blue", high = "red", name = "Total value ($)") +
-  theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 10),
-        axis.text.y = element_text(size = 10),
-        panel.background = element_rect(fill = "white"),
-        axis.line.x = element_line(colour = c("black")),
-        axis.line.y = element_line(colour = c("black")),
-        legend.key=element_blank(),
-        axis.title.y = element_text(size = 14),
-        axis.title.x = element_text(size = 14)) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "grey") +
-  geom_text_repel(data = subset(latitude, valgdp > 0.01),
-                  aes(color = landedvalueFEspT), size = 3, vjust = 1) +
-  guides(size = F,
-         alpha = F) +
-  labs(x = "value per gdp",
-       y = "latitude shift (km)") +
-  facet_wrap(~ fishing_entity) 
-
-
-#ALL!!!!!!!!!!!!!!!
-latitude2 <- latitude
-latitude2$fishing_entity <- as.character(latitude2$fishing_entity)
-unique(latitude2$fishing_entity)
-latitude2$fishing_entity[latitude2$fishing_entity == "Russian Federation"] <- "Russia"
-latitude2$fishing_entity[latitude2$fishing_entity == "Korea (South)"] <- "Korea"
-latitude2$fishing_entity[latitude2$fishing_entity == "Saint Pierre & Miquelon (France)"] <- "St P&M (Fr)"
-
-latitude2$area_name <- as.character(latitude2$area_name)
-unique(latitude2$area_name)
-latitude2$area_name[latitude2$area_name == "USA (East Coast)"] <- "USA (East)"
-latitude2$area_name[latitude2$area_name == "USA (West Coast)"] <- "USA (West)"
-latitude2$area_name[latitude2$area_name == "USA (Alaska, Subarctic)"] <- "USA (Alaska)"
-latitude2$area_name[latitude2$area_name == "Azores Isl. (Portugal)"] <- "Azores Isl"
-latitude2$area_name[latitude2$area_name == "Spain (mainland, Med and Gulf of Cadiz)"] <- "Spain (Med)"
-latitude2$area_name[latitude2$area_name == "South Africa (Atlantic and Cape)"] <- "South Africa (ATL,Cape)"
-latitude2$area_name[latitude2$area_name == "France (Atlantic Coast)"] <- "France (ATL Coast)"
-
-
-
-ggplot(latitude2, aes(area_name, decadal_change, label = scientific_name)) +#tonnesFEspT/pop
-  geom_point(aes(color = catchpercapita, size = 2.5, alpha = 0.4)) +
-  scale_colour_gradient(low = "blue", high = "red", name = "Catchcapita") +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.35, size = 8),
-        axis.text.y = element_text(size = 10),
-        panel.background = element_rect(fill = "white"),
-        axis.line.x = element_line(colour = c("black")),
-        axis.line.y = element_line(colour = c("black")),
-        legend.key=element_blank(),
-        axis.title.y = element_text(size = 14),
-        axis.title.x = element_text(size = 14)) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "grey") +
-  geom_text_repel(data = subset(latitude2, decadal_change > 350),
-                   aes(color = catchpercapita), size = 3, vjust = 1) +
-  guides(size = F,
-         alpha = F) +
-  labs(x = "EEZ",
-       y = "latitude shift (km)",
-       title = "Fishing countries") +
-  facet_wrap(~ fishing_entity) 
-
-
-###FIGURE FISHING ENTITIES CATCH DEPENDENCY
-##LATITUDE
-P3 <- ggplot(latitude, aes(catchdepFE, decadal_change, colour=decadal_change, label = scientific_name)) +
-  geom_point(aes(colour = decadal_change, size = tonnesEEZsp), alpha = 0.4) +
-  geom_text_repel(data=subset(latitude, latitude$catchdepFE>0.07), aes(color=decadal_change), size=3, 
-                  vjust=1) +
-  scale_color_gradient("km/decade", low = "blue", high = "red")+
-  ylim(-100, 450)+
-  scale_size_continuous("Species landings in EEZ (t/y)", range=c(3,20),breaks=c(250000, 500000, 750000, 1000000))+
-  theme(axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12),
-        panel.background = element_rect(fill = "white"),
-        axis.line.x = element_line(colour = c("black")),
-        axis.line.y = element_line(colour = c("black")),
-        #legend.key=element_blank(),
-        axis.title.y = element_text(size=14),
-        axis.title.x = element_text(size=14)) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "darkgrey") +
-  labs(x = "FE species catch dependency on EEZ",
-       y = "latitude shift")
-P3
-
-##DEPTH
-P4 <- ggplot(depth, aes(catchdepFE, decadal_change, colour=decadal_change, label = scientific_name)) +
-  geom_point(aes(colour = decadal_change, size = tonnesEEZsp), alpha = 0.4) +
-  geom_text_repel(data=subset(depth, depth$catchdepFE>0.10), aes(color=decadal_change), size=3, 
-                  vjust=1) +
-  scale_color_gradient("km/decade", low = "blue", high = "red")+
-  ylim(-50, 100)+
-  scale_size_continuous("Species landings in EEZ (t/y)", range=c(3,20),breaks=c(250000, 500000, 750000, 1000000))+
-  theme(axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12),
-        panel.background = element_rect(fill = "white"),
-        axis.line.x = element_line(colour = c("black")),
-        axis.line.y = element_line(colour = c("black")),
-        #legend.key=element_blank(),
-        axis.title.y = element_text(size=14),
-        axis.title.x = element_text(size=14)) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "darkgrey") +
-  labs(x = "FE species catch dependency on EEZ",
-       y = "depth shift")
-P4
+#DEPTH
+P4 <- ggplot(depth, aes(catchdepFE*100, decadal_change, label = scientific_name)) +
+        geom_point(aes(color = (landedvalueFEsp/landedvalueFE)*100, alpha = 0.6), size = 5) +
+        scale_colour_gradientn(colours = myP, name = "Value dependency\non species (%)") +
+        theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 10),
+              axis.text.y = element_text(size = 10),
+              panel.background = element_rect(fill = "white"),
+              axis.line.x = element_line(colour = c("black")),
+              axis.line.y = element_line(colour = c("black")),
+              legend.key=element_blank(),
+              axis.title.y = element_text(size = 14),
+              axis.title.x = element_text(size = 14)) +
+        geom_hline(yintercept = 0, linetype = "dashed", color = "grey") +
+        geom_text_repel(data = subset(depth, catchdepFE*100 > 6), 
+                        aes(color = (landedvalueFEsp/landedvalueFE)*100), size = 3,
+                        vjust = -2.5, hjust = "inward", force = 3) +
+        guides(size = F,
+               alpha = F) +
+        labs(x = "Catch dependency on species (%)",
+             y = "Depth shift (m)") +
+        facet_wrap(~ fishing_entity)
 
 ##Paper Fig 4. IMpact and Catch dependency
-png(file = "paper_figures/figure_4ab.png", 
- width = 16, height = 7, units = 'in', res = 600)
-F4 <- multiplot(P3, P4, cols = 2)
+png(file = "paper_figures/figure_4.png", 
+ width = 12, height = 7, units = 'in', res = 600)
+ P3
 dev.off()
 
-
-##Fishing entities impact catch dependency in value
-##LATITUDE
-latitude$landdepFE <- latitude$landedvalueFEsp/latitude$landedvalueFE   #fishing entity dependency on EEZ for economic landings of that species
-latitude$landedvalueEEZsp <- latitude$landedvalueEEZsp/1000000   #convert landedvalues to million $
-
-P5 <- ggplot(latitude, aes(landdepFE, decadal_change, colour=decadal_change, label = scientific_name)) +
-  geom_point(aes(colour = decadal_change, size = landedvalueEEZsp), alpha = 0.4) +
-  geom_text_repel(data=subset(latitude, latitude$landdepFE>0.1), aes(color=decadal_change), size=3, 
-  vjust=1) +
-  scale_color_gradient("km/decade", low = "blue", high = "red")+
-  ylim(-100, 450)+
-  scale_size_continuous("Species landed value in EEZ (M$)", range=c(3,20),breaks=c(50, 100, 500, 1000))+
-  theme(axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12),
-        panel.background = element_rect(fill = "white"),
-        axis.line.x = element_line(colour = c("black")),
-        axis.line.y = element_line(colour = c("black")),
-        #legend.key=element_blank(),
-        axis.title.y = element_text(size=14),
-        axis.title.x = element_text(size=14)) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "darkgrey") +
-  labs(x = "FE landed value dependency on EEZ",
-       y = "latitude shift")
-P5
-
-##DEPTH
-depth$landdepFE <- depth$landedvalueFEsp/depth$landedvalueFE   #fishing entity dependency on EEZ for economic landings of that species
-depth$landedvalueEEZsp <- depth$landedvalueEEZsp/1000000   #convert landedvalues to million $
-
-P6 <- ggplot(depth, aes(landdepFE, decadal_change, colour=decadal_change, label = scientific_name)) +
-  geom_point(aes(colour = decadal_change, size = landedvalueEEZsp), alpha = 0.4) +
-  geom_text_repel(data=subset(depth, depth$landdepFE>0.10), aes(color=decadal_change), size=3, 
-                  vjust=1) +
-  scale_color_gradient("km/decade", low = "blue", high = "red")+
-  ylim(-50, 100)+
-  scale_size_continuous("Species landed value in EEZ (M$)", range=c(3,20),breaks=c(50, 100, 500, 1000))+
-  scale_size_continuous("Species landed value in EEZ (M$)", range=c(3,20),breaks=c(50, 100, 500, 1000))+
-  
-  theme(axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12),
-        panel.background = element_rect(fill = "white"),
-        axis.line.x = element_line(colour = c("black")),
-        axis.line.y = element_line(colour = c("black")),
-        #legend.key=element_blank(),
-        axis.title.y = element_text(size=14),
-        axis.title.x = element_text(size=14)) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "darkgrey") +
-  labs(x = "FE landed value dependency on EEZ",
-       y = "depth shift")
-P6
-
-##Paper Fig 5. IMpact and Catch dependency - landed value
-png(file = "paper_figures/figure_5ab.png", 
-    width = 16, height = 7, units = 'in', res = 600)
-F5 <- multiplot(P5, P6, cols = 2)
+png(file = "paper_figures/figure_5.png", 
+ width = 12, height = 7, units = 'in', res = 600)
+ P4
 dev.off()
+
 
 
 ####FINAL TABLE of most vulnerable countries
@@ -364,220 +150,6 @@ write.csv(DepthTable, "paper_tables/depthtable.csv")
 
 
 ##################################### SUPPLEMENTARY MATERIALS #############################################
-
-
-
-#Final figures socioeconomic - SSMM
-##Latitude with catches and labels on fishing entities
-
-P3s1 <- ggplot(latitude, aes(catchdepFE, decadal_change, colour=decadal_change, label = fishing_entity)) +
-  geom_point(aes(colour = decadal_change, size = tonnesEEZsp), alpha = 0.4) +
-  geom_text_repel(data=subset(latitude, latitude$catchdepFE>0.07), aes(color=decadal_change), size=3, 
-                  vjust=1) +
-  scale_color_gradient("km/decade", low = "blue", high = "red")+
-  ylim(-100, 450)+
-  scale_size_continuous("Species landings in EEZ (t/y)", range=c(3,20),breaks=c(250000, 500000, 750000, 1000000))+
-  theme(axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12),
-        panel.background = element_rect(fill = "white"),
-        axis.line.x = element_line(colour = c("black")),
-        axis.line.y = element_line(colour = c("black")),
-        #legend.key=element_blank(),
-        axis.title.y = element_text(size=14),
-        axis.title.x = element_text(size=14)) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "darkgrey") +
-  labs(x = "FE species catch dependency on EEZ",
-       y = "latitude shift")
-P3s1
-
-
-##Latitude with catches and EEZ labels 
-P3s2 <- ggplot(latitude, aes(catchdepFE, decadal_change, colour=decadal_change, label = area_name)) +
-  geom_point(aes(colour = decadal_change, size = tonnesEEZsp), alpha = 0.4) +
-  geom_text_repel(data=subset(latitude, latitude$catchdepFE>0.07), aes(color=decadal_change), size=3, 
-                  vjust=1) +
-  scale_color_gradient("km/decade", low = "blue", high = "red")+
-  ylim(-100, 450)+
-  scale_size_continuous("Species landings in EEZ (t/y)", range=c(3,20),breaks=c(250000, 500000, 750000, 1000000))+
-  theme(axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12),
-        panel.background = element_rect(fill = "white"),
-        axis.line.x = element_line(colour = c("black")),
-        axis.line.y = element_line(colour = c("black")),
-        #legend.key=element_blank(),
-        axis.title.y = element_text(size=14),
-        axis.title.x = element_text(size=14)) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "darkgrey") +
-  labs(x = "FE species catch dependency on EEZ",
-       y = "latitude shift")
-P3s2
-
-
-png(file = "paper_figures/figure_3s.png", 
-    width = 16, height = 7, units = 'in', res = 600)
-F3s <- multiplot(P3s1, P3s2, cols = 2)
-dev.off()
-
-###DEPTH with catched and fishing entity labels
-P4s1 <- ggplot(depth, aes(catchdepFE, decadal_change, colour=decadal_change, label = fishing_entity)) +
-  geom_point(aes(colour = decadal_change, size = tonnesEEZsp), alpha = 0.4) +
-  geom_text_repel(data=subset(depth, depth$catchdepFE>0.10), aes(color=decadal_change), size=3, 
-                  vjust=1) +
-  scale_color_gradient("km/decade", low = "blue", high = "red")+
-  ylim(-50, 100)+
-  scale_size_continuous("Species landings in EEZ (t/y)", range=c(3,20),breaks=c(250000, 500000, 750000, 1000000))+
-  theme(axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12),
-        panel.background = element_rect(fill = "white"),
-        axis.line.x = element_line(colour = c("black")),
-        axis.line.y = element_line(colour = c("black")),
-        #legend.key=element_blank(),
-        axis.title.y = element_text(size=14),
-        axis.title.x = element_text(size=14)) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "darkgrey") +
-  labs(x = "FE species catch dependency on EEZ",
-       y = "depth shift")
-P4s1
-
-
-P4s2 <- ggplot(depth, aes(catchdepFE, decadal_change, colour=decadal_change, label = area_name)) +
-  geom_point(aes(colour = decadal_change, size = tonnesEEZsp), alpha = 0.4) +
-  geom_text_repel(data=subset(depth, depth$catchdepFE>0.10), aes(color=decadal_change), size=3, 
-                  vjust=1) +
-  scale_color_gradient("km/decade", low = "blue", high = "red")+
-  ylim(-50, 100)+
-  scale_size_continuous("Species landings in EEZ (t/y)", range=c(3,20),breaks=c(250000, 500000, 750000, 1000000))+
-  theme(axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12),
-        panel.background = element_rect(fill = "white"),
-        axis.line.x = element_line(colour = c("black")),
-        axis.line.y = element_line(colour = c("black")),
-        #legend.key=element_blank(),
-        axis.title.y = element_text(size=14),
-        axis.title.x = element_text(size=14)) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "darkgrey") +
-  labs(x = "FE species catch dependency on EEZ",
-       y = "depth shift")
-P4s2
-
-png(file = "paper_figures/figure_4s.png", 
-    width = 16, height = 7, units = 'in', res = 600)
-F4s <- multiplot(P4s1, P4s2, cols = 2)
-dev.off()
-
-
-###for fishing landed values
-
-##LATITUDE and landings and fishing entities as labels
-latitude$landdepFE <- latitude$landedvalueFEsp/latitude$landedvalueFE   #fishing entity dependency on EEZ for economic landings of that species
-latitude$landedvalueEEZsp <- latitude$landedvalueEEZsp/1000000   #convert landedvalues to million $
-
-P5s1 <- ggplot(latitude, aes(landdepFE, decadal_change, colour=decadal_change, label = fishing_entity)) +
-  geom_point(aes(colour = decadal_change, size = landedvalueEEZsp), alpha = 0.4) +
-  geom_text_repel(data=subset(latitude, latitude$landdepFE>0.1), aes(color=decadal_change), size=3, 
-                  vjust=1) +
-  scale_color_gradient("km/decade", low = "blue", high = "red")+
-  ylim(-100, 450)+
-  scale_size_continuous("Species landed value in EEZ (M$)", range=c(3,20),breaks=c(50, 100, 500, 1000))+
-  theme(axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12),
-        panel.background = element_rect(fill = "white"),
-        axis.line.x = element_line(colour = c("black")),
-        axis.line.y = element_line(colour = c("black")),
-        #legend.key=element_blank(),
-        axis.title.y = element_text(size=14),
-        axis.title.x = element_text(size=14)) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "darkgrey") +
-  labs(x = "FE landed value dependency on EEZ",
-       y = "latitude shift")
-P5s1
-
-
-##LATITUDE and landings and EEZ as labels
-latitude$landdepFE <- latitude$landedvalueFEsp/latitude$landedvalueFE   #fishing entity dependency on EEZ for economic landings of that species
-latitude$landedvalueEEZsp <- latitude$landedvalueEEZsp/1000000   #convert landedvalues to million $
-
-P5s2 <- ggplot(latitude, aes(landdepFE, decadal_change, colour=decadal_change, label = area_name)) +
-  geom_point(aes(colour = decadal_change, size = landedvalueEEZsp), alpha = 0.4) +
-  geom_text_repel(data=subset(latitude, latitude$landdepFE>0.1), aes(color=decadal_change), size=3, 
-                  vjust=1) +
-  scale_color_gradient("km/decade", low = "blue", high = "red")+
-  ylim(-100, 450)+
-  scale_size_continuous("Species landed value in EEZ (M$)", range=c(3,20),breaks=c(50, 100, 500, 1000))+
-  theme(axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12),
-        panel.background = element_rect(fill = "white"),
-        axis.line.x = element_line(colour = c("black")),
-        axis.line.y = element_line(colour = c("black")),
-        #legend.key=element_blank(),
-        axis.title.y = element_text(size=14),
-        axis.title.x = element_text(size=14)) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "darkgrey") +
-  labs(x = "FE landed value dependency on EEZ",
-       y = "latitude shift")
-P5s2
-
-png(file = "paper_figures/figure_5s.png", 
-    width = 16, height = 7, units = 'in', res = 600)
-F5s <- multiplot(P5s1, P5s2, cols = 2)
-dev.off()
-
-
-##DEPTH with fishing entity labels
-depth$landdepFE <- depth$landedvalueFEsp/depth$landedvalueFE   #fishing entity dependency on EEZ for economic landings of that species
-depth$landedvalueEEZsp <- depth$landedvalueEEZsp/1000000   #convert landedvalues to million $
-
-P6s1 <- ggplot(depth, aes(landdepFE, decadal_change, colour=decadal_change, label = fishing_entity)) +
-  geom_point(aes(colour = decadal_change, size = landedvalueEEZsp), alpha = 0.4) +
-  geom_text_repel(data=subset(depth, depth$landdepFE>0.10), aes(color=decadal_change), size=3, 
-                  vjust=1) +
-  scale_color_gradient("km/decade", low = "blue", high = "red")+
-  ylim(-50, 100)+
-  scale_size_continuous("Species landed value in EEZ (M$)", range=c(3,20),breaks=c(50, 100, 500, 1000))+
-  scale_size_continuous("Species landed value in EEZ (M$)", range=c(3,20),breaks=c(50, 100, 500, 1000))+
-  
-  theme(axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12),
-        panel.background = element_rect(fill = "white"),
-        axis.line.x = element_line(colour = c("black")),
-        axis.line.y = element_line(colour = c("black")),
-        #legend.key=element_blank(),
-        axis.title.y = element_text(size=14),
-        axis.title.x = element_text(size=14)) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "darkgrey") +
-  labs(x = "FE landed value dependency on EEZ",
-       y = "depth shift")
-P6s1
-
-##DEPTH with EEZ labels
-P6s2 <- ggplot(depth, aes(landdepFE, decadal_change, colour=decadal_change, label = area_name)) +
-  geom_point(aes(colour = decadal_change, size = landedvalueEEZsp), alpha = 0.4) +
-  geom_text_repel(data=subset(depth, depth$landdepFE>0.10), aes(color=decadal_change), size=3, 
-                  vjust=1) +
-  scale_color_gradient("km/decade", low = "blue", high = "red")+
-  ylim(-50, 100)+
-  scale_size_continuous("Species landed value in EEZ (M$)", range=c(3,20),breaks=c(50, 100, 500, 1000))+
-  scale_size_continuous("Species landed value in EEZ (M$)", range=c(3,20),breaks=c(50, 100, 500, 1000))+
-  
-  theme(axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12),
-        panel.background = element_rect(fill = "white"),
-        axis.line.x = element_line(colour = c("black")),
-        axis.line.y = element_line(colour = c("black")),
-        #legend.key=element_blank(),
-        axis.title.y = element_text(size=14),
-        axis.title.x = element_text(size=14)) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "darkgrey") +
-  labs(x = "FE landed value dependency on EEZ",
-       y = "depth shift")
-P6s2
-
-png(file = "paper_figures/figure_6s.png", 
-    width = 16, height = 7, units = 'in', res = 600)
-F6s <- multiplot(P6s1, P6s2, cols = 2)
-dev.off()
-
-
 
 ##Making a specific subset to plot the specific varibales
 mybiblio_database <- read.csv("data/biblio_database.csv", stringsAsFactors=FALSE, header=T, sep = ",")
