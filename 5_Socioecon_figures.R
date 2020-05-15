@@ -29,6 +29,12 @@ data <- filter(data, !ID %in% rm_id)
 length(unique(data$scientific_name)) #
 #we loose a lot of species again!!
 
+#Changing a few names for plotting
+data$fishing_entity <- as.character(data$fishing_entity)
+data$area_name <- as.character(data$area_name)
+data$fishing_entity[data$fishing_entity == "Saint Pierre & Miquelon (France)"] <- "St Pierre & Miquelon (Fr)"
+
+
 # Subsets of the impacts depending on the response type lat or depth
 data$response <- as.factor(data$response)
 levels(data$response)
@@ -83,8 +89,22 @@ dev.off()
 # data <- subset(data, data$decadal_change < 300)
 
 #####3. FIGURE 4:
+
+#Changing a few names for plotting
+latitude$area_name[latitude$area_name == "Canada (East Coast)"] <- "Can-East"
+depth$area_name[depth$area_name == "Canada (East Coast)"] <- "Can-East"
+latitude$area_name[latitude$area_name == "Korea (South)"] <- "S-Korea"
+depth$area_name[depth$area_name == "Korea (South)"] <- "S-Korea"
+latitude$area_name[latitude$area_name == "United Kingdom (UK)"] <- "UK"
+depth$area_name[depth$area_name == "United Kingdom (UK)"] <- "UK"
+latitude$area_name[latitude$area_name == "USA (Alaska, Subarctic)"] <- "Alaska"
+depth$area_name[depth$area_name == "USA (Alaska, Subarctic)"] <- "Alaska"
+latitude$area_name[latitude$area_name == "Japan (main islands)"] <- "Japan"
+depth$area_name[depth$area_name == "Japan (main islands)"] <- "Japan"
+
+
 #LAT
-P3 <- ggplot(latitude, aes(catchdepFE*100, decadal_change, label = scientific_name)) +
+P3 <- ggplot(latitude, aes(catchdepFE*100, decadal_change, label = paste(scientific_name, ", ", area_name, sep =""))) +
         geom_point(aes(color = (landedvalueFEsp/landedvalueFE)*100, alpha = 0.6), size = 5) +
         scale_colour_gradientn(colours = myP, name = "Value dependency\non species (%)") +
         theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 10),
@@ -98,7 +118,7 @@ P3 <- ggplot(latitude, aes(catchdepFE*100, decadal_change, label = scientific_na
         geom_hline(yintercept = 0, linetype = "dashed", color = "grey") +
         geom_text_repel(data = subset(latitude, catchdepFE*100 > 6), 
                         aes(color = (landedvalueFEsp/landedvalueFE)*100), size = 3,
-                        vjust = -2.5, hjust = "inward", force = 3) +
+                        vjust = -2.5, hjust = "inward") +
         guides(size = F,
                alpha = F) +
         labs(x = "Catch dependency on species (%)",
@@ -106,7 +126,7 @@ P3 <- ggplot(latitude, aes(catchdepFE*100, decadal_change, label = scientific_na
         facet_wrap(~ fishing_entity)
 
 #DEPTH
-P4 <- ggplot(depth, aes(catchdepFE*100, decadal_change, label = scientific_name)) +
+P4 <- ggplot(depth, aes(catchdepFE*100, decadal_change, label = paste(scientific_name, ", ", area_name, sep =""))) +
         geom_point(aes(color = (landedvalueFEsp/landedvalueFE)*100, alpha = 0.6), size = 5) +
         scale_colour_gradientn(colours = myP, name = "Value dependency\non species (%)") +
         theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 10),
@@ -119,7 +139,7 @@ P4 <- ggplot(depth, aes(catchdepFE*100, decadal_change, label = scientific_name)
               axis.title.x = element_text(size = 14)) +
         geom_hline(yintercept = 0, linetype = "dashed", color = "grey") +
         geom_text_repel(data = subset(depth, catchdepFE*100 > 6), 
-                        aes(color = (landedvalueFEsp/landedvalueFE)*100), size = 3,
+                        aes(color = (landedvalueFEsp/landedvalueFE)*100), size = 2.8,
                         vjust = -2.5, hjust = "inward", force = 3) +
         guides(size = F,
                alpha = F) +
@@ -129,12 +149,12 @@ P4 <- ggplot(depth, aes(catchdepFE*100, decadal_change, label = scientific_name)
 
 ##Paper Fig 4. IMpact and Catch dependency
 png(file = "paper_figures/figure_4.png", 
- width = 12, height = 7, units = 'in', res = 600)
+ width = 14, height = 7, units = 'in', res = 600)
  P3
 dev.off()
 
 png(file = "paper_figures/figure_5.png", 
- width = 12, height = 7, units = 'in', res = 600)
+ width = 14, height = 7, units = 'in', res = 600)
  P4
 dev.off()
 
