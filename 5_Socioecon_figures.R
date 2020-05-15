@@ -122,7 +122,7 @@ P3 <- ggplot(latitude, aes(catchdepFE*100, decadal_change, label = paste(scienti
         guides(size = F,
                alpha = F) +
         labs(x = "Catch dependency on species (%)",
-             y = "Latitude shift (km)") +
+             y = "Latitude shift (km/decade)") +
         facet_wrap(~ fishing_entity)
 
 #DEPTH
@@ -144,7 +144,7 @@ P4 <- ggplot(depth, aes(catchdepFE*100, decadal_change, label = paste(scientific
         guides(size = F,
                alpha = F) +
         labs(x = "Catch dependency on species (%)",
-             y = "Depth shift (m)") +
+             y = "Depth shift (m/decade)") +
         facet_wrap(~ fishing_entity)
 
 ##Paper Fig 4. IMpact and Catch dependency
