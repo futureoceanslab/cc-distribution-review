@@ -33,8 +33,8 @@ v2 <- data %>% group_by(site) %>% summarise(n = n())
 (74*100)/sum(v2$n)
 
 #Number of species by location
-v3 <- data %>% group_by(site, scientific_name) %>% summarise(n = n()) %>%
-        group_by(site) %>% summarise(sp_num = sum(n))
+v3 <- data %>% group_by(site, scientific_name) %>% summarise(n = n(), n2=1) %>%
+        group_by(site) %>% summarise(sp_num = sum(n2))
 
 #number of observations by article
 v4 <- data %>% group_by(reference) %>% summarise(n = n()) 
