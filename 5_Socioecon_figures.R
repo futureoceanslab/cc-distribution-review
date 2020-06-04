@@ -27,7 +27,6 @@ allsp <- unique(data$scientific_name)
 remove2 <- filter(data_original, is.na(fishing_entity) == T)
 rm_id <- remove2$ID
 data <- filter(data, !ID %in% rm_id)
-length(unique(data$scientific_name)) #
 #species lost!! No record of FEs fishing that species within that EEZs
 sp <- unique(data$scientific_name)
 lostsp <- allsp[allsp %in% sp == F]

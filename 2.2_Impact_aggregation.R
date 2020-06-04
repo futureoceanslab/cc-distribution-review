@@ -58,7 +58,7 @@ repeated_sp_EEZ_impact <- subset(sp_EEZ_impact, N > 1)
 df <- ReviewDat %>%  
         select(id_obs, id_study, stock_EEZ_country, 
                scientific_name, cc_driver_detail, response, direction,
-               decadal_change, fishbase_id_species, FAO_area)  %>%
+               decadal_change, fishbase_id_species, FAO_area, taxa)  %>%
         group_by(stock_EEZ_country, scientific_name, response) %>% 
         mutate(total = n())
 
@@ -81,7 +81,8 @@ ddd2 <- ddd %>%
                     fishbase_id_species = paste(fishbase_id_species, collapse = "-"),
                     total = mean(total),
                     decadal_change_x = mean(decadal_change_x),
-                    FAO_area = paste(unique(FAO_area)))
+                    FAO_area = paste(unique(FAO_area)),
+                    taxa = paste(unique(taxa)))
 
 colnames(ddd2) #change column name to have decadal_change aggregated and be able to merge with non duplicated data
 colnames(ddd2)[which(names(ddd2) == "decadal_change")] <- "decadal_change_original"
