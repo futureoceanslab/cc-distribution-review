@@ -135,7 +135,7 @@ for (i in 1:length(genus_list)) {
   }
 }
 
-matchsp3 <- spmiss3 %in% Sp_SAU
+matchsp3 <- spmiss3 %in% Sp_SAU #from 70 unmatching species, how many do we match? 24
 table(matchsp3) ## FIRST round: 64 spp no macth, 143 spp macthed (total:207spp) *will be updated with new observations
 #FINAL round: 24 species/genus from 70 are now match
 #spmiss3 <- unique(spmiss3)#2 repeated species after correcting typos!
@@ -160,8 +160,10 @@ cont2 <- length(unique(spmiss3))
 table(unique(ReviewDatFB$scientific_name[pos]) %in% data$scientific_name[pos])#15 unmatch from genus changes
 table(unique(ReviewDatFB$scientific_name) %in% Sp_SAU)#46 vs 147 (193)
 i <- table(unique(ReviewDatFB$scientific_name) %in% Sp_SAU)#46 vs 147 (193)
-c(cont-cont2) == 202-as.numeric((i[1]+i[2])) #(202 is the species number)
+c(cont-cont2) == 202-as.numeric((i[1]+i[2])) #(202 is the old species number)
 #if TRUE, CHANGES ARE OOOOK!!!!
+#How many species from our database finally match SAU?
+length(unique(ReviewDatFB$scientific_name)[unique(ReviewDatFB$scientific_name) %in% Sp_SAU == T])
 rm(spmiss1, spmiss2, spmiss3, matchsp, matchsp2, matchsp3, i, j, cont, cont2, pos, genus_list, data, Sp_SAU, Sp_ReviewDatFB)
 
 write.csv(ReviewDatFB, row.names = F, "data/biblio_database3.csv")

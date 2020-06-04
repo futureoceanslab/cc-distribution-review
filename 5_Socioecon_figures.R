@@ -22,12 +22,19 @@ remove <- filter(data_original, fishing_entity  == "Unknown Fishing Country")
 rm_id <- remove$ID
 data <- filter(data_original, !ID %in% rm_id)
 length(unique(data$scientific_name)) #193, ok!
+allsp <- unique(data$scientific_name) 
 
 remove2 <- filter(data_original, is.na(fishing_entity) == T)
 rm_id <- remove2$ID
 data <- filter(data, !ID %in% rm_id)
 length(unique(data$scientific_name)) #
-#we loose a lot of species again!!
+#species lost!! No record of FEs fishing that species within that EEZs
+sp <- unique(data$scientific_name)
+lostsp <- allsp[allsp %in% sp == F]
+#We end up with the following number of species:
+length(unique(data$scientific_name))
+
+rm(remove, remove2, allsp, lostsp, rm_id, sp)
 
 #Changing a few names for plotting
 data$fishing_entity <- as.character(data$fishing_entity)
