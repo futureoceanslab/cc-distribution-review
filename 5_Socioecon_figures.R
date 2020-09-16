@@ -52,7 +52,7 @@ myP <- rev(brewer.pal(n = 8, name = 'RdBu'))
 
 #####2. FIGURE 3: RELATIONAL DEPENDENCY between FISHING ENTITIES AND EEZ (T AND $) ####
 ##plot catch dependency
-P1<- ggplot(data, aes(x = area_name, y = fishing_entity, fill = catchdepFEEZ)) +
+P1<- ggplot(data, aes(x = area_name, y = fishing_entity, fill = catchdepFEEZ*100)) +
   geom_tile(data = subset(data, !is.na(fishing_entity))) +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 11),
@@ -67,7 +67,7 @@ P1<- ggplot(data, aes(x = area_name, y = fishing_entity, fill = catchdepFEEZ)) +
 P1
 
 ##plot $ dependency
-P2<- ggplot(data, aes(x = area_name, y = fishing_entity, fill = landedvalueFEEZ/landedvalueFE)) +
+P2<- ggplot(data, aes(x = area_name, y = fishing_entity, fill = (landedvalueFEEZ/landedvalueFE)*100)) +
   geom_tile(data = subset(data, !is.na(fishing_entity))) +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 11),
@@ -164,6 +164,109 @@ png(file = "paper_figures/figure_5.png",
  P4
 dev.off()
 
+
+#new Figure trial
+
+d <- data %>% 
+      group_by(fishing_entity) %>% 
+      summarise(landedvalueFE = unique(landedvalueFE))
+
+gdp <- read.csv("data/gdp_country.csv")[,-1]
+
+#https://ourworldindata.org/grapher/fish-and-seafood-consumption-per-capita?time=earliest..latest
+consum <- read.csv("data/fish-and-seafood-consumption-per-capita.csv")
+colnames(consum)[4] <- "consum"
+colnames(consum)[1] <- "fishing_entity"
+
+consum <- consum %>% 
+            filter(Year >= 2014 & Year <= 2017) %>%
+            group_by(fishing_entity, Code) %>%
+            summarise(consum = mean(consum, na.rm = T))
+unique(d$fishing_entity) %in% unique(gdp$fishing_entity)
+dd <- full_join(d, gdp, by = "fishing_entity")
+unique(d$fishing_entity)[which(unique(d$fishing_entity) %in% unique(consum$fishing_entity) == F)]
+consum$fishing_entity[consum$fishing_entity=="Russia"] <- "Russian Federation"
+consum$fishing_entity[consum$fishing_entity=="United States"] <- "USA"
+
+dd <- full_join(dd, consum, by = "fishing_entity")
+dd$gdp_contribution <- (dd$landedvalueFE/dd$gdp)*100
+
+#http://hdr.undp.org/en/data#
+HDIi <- read.csv("data/Human development index (HDI).csv", sep = ";")[-c(196:2012),]
+HDI <- gather(HDIi, key = "year", value = "HDI", 2:30)
+HDI$year <- substring(HDI$year, 2)
+colnames(HDI)[1] <- "fishing_entity"
+HDI$HDI <- as.numeric(HDI$HDI)
+
+HDI <- HDI %>%
+  filter(year >= 2014 & year <= 2017) %>%
+  group_by(fishing_entity) %>%
+  summarise(HDI = mean(HDI, na.rm = T))
+unique(d$fishing_entity)[which(unique(d$fishing_entity) %in% unique(HDI$fishing_entity) == F)]
+HDI$fishing_entity[HDI$fishing_entity=="United States"] <- "USA"
+HDI$fishing_entity[HDI$fishing_entity=="Korea (Republic of)"] <- "Korea (South)"
+
+dd <- full_join(dd, HDI, by = "fishing_entity")
+
+ddd <- dd[complete.cases(dd), ]
+
+ggplot(ddd, aes(HDI, consum)) +
+  geom_point(aes(size = gdp_contribution, color = gdp_contribution)) +
+  geom_text_repel(aes(label = ifelse(gdp_contribution>0,as.character(Code),'')),
+                  hjust=0, vjust=0, size = 3) +
+  ylab("Seafod consumption (kg person/year)") +
+  #theme_classic() +
+  guides(color = guide_legend(title = "Contribution of \nfishing entity's \nlanded value \nto gdp (%)"), 
+         size = guide_legend(title = "Contribution of \nfishing entity's \nlanded value \nto gdp (%)")) 
+  # scale_size(breaks = seq(0,40, by = 10), range = c(0,40)) +
+  # guides(
+  #   #color= guide_legend(), 
+  #   size=guide_legend(override.aes = list(size = c(1,5,9)))
+  # )
+
+ggplot(ddd, aes(HDI, gdp_contribution)) +
+  geom_point(size = 4) +
+  geom_text_repel(aes(label = ifelse(gdp_contribution>0,as.character(Code),'')),
+                  hjust=0, vjust=0, size = 3) +
+  theme_bw()
+
+
+#VERIFICATIONS OK!
+# a <- data %>% 
+#       group_by(fishing_entity, area_name) %>% 
+#       summarise(catchdepFEEZ = unique(catchdepFEEZ))
+# 
+# a$prop_catchdepFEEZ <- round(a$catchdepFEEZ*100,0)
+# 
+# a2 <- a %>% 
+#         group_by(fishing_entity) %>% 
+#         summarise(catchdepFEEZ = sum(catchdepFEEZ))
+# a2$prop_catchdepFEEZ <- round(a2$catchdepFEEZ*100,0)
+
+c <- latitude %>%
+      group_by(fishing_entity, area_name, scientific_name) %>%
+      summarise(tonnesFEsp = unique(tonnesFEsp),
+                landedvalueFEsp = unique(landedvalueFEsp),
+                tonnesFE = unique(tonnesFE)) %>%
+      group_by(fishing_entity) %>%
+      summarise(impacted_catch = sum(tonnesFEsp),
+                impacted_value = sum(landedvalueFEsp),
+                tonnesFE = unique(tonnesFE),
+                impacted_catch_prop = round((impacted_catch/tonnesFE)*100,2))
+
+dddd <- left_join(ddd, c, by = "fishing_entity")
+# dddd$impacted_catch_gdp <- (dddd$impacted_catch/dddd$gdp)*100
+dddd$impacted_value_gdp <- (dddd$impacted_value/dddd$gdp)*100
+
+
+ggplot(dddd, aes(impacted_catch_prop, impacted_value_gdp)) +
+  geom_point(aes(size = HDI, color = HDI)) +
+  geom_text_repel(aes(label = ifelse(gdp_contribution>0,as.character(Code),'')),
+                  hjust=0, vjust=0, size = 3) +
+  ylab("Impacted gdp (%)") +
+  #theme_classic() +
+  guides(color = guide_legend(title = "HDI"), 
+         size = guide_legend(title = "HDI")) 
 
 
 ####FINAL TABLE of most vulnerable countries

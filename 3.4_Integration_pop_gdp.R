@@ -83,6 +83,10 @@ data <- left_join(data, gdp_data, by = "fishing_entity")
 data$gdp[data$fishing_entity == "Saint Pierre & Miquelon (France)"] <- gdp_data$gdp[gdp_data$fishing_entity == "France"]
 data$gdp[data$fishing_entity == "Azores Isl"] <- gdp_data$gdp[gdp_data$fishing_entity == "Portugal"]
 
+gdp2 <- gdp[-c(1:188),]%>%
+  group_by(fishing_entity) %>%
+  summarise(gdp = mean(gdp, na.rm = T))
+write.csv(gdp2, "data/gdp_country.csv")
 
 ######4. Relative indicators calculation####
 
