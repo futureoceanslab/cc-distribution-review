@@ -71,52 +71,41 @@ ssmm <- ggplot(cc_driver.counts, aes(x = response, y= counts , fill = cc_driver)
 # LATITUDE #
 ############
 
-#histogram
+#taxa barplot
 lat <- subset (data, response == "latitude")
 lat$sign <- ifelse(lat$decadal_change > 0,"Polewards (+)", "Towards equator (-)") #there are no zeros sum(lat$decadal_change == 0)
 
-Fig2.lat <- lat %>% 
-              ggplot() +
-              geom_histogram(aes(decadal_change, fill = sign),
-                             alpha = 0.7, binwidth = 9) +
-              scale_x_continuous(name = "Mean Latitude Shift Rate (km/decade)") + 
-              scale_y_continuous(name = "Number of Observations") +
-              scale_colour_manual(name = "Shift direction", 
-                                  values = c("Polewards (+)" = "skyblue", 
-                                             "Towards equator (-)" = "royalblue4"), 
-                                  labels = c("Polewards (+)" = "Polewards", 
-                                             "Towards equator (-)" = "Towards equator")) +
-              scale_fill_manual(name = "Shift direction", 
-                                values = c("Polewards (+)" = "skyblue", 
-                                           "Towards equator (-)"="royalblue4"), 
-                                labels = c("Polewards (+)" = "Polewards", 
-                                           "Towards equator (-)" = "Towards equator")) +
-              coord_flip() +
-              theme_bw() +
-              theme(legend.position = c(.85, .9),
-                    axis.title.x = element_text(size = 16),
-                    axis.title.y = element_text(size = 16),
-                    axis.text.x = element_text(size = 14),
-                    axis.text.y = element_text(size = 14),
-                    title = element_text(size = 16),
-                    legend.title = element_text(size = 16),
-                    legend.text = element_text(size = 14)) +
-              ggtitle("b)")
-
-#taxa barplot
 my.labels2 <- c("Benthic \n crustacea",
                 "Benthic \n mollusca",
                 "Bony-fish", 
                 "Cephalopode",
                 "Non-bony \n fish")
 
+give.n <- function(x){
+  return(data.frame(y = median(x), label = paste0("n = ",length(x))))
+}
+
+lat2 <- lat %>%
+          group_by(sign, taxa) %>%
+          summarise(n = n())
+col1 <- c("chartreuse2", "darkgreen", "mediumorchid4", "darkgreen", "darkgreen")#5 colors
+col2 <- c("chartreuse2", "darkgreen", "mediumorchid2", "darkgreen",  "darkgreen")#5 colors
+
 lat.barplot <- ggplot(lat, aes(taxa, decadal_change)) + 
                 geom_boxplot(data = subset(lat, decadal_change >= 0), 
-                             aes(taxa, decadal_change),  
+                             aes(taxa, decadal_change), fill = col1, 
                              na.rm = T, outlier.shape = 1, outlier.size = 0.1) +
+                stat_summary(data = subset(lat, decadal_change >= 0), 
+                             fun.data = give.n, geom = "text", color = "black", fontface = 2)+
+                # geom_text(stat="count", data = subset(lat, decadal_change >= 0), 
+                #           aes(label=paste0("n=",..count..)), 
+                #           y=1.05*max(lat$decadal_change)) +
+                expand_limits(y=1.05*max(lat$decadal_change)) +
                 geom_boxplot(data = subset(lat, decadal_change < 0), 
-                             aes(taxa, decadal_change),  
+                             aes(taxa, decadal_change), fill = col2,  
                              na.rm = T, outlier.shape = 1, outlier.size = 0.1) +
+                # geom_text(stat="count", data = subset(lat, decadal_change < 0), aes(label=paste0("n=",..count..)), y=1.05*min(lat$decadal_change)) +
+                stat_summary(data = subset(lat, decadal_change < 0), fun.data = give.n, geom = "text", color = "black", fontface = 2)+
                 geom_hline(yintercept = c(0), linetype = "dotted") +
                 scale_y_continuous(name = "km/decade", breaks = seq(-100, 200, by = 50)) +
                 xlab(NULL)+
@@ -128,7 +117,7 @@ lat.barplot <- ggplot(lat, aes(taxa, decadal_change)) +
                       axis.text.x = element_text(size = 14),
                       axis.text.y = element_text(size = 14),
                       title = element_text(size = 16)) +
-                ggtitle("a)")
+                ggtitle("b)")
 
 #########
 # DEPTH #
@@ -138,44 +127,25 @@ depth$sign <- ifelse(depth$decadal_change < 0, "Shallower (-)", "Deeper (+)")# t
 
 depth$decadal_change_reversed <- (-1)*depth$decadal_change
 
-Fig2.depth <- depth %>%
-                ggplot()+
-                geom_histogram(aes(decadal_change_reversed, fill = sign), 
-                               alpha = 0.7, binwidth = 4) +
-                scale_x_continuous(name = "Depth Shift Rate (m/decade)") + 
-                scale_y_continuous(name = "Number of Observations")+
-                scale_colour_manual(name = "Shift direction", 
-                                    values = c("Deeper (+)" = "royalblue4", 
-                                               "Shallower (-)"="skyblue"), 
-                                    labels = c("Deeper (+)" = "Deeper", 
-                                               "Shallower (-)" = "Shallower"),
-                                    guide = guide_legend(reverse = T)) +
-                scale_fill_manual(name = "Shift direction", 
-                                  values = c("Deeper (+)" = "royalblue4", 
-                                             "Shallower (-)" = "skyblue"), 
-                                  labels = c("Deeper (+)" = "Deeper", 
-                                             "Shallower (-)" = "Shallower"),
-                                  guide = guide_legend(reverse = T)) +
-                coord_flip() +
-                theme_bw() +
-                theme(legend.position = c(.85, .9),
-                      axis.title.x = element_text(size = 16),
-                      axis.title.y = element_text(size = 16),
-                      axis.text.x = element_text(size = 14),
-                      axis.text.y = element_text(size = 14),
-                      title = element_text(size = 16),
-                      legend.title = element_text(size = 16),
-                      legend.text = element_text(size = 14)) +
-                ggtitle("d)")
+depth2 <- depth %>%
+            group_by(sign, taxa) %>%
+            summarise(n = n())
+col1 <- c("darkgreen", "mediumorchid4", "darkgreen", "darkgreen")#5 colors
+col2 <- c("darkgreen", "darkgreen", "mediumorchid2", "darkgreen",  "darkgreen")#5 colors
+
 
 #taxa barplot depth
 depth.barplot <- ggplot(depth, aes(taxa, decadal_change)) +
                   geom_boxplot(data = subset(depth, decadal_change >= 0), 
-                               aes(taxa, decadal_change),  
+                               aes(taxa, decadal_change), fill = col1,   
                                na.rm = T, outlier.shape = 1, outlier.size = 0.1) +
+                  stat_summary(data = subset(depth, decadal_change >= 0), 
+                               fun.data = give.n, geom = "text", color = "black", fontface = 2)+
                   geom_boxplot(data = subset(depth, decadal_change < 0), 
-                               aes(taxa, decadal_change),  
+                               aes(taxa, decadal_change), fill = col2,
                                na.rm = T, outlier.shape = 1, outlier.size = 0.1) +
+                  stat_summary(data = subset(depth, decadal_change < 0), 
+                               fun.data = give.n, geom = "text", color = "black", fontface = 2)+
                   geom_hline(yintercept = c(0), linetype = "dotted")+
                   scale_y_continuous(name ="m/decade", breaks = seq(-80, 60, by = 20)) +
                   xlab(NULL) +
@@ -194,14 +164,9 @@ depth.barplot <- ggplot(depth, aes(taxa, decadal_change)) +
 #plot(join.lat.depth)
 #ggsave("paper_figures/join_lat_depth.jpeg")
 
-png(file = "paper_figures/figure_2ab.png", 
+png(file = "paper_figures/figure_1bc.png", 
     width = 16, height = 7, units = 'in', res = 600)
-multiplot(lat.barplot, Fig2.lat, cols = 2)
-dev.off()
-
-png(file = "paper_figures/figure_2cd.png", 
-    width = 16, height = 7, units = 'in', res = 600)
-multiplot(depth.barplot, Fig2.depth, cols = 2)
+multiplot(lat.barplot, depth.barplot, cols = 2)
 dev.off()
 
 png(file = "paper_figures/ssmm_1.png", 

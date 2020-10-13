@@ -77,6 +77,7 @@ rm(l1, l, func, path)
 
 ##FILTER SAU DATASETS: 5 last years, landings, NAs
 Final_SAU_FE <- filter(Final_SAU_FE, year > 2009, catch_type == "Landings")
+Final_SAU_FE <- filter(Final_SAU_FE, !area_name == "All")
 
 #dataframe sp - EEZ catch
 counts <- Final_SAU_FE %>%
@@ -88,6 +89,7 @@ rm(counts)
 #add fishing entities landings and catches per species to ReviewDat 
 Final_SAU_FE$area_name <- as.character(Final_SAU_FE$area_name)
 Final_SAU_FE$scientific_name <- as.character(Final_SAU_FE$scientific_name)
+write.csv(Final_SAU_FE, "SAU_all.csv", row.names = F)
 
 #Catches and Landings per fishing entity, EEZ and species (mean across years)
 tonlandFEspyear <- Final_SAU_FE %>%

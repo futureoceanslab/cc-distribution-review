@@ -8,6 +8,7 @@
 library(RColorBrewer)#brewer.pal
 library(tidyverse)
 library(ggrepel)#geom_text_repel
+library(stringr)
 source("function_multiplot.R")
 
 #Open Biblio_data with SAU data on FE
@@ -32,14 +33,13 @@ sp <- unique(data$scientific_name)
 lostsp <- allsp[allsp %in% sp == F]
 #We end up with the following number of species:
 length(unique(data$scientific_name))
-
+write.csv(data, "data/biblio_database_full2.csv", row.names = F)# FOR MAPS
 rm(remove, remove2, allsp, lostsp, rm_id, sp)
 
 #Changing a few names for plotting
 data$fishing_entity <- as.character(data$fishing_entity)
 data$area_name <- as.character(data$area_name)
 data$fishing_entity[data$fishing_entity == "Saint Pierre & Miquelon (France)"] <- "St Pierre & Miquelon (Fr)"
-
 
 # Subsets of the impacts depending on the response type lat or depth
 data$response <- as.factor(data$response)
@@ -50,69 +50,34 @@ depth <- subset (data, response == "depth")
 #Color palette
 myP <- rev(brewer.pal(n = 8, name = 'RdBu'))
 
-#####2. FIGURE 3: RELATIONAL DEPENDENCY between FISHING ENTITIES AND EEZ (T AND $) ####
-##plot catch dependency
-P1<- ggplot(data, aes(x = area_name, y = fishing_entity, fill = catchdepFEEZ*100)) +
-  geom_tile(data = subset(data, !is.na(fishing_entity))) +
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 11),
-        axis.text.y = element_text(size = 11),
-        title = element_text(size = 13),
-        legend.title = element_text(size = 13),
-        legend.text = element_text(size = 11)) +
-  scale_fill_gradientn("Catch dependency\non EEZ (%)", 
-                       colours = myP) + #c("blue","white","red")
-  xlab("Economic Exclusive Zones") + ylab("Fishing entities") +
-  ggtitle("a)")
-P1
-
-##plot $ dependency
-P2<- ggplot(data, aes(x = area_name, y = fishing_entity, fill = (landedvalueFEEZ/landedvalueFE)*100)) +
-  geom_tile(data = subset(data, !is.na(fishing_entity))) +
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 11),
-        axis.text.y = element_text(size = 11),
-        title = element_text(size = 13),
-        legend.title = element_text(size = 13),
-        legend.text = element_text(size = 11)) +
-  scale_fill_gradientn("Value dependency\non EEZ (%)", 
-                       colours = myP) + #c("blue","white","red")
-  xlab("Economic Exclusive Zones") + ylab("Fishing entities") +
-  ggtitle("b)")
-P2
-## If we want to modify scale, code here: ", limits=c(0,1250000), breaks=seq(0,1250000, by=1000000)"
-
-##PAPER Fig3 
-png(file = "paper_figures/figure_3ab.png", 
-    width = 16, height = 7, units = 'in', res = 600)
-F3 <- multiplot(P1, P2, cols = 2)
-dev.off()
-
-
 # REMOVE OUTLIERS in impact. remove decadal_change>300, one observation
 # range(data$decadal_change)
 # plot(data$decadal_change, data$id_obs) #to check for outliers
 # data <- subset(data, data$decadal_change < 300)
 
-#####3. FIGURE 4:
+#####2. FIGURE 3 ####
 
 #Changing a few names for plotting
-latitude$area_name[latitude$area_name == "Canada (East Coast)"] <- "Can-East"
-depth$area_name[depth$area_name == "Canada (East Coast)"] <- "Can-East"
-latitude$area_name[latitude$area_name == "Korea (South)"] <- "S-Korea"
-depth$area_name[depth$area_name == "Korea (South)"] <- "S-Korea"
-latitude$area_name[latitude$area_name == "United Kingdom (UK)"] <- "UK"
-depth$area_name[depth$area_name == "United Kingdom (UK)"] <- "UK"
-latitude$area_name[latitude$area_name == "USA (Alaska, Subarctic)"] <- "Alaska"
-depth$area_name[depth$area_name == "USA (Alaska, Subarctic)"] <- "Alaska"
-latitude$area_name[latitude$area_name == "Japan (main islands)"] <- "Japan"
-depth$area_name[depth$area_name == "Japan (main islands)"] <- "Japan"
+lat <- latitude
+dep <- depth
+lat$area_name[lat$area_name == "Canada (East Coast)"] <- "Can-East"
+dep$area_name[dep$area_name == "Canada (East Coast)"] <- "Can-East"
+lat$area_name[lat$area_name == "Korea (South)"] <- "S-Korea"
+dep$area_name[dep$area_name == "Korea (South)"] <- "S-Korea"
+lat$area_name[lat$area_name == "United Kingdom (UK)"] <- "UK"
+dep$area_name[dep$area_name == "United Kingdom (UK)"] <- "UK"
+lat$area_name[lat$area_name == "USA (Alaska, Subarctic)"] <- "Alaska"
+dep$area_name[dep$area_name == "USA (Alaska, Subarctic)"] <- "Alaska"
+lat$area_name[lat$area_name == "Japan (main islands)"] <- "Japan"
+dep$area_name[dep$area_name == "Japan (main islands)"] <- "Japan"
 
 
 #LAT
-P3 <- ggplot(latitude, aes(catchdepFE*100, decadal_change, label = paste(scientific_name, ", ", area_name, sep =""))) +
+P3 <- ggplot(lat, aes(catchdepFE*100, decadal_change, 
+                           label = paste(scientific_name, ", ", area_name, sep =""))) + #paste(scientific_name, ", ", area_name, sep ="" +
         geom_point(aes(color = (landedvalueFEsp/landedvalueFE)*100, alpha = 0.6), size = 5) +
         scale_colour_gradientn(colours = myP, name = "Value dependency\non species (%)") +
+        scale_shape_manual(values = c(0:4)) +
         theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 10),
               axis.text.y = element_text(size = 10),
               panel.background = element_rect(fill = "white"),
@@ -120,19 +85,21 @@ P3 <- ggplot(latitude, aes(catchdepFE*100, decadal_change, label = paste(scienti
               axis.line.y = element_line(colour = c("black")),
               legend.key=element_blank(),
               axis.title.y = element_text(size = 14),
-              axis.title.x = element_text(size = 14)) +
+              axis.title.x = element_text(size = 14),
+              plot.title = element_text(size = 20)) +
         geom_hline(yintercept = 0, linetype = "dashed", color = "grey") +
-        geom_text_repel(data = subset(latitude, catchdepFE*100 > 6), 
+        geom_text_repel(data = subset(lat, catchdepFE*100 > 6), 
                         aes(color = (landedvalueFEsp/landedvalueFE)*100), size = 3,
                         vjust = -2.5, hjust = "inward") +
         guides(size = F,
                alpha = F) +
         labs(x = "Catch dependency on species (%)",
              y = "Latitude shift (km/decade)") +
-        facet_wrap(~ fishing_entity)
+        facet_wrap(~ fishing_entity)+
+        ggtitle("a)") 
 
 #DEPTH
-P4 <- ggplot(depth, aes(catchdepFE*100, decadal_change, label = paste(scientific_name, ", ", area_name, sep =""))) +
+P4 <- ggplot(dep, aes(catchdepFE*100, decadal_change, label = paste(scientific_name, ", ", area_name, sep =""))) +
         geom_point(aes(color = (landedvalueFEsp/landedvalueFE)*100, alpha = 0.6), size = 5) +
         scale_colour_gradientn(colours = myP, name = "Value dependency\non species (%)") +
         theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 10),
@@ -142,131 +109,231 @@ P4 <- ggplot(depth, aes(catchdepFE*100, decadal_change, label = paste(scientific
               axis.line.y = element_line(colour = c("black")),
               legend.key=element_blank(),
               axis.title.y = element_text(size = 14),
-              axis.title.x = element_text(size = 14)) +
+              axis.title.x = element_text(size = 14),
+              plot.title = element_text(size = 20)) +
         geom_hline(yintercept = 0, linetype = "dashed", color = "grey") +
-        geom_text_repel(data = subset(depth, catchdepFE*100 > 6), 
+        geom_text_repel(data = subset(dep, catchdepFE*100 > 6), 
                         aes(color = (landedvalueFEsp/landedvalueFE)*100), size = 2.8,
                         vjust = -2.5, hjust = "inward", force = 3) +
         guides(size = F,
                alpha = F) +
         labs(x = "Catch dependency on species (%)",
              y = "Depth shift (m/decade)") +
-        facet_wrap(~ fishing_entity)
+        facet_wrap(~ fishing_entity)+
+        ggtitle("b)") 
 
-##Paper Fig 4. IMpact and Catch dependency
-png(file = "paper_figures/figure_4.png", 
+##Paper Fig 3 IMpact and Catch dependency
+png(file = "paper_figures/figure_3a.png", 
  width = 14, height = 7, units = 'in', res = 600)
  P3
 dev.off()
 
-png(file = "paper_figures/figure_5.png", 
+png(file = "paper_figures/figure_3b.png", 
  width = 14, height = 7, units = 'in', res = 600)
  P4
 dev.off()
 
+rm(P3, P4, lat, dep)
 
-#new Figure trial
-
+#####3. FIGURE 4 ####
 d <- data %>% 
       group_by(fishing_entity) %>% 
       summarise(landedvalueFE = unique(landedvalueFE))
 
-gdp <- read.csv("data/gdp_country.csv")[,-1]
+gdp <- read.csv("data/gdp_country.csv")
 
-#https://ourworldindata.org/grapher/fish-and-seafood-consumption-per-capita?time=earliest..latest
-consum <- read.csv("data/fish-and-seafood-consumption-per-capita.csv")
-colnames(consum)[4] <- "consum"
-colnames(consum)[1] <- "fishing_entity"
-
-consum <- consum %>% 
-            filter(Year >= 2014 & Year <= 2017) %>%
-            group_by(fishing_entity, Code) %>%
-            summarise(consum = mean(consum, na.rm = T))
-unique(d$fishing_entity) %in% unique(gdp$fishing_entity)
 dd <- full_join(d, gdp, by = "fishing_entity")
-unique(d$fishing_entity)[which(unique(d$fishing_entity) %in% unique(consum$fishing_entity) == F)]
-consum$fishing_entity[consum$fishing_entity=="Russia"] <- "Russian Federation"
-consum$fishing_entity[consum$fishing_entity=="United States"] <- "USA"
-
-dd <- full_join(dd, consum, by = "fishing_entity")
 dd$gdp_contribution <- (dd$landedvalueFE/dd$gdp)*100
 
-#http://hdr.undp.org/en/data#
-HDIi <- read.csv("data/Human development index (HDI).csv", sep = ";")[-c(196:2012),]
-HDI <- gather(HDIi, key = "year", value = "HDI", 2:30)
-HDI$year <- substring(HDI$year, 2)
-colnames(HDI)[1] <- "fishing_entity"
-HDI$HDI <- as.numeric(HDI$HDI)
-
-HDI <- HDI %>%
-  filter(year >= 2014 & year <= 2017) %>%
-  group_by(fishing_entity) %>%
-  summarise(HDI = mean(HDI, na.rm = T))
-unique(d$fishing_entity)[which(unique(d$fishing_entity) %in% unique(HDI$fishing_entity) == F)]
-HDI$fishing_entity[HDI$fishing_entity=="United States"] <- "USA"
-HDI$fishing_entity[HDI$fishing_entity=="Korea (Republic of)"] <- "Korea (South)"
-
+HDI <- read.csv("data/HDI.csv")
 dd <- full_join(dd, HDI, by = "fishing_entity")
 
 ddd <- dd[complete.cases(dd), ]
 
-ggplot(ddd, aes(HDI, consum)) +
-  geom_point(aes(size = gdp_contribution, color = gdp_contribution)) +
-  geom_text_repel(aes(label = ifelse(gdp_contribution>0,as.character(Code),'')),
-                  hjust=0, vjust=0, size = 3) +
-  ylab("Seafod consumption (kg person/year)") +
-  #theme_classic() +
-  guides(color = guide_legend(title = "Contribution of \nfishing entity's \nlanded value \nto gdp (%)"), 
-         size = guide_legend(title = "Contribution of \nfishing entity's \nlanded value \nto gdp (%)")) 
-  # scale_size(breaks = seq(0,40, by = 10), range = c(0,40)) +
-  # guides(
-  #   #color= guide_legend(), 
-  #   size=guide_legend(override.aes = list(size = c(1,5,9)))
-  # )
-
-ggplot(ddd, aes(HDI, gdp_contribution)) +
-  geom_point(size = 4) +
-  geom_text_repel(aes(label = ifelse(gdp_contribution>0,as.character(Code),'')),
-                  hjust=0, vjust=0, size = 3) +
-  theme_bw()
-
+country_code <- read.csv("data/country_code.csv")
+d4 <- left_join(ddd, country_code, by = "fishing_entity")
+rm(country_code, HDI, gdp)
 
 #VERIFICATIONS OK!
-# a <- data %>% 
-#       group_by(fishing_entity, area_name) %>% 
+# a <- data %>%
+#       group_by(fishing_entity, area_name) %>%
 #       summarise(catchdepFEEZ = unique(catchdepFEEZ))
 # 
 # a$prop_catchdepFEEZ <- round(a$catchdepFEEZ*100,0)
 # 
-# a2 <- a %>% 
-#         group_by(fishing_entity) %>% 
+# a2 <- a %>%
+#         group_by(fishing_entity) %>%
 #         summarise(catchdepFEEZ = sum(catchdepFEEZ))
 # a2$prop_catchdepFEEZ <- round(a2$catchdepFEEZ*100,0)
 
-c <- latitude %>%
+c <- data %>% ###LATITUDE OR DATA!!!!!!!!!!!!!!!!!
       group_by(fishing_entity, area_name, scientific_name) %>%
       summarise(tonnesFEsp = unique(tonnesFEsp),
                 landedvalueFEsp = unique(landedvalueFEsp),
                 tonnesFE = unique(tonnesFE)) %>%
       group_by(fishing_entity) %>%
-      summarise(impacted_catch = sum(tonnesFEsp),
-                impacted_value = sum(landedvalueFEsp),
+      summarise(affected_catch = sum(tonnesFEsp),
+                affected_value = sum(landedvalueFEsp),
                 tonnesFE = unique(tonnesFE),
-                impacted_catch_prop = round((impacted_catch/tonnesFE)*100,2))
+                affected_catch_prop = round((affected_catch/tonnesFE)*100,2))
 
-dddd <- left_join(ddd, c, by = "fishing_entity")
-# dddd$impacted_catch_gdp <- (dddd$impacted_catch/dddd$gdp)*100
-dddd$impacted_value_gdp <- (dddd$impacted_value/dddd$gdp)*100
+d4 <- left_join(d4, c, by = "fishing_entity")
+# dddd$affected_catch_gdp <- (dddd$affected_catch/dddd$gdp)*100
+d4$affected_value_gdp <- (d4$affected_value/d4$gdp)*100
 
-
-ggplot(dddd, aes(impacted_catch_prop, impacted_value_gdp)) +
-  geom_point(aes(size = HDI, color = HDI)) +
+#FIGURE4!!!!!!!!!!!!!!
+png(file = "paper_figures/figure_4.png", 
+    width = 11, height = 7, units = 'in', res = 600)
+ggplot(d4, aes(HDI, affected_catch_prop)) +
+  geom_point(aes(size =affected_value_gdp)) +
   geom_text_repel(aes(label = ifelse(gdp_contribution>0,as.character(Code),'')),
-                  hjust=0, vjust=0, size = 3) +
-  ylab("Impacted gdp (%)") +
-  #theme_classic() +
-  guides(color = guide_legend(title = "HDI"), 
-         size = guide_legend(title = "HDI")) 
+                  hjust=0, vjust=0, size = 5) +
+  ylab("Maximum affected catch prop.") +
+  guides(size = guide_legend(title = "Maximum affected \ngdp prop.")) +
+  theme_classic() +
+  theme(axis.text.x = element_text(size = 16),
+        axis.text.y = element_text(size = 16),
+        axis.title = element_text(size = 18),
+        legend.title = element_text(size = 18),
+        legend.text = element_text(size = 16)) 
+dev.off()
+rm(c, d, dd, ddd)
+
+#####4. FIGURE 5 ####
+
+# data$area_name_simpl <- data$area_name
+# data$area_name_simpl[grep("USA", data$area_name_simpl)] <- "USA"
+# data$area_name_simpl[grep("Denmark", data$area_name_simpl)] <- "Denmark"
+# data$area_name_simpl[grep("Germany", data$area_name_simpl)] <- "Germany"
+# data$area_name_simpl[grep("Sweden", data$area_name_simpl)] <- "Sweden"
+# data$area_name_simpl[grep("UK", data$area_name_simpl)] <- "United Kingdom"
+# data$area_name_simpl[grep("Japan", data$area_name_simpl)] <- "Japan"
+# data$area_name_simpl[grep("Canada", data$area_name_simpl)] <- "Canada"
+# data$area_name_simpl[grep("Spain", data$area_name_simpl)] <- "Spain"
+# data$area_name_simpl[grep("France", data$area_name_simpl)] <- "France"
+# data$area_name_simpl[grep("Portugal", data$area_name_simpl)] <- "Portugal"
+# data$area_name_simpl[grep("Africa", data$area_name_simpl)] <- "South Africa"
+# 
+# #add within/outside EEZ var
+# data$in_out <- "outside"
+# for (i in 1:dim(data)[1]) {
+#   if(identical(data[i,15], data[i,33])==T) {
+#     data$in_out[i] <- "within"
+#   }
+# }
+
+
+path <- "data/data_FE_SAU/" #Final_SAU_FE, script integration SAU
+l <- list.files(path, pattern = ".csv")
+l2 <- str_sub(l, end = -5) 
+names <- unique(data_original$fishing_entity)[-c(11,24)] #data from script 5
+names %in% l2
+Final_SAU_FE <- read.csv("SAU_all.csv") #FINAL SAU FE l. 90
+Final_SAU_FE$fishing_entity[Final_SAU_FE$fishing_entity == "Faeroe Isl.(Denmark)"] <- "Faeroe Isl"
+Final_SAU_FE$fishing_entity[Final_SAU_FE$fishing_entity == "Azores Isl. (Portugal)"] <- "Azores Isl"
+names %in% unique(Final_SAU_FE$fishing_entity)
+data1 <- filter(Final_SAU_FE, fishing_entity %in% names)#all our fishing entities
+df <- data1 %>%
+        group_by(fishing_entity, area_name, year) %>%
+        summarise(tonnes = sum(tonnes, na.rm = T),
+                  landed_value = sum(landed_value, na.rm = T)) %>%
+        group_by(fishing_entity, area_name) %>%
+        summarise(tonnes = mean(tonnes, na.rm = T),
+                  landed_value = mean(landed_value, na.rm = T))
+
+#REVISIONS
+# rev <- data %>% 
+#         group_by(fishing_entity, area_name) %>%
+#         summarise(tonnes = unique(tonnesFEEZ))
+# rev[1,3]
+# df[1,3]
+# rev2 <- left_join(rev, data3, by = c("fishing_entity", "area_name"))
+
+dataa <- data_original %>% 
+            group_by(fishing_entity, area_name, scientific_name) %>%
+            summarise(tonnesFEsp = unique(tonnesFEsp),
+                      landedvalueFEsp = unique(landedvalueFEsp)) %>%
+            group_by(fishing_entity, area_name) %>% 
+            summarise(affected_catch = sum(tonnesFEsp, na.rm = T),
+                      affected_value = sum(landedvalueFEsp, na.rm = T))
+d_plot <- left_join(df, dataa, by = c("fishing_entity", "area_name"))
+d_plot[is.na(d_plot)] <- 0
+d_plot$na_catch <- d_plot$tonnes - d_plot$affected_catch
+d_plot$na_value <- d_plot$landed_value - d_plot$affected_value
+
+d_plot$catch_na_prop <- round((d_plot$na_catch*100)/d_plot$tonnes,2)
+d_plot$value_na_prop <- round((d_plot$na_value*100)/d_plot$landed_value,2)
+d_plot$catch_affect_prop <- round((d_plot$affected_catch*100)/d_plot$tonnes,2)
+d_plot$value_affect_prop <- round((d_plot$affected_value*100)/d_plot$landed_value,2)
+d_plot$tot_catch <- d_plot$catch_na_prop + d_plot$catch_affect_prop
+d_plot$tot_value <- d_plot$value_na_prop + d_plot$value_affect_prop  
+
+angola <- filter(d_plot, fishing_entity %in% c("Angola","Azores Isl",
+                                               "Belgium","Canada"))
+d_plot2 <- d_plot %>%
+  group_by(fishing_entity) %>%
+  summarise(#total_catch = sum(tonnes),
+    #total_value = sum(landed_value),
+    assessed_catch = (sum(affected_catch)*100)/sum(tonnes),
+    #prop_affected_value = (sum(affected_value)*100)/sum(landed_value),
+    unassessed_catch = ((sum(tonnes)-sum(affected_catch))*100)/sum(tonnes))#,
+#prop_na_value = ((sum(landed_value)-sum(affected_value))*100)/sum(landed_value))
+pl <- melt(d_plot2) 
+
+pl$fishing_entity[pl$fishing_entity == "Saint Pierre & Miquelon (France)"] <- "St P. & Miquelon (France)"
+#FIGURE2
+ggplot(pl, aes(fishing_entity, value, fill = variable)) +
+  scale_fill_manual(values = c("black", "grey"), name = "Assessed catch?",
+                    labels = c("Yes", "No")) +
+  #coord_polar() +
+  geom_bar(stat = "identity") +
+  # geom_hline(yintercept = seq(0, 500, by = 100), color = "grey80", size = 0.3) +
+  # scale_x_continuous(breaks = 0:24, expand = c(.002,0)) +
+  labs(x = "Fishing entity", y = "Proportion of total catch") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size = 16),
+        axis.text.y = element_text(size = 16),
+        axis.title = element_text(size = 18),
+        legend.title = element_text(size = 18),
+        legend.text = element_text(size = 16),
+        plot.title = element_text(size = 20))+
+  ggtitle("b)") 
+
+
+d_plot3 <- d_plot %>%
+  group_by(fishing_entity) %>%
+  summarise(total_catch = sum(tonnes))
+
+ggplot(d_plot3, aes(fishing_entity, total_catch)) +
+  geom_bar(stat = "identity") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+all <- d_plot %>%
+  group_by(fishing_entity) %>%
+  summarise(toneesFE = sum(tonnes),
+            landedvalueFE = sum(landed_value))
+all2 <- left_join(d_plot, all, by = "fishing_entity")
+all2 <- all2 %>%
+  mutate(catchdepFEEZ = round((tonnes/toneesFE)*100,4))
+
+
+#FIGURE5
+png(file = "paper_figures/figure_5.png", 
+    width = 20, height = 7, units = 'in', res = 600)
+ggplot(all2, aes(x = area_name, y = fishing_entity, fill = catchdepFEEZ)) +
+  geom_tile() + #data = subset(data, !is.na(fishing_entity))
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 10),
+        axis.text.y = element_text(size = 10),
+        title = element_text(size = 13),
+        legend.title = element_text(size = 8),
+        legend.text = element_text(size = 11)) +
+  scale_fill_gradientn("Catch dependency\non EEZ (%)", 
+                       colours = myP) + #c("blue","white","red")
+  xlab("Economic Exclusive Zones") + ylab("Fishing entities") 
+dev.off()
+
+
 
 
 ####FINAL TABLE of most vulnerable countries
@@ -284,6 +351,9 @@ colnames(DepthTable)
 DepthTable <- DepthTable[ , c(3, 2, 8, 1, 31)]
 
 write.csv(DepthTable, "paper_tables/depthtable.csv")
+
+
+
 
 
 ##################################### SUPPLEMENTARY MATERIALS #############################################
