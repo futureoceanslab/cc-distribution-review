@@ -10,6 +10,7 @@ library(tidyverse)
 library(ggrepel)#geom_text_repel
 library(stringr)
 source("function_multiplot.R")
+library(reshape2)#melt function
 
 #Open Biblio_data with SAU data on FE
 data_original <- read.csv("data/biblio_database_full.csv")
@@ -50,13 +51,8 @@ depth <- subset (data, response == "depth")
 #Color palette
 myP <- rev(brewer.pal(n = 8, name = 'RdBu'))
 
-# REMOVE OUTLIERS in impact. remove decadal_change>300, one observation
-# range(data$decadal_change)
-# plot(data$decadal_change, data$id_obs) #to check for outliers
-# data <- subset(data, data$decadal_change < 300)
 
 #####2. FIGURE 3 ####
-
 #Changing a few names for plotting
 lat <- latitude
 dep <- depth
@@ -70,7 +66,6 @@ lat$area_name[lat$area_name == "USA (Alaska, Subarctic)"] <- "Alaska"
 dep$area_name[dep$area_name == "USA (Alaska, Subarctic)"] <- "Alaska"
 lat$area_name[lat$area_name == "Japan (main islands)"] <- "Japan"
 dep$area_name[dep$area_name == "Japan (main islands)"] <- "Japan"
-
 
 #LAT
 P3 <- ggplot(lat, aes(catchdepFE*100, decadal_change, 
@@ -197,38 +192,16 @@ ggplot(d4, aes(HDI, affected_catch_prop)) +
         legend.title = element_text(size = 18),
         legend.text = element_text(size = 16)) 
 dev.off()
-rm(c, d, dd, ddd)
+rm(d, dd, ddd)
 
-#####4. FIGURE 5 ####
-
-# data$area_name_simpl <- data$area_name
-# data$area_name_simpl[grep("USA", data$area_name_simpl)] <- "USA"
-# data$area_name_simpl[grep("Denmark", data$area_name_simpl)] <- "Denmark"
-# data$area_name_simpl[grep("Germany", data$area_name_simpl)] <- "Germany"
-# data$area_name_simpl[grep("Sweden", data$area_name_simpl)] <- "Sweden"
-# data$area_name_simpl[grep("UK", data$area_name_simpl)] <- "United Kingdom"
-# data$area_name_simpl[grep("Japan", data$area_name_simpl)] <- "Japan"
-# data$area_name_simpl[grep("Canada", data$area_name_simpl)] <- "Canada"
-# data$area_name_simpl[grep("Spain", data$area_name_simpl)] <- "Spain"
-# data$area_name_simpl[grep("France", data$area_name_simpl)] <- "France"
-# data$area_name_simpl[grep("Portugal", data$area_name_simpl)] <- "Portugal"
-# data$area_name_simpl[grep("Africa", data$area_name_simpl)] <- "South Africa"
-# 
-# #add within/outside EEZ var
-# data$in_out <- "outside"
-# for (i in 1:dim(data)[1]) {
-#   if(identical(data[i,15], data[i,33])==T) {
-#     data$in_out[i] <- "within"
-#   }
-# }
-
-
+#####4. OTHER FIGURES ####
+#Read data for all fishing countries
 path <- "data/data_FE_SAU/" #Final_SAU_FE, script integration SAU
 l <- list.files(path, pattern = ".csv")
 l2 <- str_sub(l, end = -5) 
 names <- unique(data_original$fishing_entity)[-c(11,24)] #data from script 5
 names %in% l2
-Final_SAU_FE <- read.csv("SAU_all.csv") #FINAL SAU FE l. 90
+Final_SAU_FE <- read.csv("data/SAU_all.csv") #FINAL SAU FE l. 90
 Final_SAU_FE$fishing_entity[Final_SAU_FE$fishing_entity == "Faeroe Isl.(Denmark)"] <- "Faeroe Isl"
 Final_SAU_FE$fishing_entity[Final_SAU_FE$fishing_entity == "Azores Isl. (Portugal)"] <- "Azores Isl"
 names %in% unique(Final_SAU_FE$fishing_entity)
@@ -242,14 +215,14 @@ df <- data1 %>%
                   landed_value = mean(landed_value, na.rm = T))
 
 #REVISIONS
-# rev <- data %>% 
+# rev <- data %>%
 #         group_by(fishing_entity, area_name) %>%
 #         summarise(tonnes = unique(tonnesFEEZ))
 # rev[1,3]
 # df[1,3]
-# rev2 <- left_join(rev, data3, by = c("fishing_entity", "area_name"))
+# rev2 <- left_join(rev, df, by = c("fishing_entity", "area_name"))
 
-dataa <- data_original %>% 
+dataa <- data %>% 
             group_by(fishing_entity, area_name, scientific_name) %>%
             summarise(tonnesFEsp = unique(tonnesFEsp),
                       landedvalueFEsp = unique(landedvalueFEsp)) %>%
@@ -268,8 +241,7 @@ d_plot$value_affect_prop <- round((d_plot$affected_value*100)/d_plot$landed_valu
 d_plot$tot_catch <- d_plot$catch_na_prop + d_plot$catch_affect_prop
 d_plot$tot_value <- d_plot$value_na_prop + d_plot$value_affect_prop  
 
-angola <- filter(d_plot, fishing_entity %in% c("Angola","Azores Isl",
-                                               "Belgium","Canada"))
+
 d_plot2 <- d_plot %>%
   group_by(fishing_entity) %>%
   summarise(#total_catch = sum(tonnes),
@@ -282,8 +254,10 @@ pl <- melt(d_plot2)
 
 pl$fishing_entity[pl$fishing_entity == "Saint Pierre & Miquelon (France)"] <- "St P. & Miquelon (France)"
 #FIGURE2
+png(file = "paper_figures/figure_2b.png", 
+    width = 11, height = 7, units = 'in', res = 600)
 ggplot(pl, aes(fishing_entity, value, fill = variable)) +
-  scale_fill_manual(values = c("black", "grey"), name = "Assessed catch?",
+  scale_fill_manual(values = c("black", "grey"), name = "Affected catch?",
                     labels = c("Yes", "No")) +
   #coord_polar() +
   geom_bar(stat = "identity") +
@@ -298,15 +272,31 @@ ggplot(pl, aes(fishing_entity, value, fill = variable)) +
         legend.text = element_text(size = 16),
         plot.title = element_text(size = 20))+
   ggtitle("b)") 
+dev.off()
 
 
 d_plot3 <- d_plot %>%
-  group_by(fishing_entity) %>%
-  summarise(total_catch = sum(tonnes))
-
-ggplot(d_plot3, aes(fishing_entity, total_catch)) +
+            group_by(fishing_entity) %>%
+            summarise(total_catch = sum(tonnes),
+                      affected_catch = sum(affected_catch))
+d_plot3 <- melt(d_plot3) 
+#ALTERNATIVE 2b pr SI
+png(file = "paper_figures/figure_2b_alternative1.png", 
+    width = 11, height = 7, units = 'in', res = 600)
+ggplot(d_plot3, aes(fishing_entity, value, fill = fct_rev(variable))) +
   geom_bar(stat = "identity") +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  scale_fill_manual(values = c("black", "grey"), name = "Affected catch?",
+                    labels = c("Yes", "Non-assessed")) +
+  labs(x = "Fishing entity", y = "Total catch (t)") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size = 16),
+        axis.text.y = element_text(size = 16),
+        axis.title = element_text(size = 18),
+        legend.title = element_text(size = 18),
+        legend.text = element_text(size = 16),
+        plot.title = element_text(size = 20))
+dev.off()
 
 all <- d_plot %>%
   group_by(fishing_entity) %>%
@@ -316,8 +306,43 @@ all2 <- left_join(d_plot, all, by = "fishing_entity")
 all2 <- all2 %>%
   mutate(catchdepFEEZ = round((tonnes/toneesFE)*100,4))
 
+#Figure 2b alternative
+dataa2 <- data %>% 
+  group_by(fishing_entity) %>%
+  summarise(response = paste(unique(response), collapse = "-"),
+            affected_catch = unique(tonnesFE)) #it's total catch but name changed for plotting purposes
 
-#FIGURE5
+dataa2$response[dataa2$response == "depth-latitude"] <- "latitude-depth"
+
+d4$response <- "non-assessed"
+d42 <- d4[,c(1,12,7)]
+colnames(d42)[3] <- "affected_catch"
+
+n1 <- dataa2[,1:2]
+n1 <- right_join(n1, d42[,-2], by = "fishing_entity")
+n2 <- d42[,1:2]
+n2 <- left_join(n2, dataa2[,-2], by = "fishing_entity")
+d_plot <- rbind(n1, n2)
+
+png(file = "paper_figures/figure_2b_alternative2.png", 
+    width = 11, height = 7, units = 'in', res = 600)
+ggplot(d_plot, aes(fishing_entity, affected_catch, fill = response)) +
+  geom_bar(stat = "identity") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  
+  scale_fill_manual(values = c("hotpink", "limegreen", "grey"), name = "Affected catch?",
+                    labels = c("Latitude", "Latitude & Depth","Non-assessed")) +
+  labs(x = "Fishing entity", y = "Total catch (t)") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size = 16),
+        axis.text.y = element_text(size = 16),
+        axis.title = element_text(size = 18),
+        legend.title = element_text(size = 18),
+        legend.text = element_text(size = 16),
+        plot.title = element_text(size = 20))
+dev.off()
+
+#FIGURE5 (OLD)
 png(file = "paper_figures/figure_5.png", 
     width = 20, height = 7, units = 'in', res = 600)
 ggplot(all2, aes(x = area_name, y = fishing_entity, fill = catchdepFEEZ)) +
@@ -333,9 +358,64 @@ ggplot(all2, aes(x = area_name, y = fishing_entity, fill = catchdepFEEZ)) +
   xlab("Economic Exclusive Zones") + ylab("Fishing entities") 
 dev.off()
 
+#FIGURE5 (NEW)
+df2 <- left_join(all2, dataa, by = c("fishing_entity", "area_name"))
 
+#Same names in "fishing_entity" and "area_name"
+df2$area_name_simpl <- df2$area_name
+df2$area_name_simpl[grep("USA", df2$area_name_simpl)] <- "USA"
+df2$area_name_simpl[grep("Denmark", df2$area_name_simpl)] <- "Denmark"
+df2$area_name_simpl[grep("Germany", df2$area_name_simpl)] <- "Germany"
+df2$area_name_simpl[grep("Sweden", df2$area_name_simpl)] <- "Sweden"
+df2$area_name_simpl[grep("UK", df2$area_name_simpl)] <- "United Kingdom"
+df2$area_name_simpl[grep("Japan", df2$area_name_simpl)] <- "Japan"
+df2$area_name_simpl[grep("Canada", df2$area_name_simpl)] <- "Canada"
+df2$area_name_simpl[grep("Spain", df2$area_name_simpl)] <- "Spain"
+df2$area_name_simpl[grep("France", df2$area_name_simpl)] <- "France"
+df2$area_name_simpl[grep("Africa", df2$area_name_simpl)] <- "South Africa"
+df2$area_name_simpl[df2$area_name_simpl == "Azores Isl. (Portugal)"] <- "Portugal"
+df2$area_name_simpl[grep("Portugal", df2$area_name_simpl)] <- "Portugal"
+df2$fishing_entity[df2$fishing_entity == "Azores Isl"] <- "Portugal"
+df2$fishing_entity[df2$fishing_entity == "Saint Pierre & Miquelon (France)"] <- "France"
+unique(df2$area_name_simpl) %in% unique(df2$fishing_entity)
 
+#add own/other EEZ var
+df2$in_out <- "other"
+df2 <- as.data.frame(df2)
+for (i in 1:dim(df2)[1]) {
+  if(identical(df2[i,colnames(df2) == "fishing_entity"], df2[i,colnames(df2) == "area_name_simpl"])==T) {
+    df2$in_out[i] <- "own"
+  }
+}
 
+dataa3 <- df2 %>%
+            group_by(fishing_entity, in_out) %>%
+            summarise(eez_number = n(),
+                      affected_catch = sum(affected_catch.x, na.rm = T),
+                      eez_total_catch = sum(tonnes, na.rm = T))
+
+dataa3 <- melt(dataa3, id.vars = c("fishing_entity", "in_out", "eez_number"))
+dataa3 <- filter(dataa3, !fishing_entity == "St Pierre & Miquelon (Fr)")
+
+ggplot(dataa3, aes(fct_rev(fishing_entity), value, fill = variable)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = c("black", "grey"), name = "Affected catch?",
+                    labels = c("Yes", "Non-assessed")) +
+  geom_text(data = subset(dataa3, variable == "affected_catch"),
+            aes(fishing_entity, value, label = eez_number), size = 4, hjust = -0.2) +
+  facet_grid(~ in_out, space = "free") + #scales="free", 
+  coord_flip()+
+  labs(x = "Fishing entity", y = "Total catch (t)") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size = 16),
+        axis.text.y = element_text(size = 16),
+        axis.title = element_text(size = 18),
+        legend.title = element_text(size = 18),
+        legend.text = element_text(size = 16),
+        plot.title = element_text(size = 20),
+        strip.text.x = element_text(size = 16)) 
+
+                 
 ####FINAL TABLE of most vulnerable countries
 
 ##Latitude
