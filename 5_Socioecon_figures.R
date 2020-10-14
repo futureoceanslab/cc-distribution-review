@@ -380,11 +380,11 @@ df2$fishing_entity[df2$fishing_entity == "Saint Pierre & Miquelon (France)"] <- 
 unique(df2$area_name_simpl) %in% unique(df2$fishing_entity)
 
 #add own/other EEZ var
-df2$in_out <- "other"
+df2$in_out <- "Other EEZ"
 df2 <- as.data.frame(df2)
 for (i in 1:dim(df2)[1]) {
   if(identical(df2[i,colnames(df2) == "fishing_entity"], df2[i,colnames(df2) == "area_name_simpl"])==T) {
-    df2$in_out[i] <- "own"
+    df2$in_out[i] <- "Own EEZ"
   }
 }
 
@@ -401,8 +401,8 @@ ggplot(dataa3, aes(fct_rev(fishing_entity), value, fill = variable)) +
   geom_bar(stat = "identity") +
   scale_fill_manual(values = c("black", "grey"), name = "Affected catch?",
                     labels = c("Yes", "Non-assessed")) +
-  geom_text(data = subset(dataa3, variable == "affected_catch"),
-            aes(fishing_entity, value, label = eez_number), size = 4, hjust = -0.2) +
+  # geom_text(data = subset(dataa3, variable == "affected_catch"),
+  #           aes(fishing_entity, value, label = eez_number), size = 4, hjust = -0.2) +
   facet_grid(~ in_out, space = "free") + #scales="free", 
   coord_flip()+
   labs(x = "Fishing entity", y = "Total catch (t)") +
@@ -413,7 +413,7 @@ ggplot(dataa3, aes(fct_rev(fishing_entity), value, fill = variable)) +
         legend.title = element_text(size = 18),
         legend.text = element_text(size = 16),
         plot.title = element_text(size = 20),
-        strip.text.x = element_text(size = 16)) 
+        strip.text.x = element_text(size = 14)) 
 
                  
 ####FINAL TABLE of most vulnerable countries
