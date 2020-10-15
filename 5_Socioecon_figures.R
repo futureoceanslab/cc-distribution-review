@@ -131,23 +131,14 @@ dev.off()
 rm(P3, P4, lat, dep)
 
 #####3. FIGURE 4 ####
-d <- data %>% 
-      group_by(fishing_entity) %>% 
-      summarise(landedvalueFE = unique(landedvalueFE))
-
 gdp <- read.csv("data/gdp_country.csv")
-
-dd <- full_join(d, gdp, by = "fishing_entity")
-dd$gdp_contribution <- (dd$landedvalueFE/dd$gdp)*100
-
 HDI <- read.csv("data/HDI.csv")
-dd <- full_join(dd, HDI, by = "fishing_entity")
-
-ddd <- dd[complete.cases(dd), ]
+dd <- full_join(gdp, HDI, by = "fishing_entity")
+dd <- dd[complete.cases(dd), ]
 
 country_code <- read.csv("data/country_code.csv")
-d4 <- left_join(ddd, country_code, by = "fishing_entity")
-rm(country_code, HDI, gdp)
+d_other_var <- left_join(dd, country_code, by = "fishing_entity")
+rm(country_code, HDI, gdp, dd)
 
 #VERIFICATIONS OK!
 # a <- data %>%
@@ -161,27 +152,28 @@ rm(country_code, HDI, gdp)
 #         summarise(catchdepFEEZ = sum(catchdepFEEZ))
 # a2$prop_catchdepFEEZ <- round(a2$catchdepFEEZ*100,0)
 
-c <- data %>% ###LATITUDE OR DATA!!!!!!!!!!!!!!!!!
-      group_by(fishing_entity, area_name, scientific_name) %>%
-      summarise(tonnesFEsp = unique(tonnesFEsp),
-                landedvalueFEsp = unique(landedvalueFEsp),
-                tonnesFE = unique(tonnesFE)) %>%
-      group_by(fishing_entity) %>%
-      summarise(affected_catch = sum(tonnesFEsp),
-                affected_value = sum(landedvalueFEsp),
-                tonnesFE = unique(tonnesFE),
-                affected_catch_prop = round((affected_catch/tonnesFE)*100,2))
+d_FE <- data %>% ###LATITUDE OR DATA!!!!!!!!!!!!!!!!!
+          group_by(fishing_entity, area_name, scientific_name) %>%
+          summarise(tonnesFEsp = unique(tonnesFEsp),
+                    landedvalueFEsp = unique(landedvalueFEsp),
+                    tonnesFE = unique(tonnesFE),
+                    landedvalueFE = unique(landedvalueFE)) %>%
+          group_by(fishing_entity) %>%
+          summarise(affected_catch = sum(tonnesFEsp),
+                    affected_value = sum(landedvalueFEsp),
+                    tonnesFE = unique(tonnesFE),
+                    landedvalueFE = unique(landedvalueFE),
+                    affected_catch_prop = round((affected_catch/tonnesFE)*100,2))
 
-d4 <- left_join(d4, c, by = "fishing_entity")
-# dddd$affected_catch_gdp <- (dddd$affected_catch/dddd$gdp)*100
-d4$affected_value_gdp <- (d4$affected_value/d4$gdp)*100
+d_other_var <- left_join(d_FE, d_other_var, by = "fishing_entity")
+d_other_var$affected_value_gdp <- (d_other_var$affected_value/d_other_var$gdp)*100
 
 #FIGURE4!!!!!!!!!!!!!!
 png(file = "paper_figures/figure_4.png", 
     width = 11, height = 7, units = 'in', res = 600)
-ggplot(d4, aes(HDI, affected_catch_prop)) +
+ggplot(d_other_var, aes(HDI, affected_catch_prop)) +
   geom_point(aes(size =affected_value_gdp)) +
-  geom_text_repel(aes(label = ifelse(gdp_contribution>0,as.character(Code),'')),
+  geom_text_repel(aes(label = Code),
                   hjust=0, vjust=0, size = 5) +
   ylab("Maximum affected catch prop.") +
   guides(size = guide_legend(title = "Maximum affected \ngdp prop.")) +
@@ -192,7 +184,6 @@ ggplot(d4, aes(HDI, affected_catch_prop)) +
         legend.title = element_text(size = 18),
         legend.text = element_text(size = 16)) 
 dev.off()
-rm(d, dd, ddd)
 
 #####4. OTHER FIGURES ####
 #Read data for all fishing countries
@@ -206,30 +197,30 @@ Final_SAU_FE$fishing_entity[Final_SAU_FE$fishing_entity == "Faeroe Isl.(Denmark)
 Final_SAU_FE$fishing_entity[Final_SAU_FE$fishing_entity == "Azores Isl. (Portugal)"] <- "Azores Isl"
 names %in% unique(Final_SAU_FE$fishing_entity)
 data1 <- filter(Final_SAU_FE, fishing_entity %in% names)#all our fishing entities
-df <- data1 %>%
-        group_by(fishing_entity, area_name, year) %>%
-        summarise(tonnes = sum(tonnes, na.rm = T),
-                  landed_value = sum(landed_value, na.rm = T)) %>%
-        group_by(fishing_entity, area_name) %>%
-        summarise(tonnes = mean(tonnes, na.rm = T),
-                  landed_value = mean(landed_value, na.rm = T))
-
+dall_FE_area <- data1 %>%
+              group_by(fishing_entity, area_name, year) %>%
+              summarise(tonnes = sum(tonnes, na.rm = T),
+                        landed_value = sum(landed_value, na.rm = T)) %>%
+              group_by(fishing_entity, area_name) %>%
+              summarise(tonnes = mean(tonnes, na.rm = T),
+                        landed_value = mean(landed_value, na.rm = T))
+rm(data1, path, l, l2, names)
 #REVISIONS
 # rev <- data %>%
 #         group_by(fishing_entity, area_name) %>%
 #         summarise(tonnes = unique(tonnesFEEZ))
 # rev[1,3]
-# df[1,3]
-# rev2 <- left_join(rev, df, by = c("fishing_entity", "area_name"))
+# dall_FE_area[1,3]
+# rev2 <- left_join(rev, dall_FE_area, by = c("fishing_entity", "area_name"))
 
-dataa <- data %>% 
+d_area <- data %>% 
             group_by(fishing_entity, area_name, scientific_name) %>%
             summarise(tonnesFEsp = unique(tonnesFEsp),
                       landedvalueFEsp = unique(landedvalueFEsp)) %>%
             group_by(fishing_entity, area_name) %>% 
             summarise(affected_catch = sum(tonnesFEsp, na.rm = T),
                       affected_value = sum(landedvalueFEsp, na.rm = T))
-d_plot <- left_join(df, dataa, by = c("fishing_entity", "area_name"))
+d_plot <- left_join(dall_FE_area, d_area, by = c("fishing_entity", "area_name"))
 d_plot[is.na(d_plot)] <- 0
 d_plot$na_catch <- d_plot$tonnes - d_plot$affected_catch
 d_plot$na_value <- d_plot$landed_value - d_plot$affected_value
@@ -314,14 +305,14 @@ dataa2 <- data %>%
 
 dataa2$response[dataa2$response == "depth-latitude"] <- "latitude-depth"
 
-d4$response <- "non-assessed"
-d42 <- d4[,c(1,12,7)]
-colnames(d42)[3] <- "affected_catch"
+d_other_var$response <- "non-assessed"
+d42 <- d_other_var[,colnames(d_other_var) %in% c("fishing_entity", 
+                                                 "response", 
+                                                 "affected_catch")]
+# colnames(d42)[3] <- "affected_catch"
 
-n1 <- dataa2[,1:2]
-n1 <- right_join(n1, d42[,-2], by = "fishing_entity")
-n2 <- d42[,1:2]
-n2 <- left_join(n2, dataa2[,-2], by = "fishing_entity")
+n1 <- cbind(d42[,c("fishing_entity", "response")], dataa2[,"affected_catch"])
+n2 <- cbind(dataa2[,c("fishing_entity", "response")], d42[,"affected_catch"])
 d_plot <- rbind(n1, n2)
 
 png(file = "paper_figures/figure_2b_alternative2.png", 
@@ -359,7 +350,7 @@ ggplot(all2, aes(x = area_name, y = fishing_entity, fill = catchdepFEEZ)) +
 dev.off()
 
 #FIGURE5 (NEW)
-df2 <- left_join(all2, dataa, by = c("fishing_entity", "area_name"))
+df2 <- left_join(all2, d_area, by = c("fishing_entity", "area_name"))
 
 #Same names in "fishing_entity" and "area_name"
 df2$area_name_simpl <- df2$area_name
