@@ -41,7 +41,10 @@ Fig1 <- ggplot() +
                 plot.title = element_text(size = 20)) +
           ggtitle("a)") 
 
-png(file = "paper_figures/figure_1.png", 
+# colfunc <- colorRampPalette(c("darkgreen", "yellow", "purple"))
+# colfunc(max(d$n)) #56 colors
+
+png(file = "paper_figures/figure_1a.png", 
     width = 13, height = 7, units = 'in', res = 600)
 Fig1
 dev.off()
@@ -92,7 +95,7 @@ eez <- left_join(regions, d3, by = "rgn_nam") #add species number
 
 # plot(eez[1], key.pos = 1) #1 -> only eez contours
 
-png(file = "paper_figures/eez_map.png", 
+png(file = "paper_figures/figure_2a.png", 
     width = 13, height = 7, units = 'in', res = 600)
 
 ggplot(eez[1:239,]) +

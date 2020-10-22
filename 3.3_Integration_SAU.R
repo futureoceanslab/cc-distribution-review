@@ -115,7 +115,7 @@ spmiss<-b[which(!b %in% d)]   ## list of unmatching(lost) species, 43 spp no mac
 spmiss0[which(spmiss0 %in% spmiss == F)]#three species that were not in EEZ SAU but are in FE SAU
 rm(a, b, c, d, spmiss, spmiss0)
 
-#total catch per species for Fishing entities (sum across species and eezs)
+#total catch per species for Fishing entities (sum across species and FEs)
 tonlandFEspT<- tonlandFEsp %>%
                 group_by(fishing_entity, scientific_name) %>%
                 summarise(tonnesFEspT=sum(tonnesFEsp, na.rm = T),
@@ -124,7 +124,7 @@ tonlandFEspT<- tonlandFEsp %>%
 ReviewDatFB_SAU2 <- left_join(ReviewDatFB_SAU1, tonlandFEspT, by = c("fishing_entity", "scientific_name"))
 
 
-#Total catch per fishing entity (mean across fishing entities)
+#Total catch per fishing entity (sum across fishing entities)
 tonlandFE<- tonlandFEspT %>%
               group_by(fishing_entity) %>%
               summarise(tonnesFE = sum(tonnesFEspT, na.rm = T),
@@ -132,16 +132,13 @@ tonlandFE<- tonlandFEspT %>%
 
 ReviewDatFB_SAU3 <- left_join(ReviewDatFB_SAU2, tonlandFE, by = c("fishing_entity"))
 
-#Total catch per fishing entity in EEZ (annual mean 2010-2014)
-tonlandFEEZyear <- Final_SAU_FE %>%
-                    group_by(fishing_entity, area_name, year) %>%
-                    summarise(tonnesFEEZyear = sum(tonnes, na.rm = T),
-                              landedvalueFEZZyear = sum(landed_value, na.rm = T))
+#Total catch per fishing entity in EEZ (sum across FE and EEZs)
+tonlandFEEZ <- tonlandFEsp %>% 
+                   group_by(fishing_entity, area_name) %>%
+                   summarise(tonnesFEEZ = sum(tonnesFEsp, na.rm = T),
+                             landedvalueFEEZ = sum(landedvalueFEsp, na.rm = T))
+  
 
-tonlandFEEZ <- tonlandFEEZyear %>% 
-                group_by(fishing_entity, area_name) %>%
-                summarise(tonnesFEEZ = mean(tonnesFEEZyear, na.rm = T),
-                          landedvalueFEEZ = mean(landedvalueFEZZyear, na.rm = T))
 
 Biblio_data <- left_join(ReviewDatFB_SAU3, tonlandFEEZ, by=c("fishing_entity", "area_name"))
 

@@ -88,8 +88,21 @@ give.n <- function(x){
 lat2 <- lat %>%
           group_by(sign, taxa) %>%
           summarise(n = n())
-col1 <- c("chartreuse2", "darkgreen", "mediumorchid4", "darkgreen", "darkgreen")#5 colors
-col2 <- c("chartreuse2", "darkgreen", "mediumorchid2", "darkgreen",  "darkgreen")#5 colors
+
+#palette from map
+colfunc <- colorRampPalette(c("darkgreen", "yellow", "purple"))
+c <- colfunc(56)
+
+lat2$col <- NA
+for (i in 1:dim(lat2)[1]) {
+  search <- lat2$n[i]
+  lat2$col[i] <- c[search]
+}
+
+lat2$col[is.na(lat2$col) == T] <- "purple4"
+
+col1 <- lat2$col[1:5]#5 colors
+col2 <- lat2$col[6:10]#5 colors
 
 lat.barplot <- ggplot(lat, aes(taxa, decadal_change)) + 
                 geom_boxplot(data = subset(lat, decadal_change >= 0), 
@@ -97,14 +110,10 @@ lat.barplot <- ggplot(lat, aes(taxa, decadal_change)) +
                              na.rm = T, outlier.shape = 1, outlier.size = 0.1) +
                 stat_summary(data = subset(lat, decadal_change >= 0), 
                              fun.data = give.n, geom = "text", color = "black", fontface = 2)+
-                # geom_text(stat="count", data = subset(lat, decadal_change >= 0), 
-                #           aes(label=paste0("n=",..count..)), 
-                #           y=1.05*max(lat$decadal_change)) +
                 expand_limits(y=1.05*max(lat$decadal_change)) +
                 geom_boxplot(data = subset(lat, decadal_change < 0), 
                              aes(taxa, decadal_change), fill = col2,  
                              na.rm = T, outlier.shape = 1, outlier.size = 0.1) +
-                # geom_text(stat="count", data = subset(lat, decadal_change < 0), aes(label=paste0("n=",..count..)), y=1.05*min(lat$decadal_change)) +
                 stat_summary(data = subset(lat, decadal_change < 0), fun.data = give.n, geom = "text", color = "black", fontface = 2)+
                 geom_hline(yintercept = c(0), linetype = "dotted") +
                 scale_y_continuous(name = "km/decade", breaks = seq(-100, 200, by = 50)) +
@@ -116,7 +125,7 @@ lat.barplot <- ggplot(lat, aes(taxa, decadal_change)) +
                       axis.title.y = element_text(size = 16),
                       axis.text.x = element_text(size = 14),
                       axis.text.y = element_text(size = 14),
-                      title = element_text(size = 16)) +
+                      title = element_text(size = 17)) +
                 ggtitle("b)")
 
 #########
@@ -130,9 +139,17 @@ depth$decadal_change_reversed <- (-1)*depth$decadal_change
 depth2 <- depth %>%
             group_by(sign, taxa) %>%
             summarise(n = n())
-col1 <- c("darkgreen", "mediumorchid4", "darkgreen", "darkgreen")#5 colors
-col2 <- c("darkgreen", "darkgreen", "mediumorchid2", "darkgreen",  "darkgreen")#5 colors
 
+depth2$col <- NA
+for (i in 1:dim(depth2)[1]) {
+  search <- depth2$n[i]
+  depth2$col[i] <- c[search]
+}
+
+depth2$col[is.na(depth2$col) == T] <- "purple4"
+
+col1 <- depth2$col[1:4]#5 colors
+col2 <- depth2$col[5:9]#5 colors
 
 #taxa barplot depth
 depth.barplot <- ggplot(depth, aes(taxa, decadal_change)) +
@@ -156,20 +173,16 @@ depth.barplot <- ggplot(depth, aes(taxa, decadal_change)) +
                         axis.title.y = element_text(size = 16),
                         axis.text.x = element_text(size = 14),
                         axis.text.y = element_text(size = 14),
-                        title = element_text(size = 16)) +
+                        title = element_text(size = 17)) +
                   ggtitle("c)")
 
 #saving figures
-#join.lat.depth <- plot_grid(lat.barplot, Fig2.lat, depth.barplot, Fig2.depth, labels = c("A", "B", "C", "D"), align="hv")
-#plot(join.lat.depth)
-#ggsave("paper_figures/join_lat_depth.jpeg")
-
 png(file = "paper_figures/figure_1bc.png", 
-    width = 16, height = 7, units = 'in', res = 600)
+    width = 13, height = 7, units = 'in', res = 600)
 multiplot(lat.barplot, depth.barplot, cols = 2)
 dev.off()
 
 png(file = "paper_figures/ssmm_1.png", 
-    width = 10, height = 7, units = 'in', res = 600)
+    width = 13, height = 7, units = 'in', res = 600)
 multiplot(ssmm)
 dev.off()
