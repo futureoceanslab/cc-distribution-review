@@ -157,7 +157,7 @@ png(file = "paper_figures/figure_3b.png",
  P4
 dev.off()
 
-rm(P3, P4, lat, dep)
+rm(P3, P4, lat, dep, depth, latitude)
 
 #####3. FIGURE 4 ####
 gdp <- read.csv("data/gdp_country.csv")
@@ -235,7 +235,7 @@ dev.off()
 path <- "data/data_FE_SAU/" #Final_SAU_FE, script integration SAU
 l <- list.files(path, pattern = ".csv")
 l2 <- str_sub(l, end = -5) 
-names <- unique(data_original$fishing_entity)[-c(11,24)] #data from script 5
+names <- unique(data_original$fishing_entity)[-c(11,24)] 
 names %in% l2
 Final_SAU_FE <- read.csv("data/SAU_all.csv") #FINAL SAU FE l. 90
 Final_SAU_FE$fishing_entity[Final_SAU_FE$fishing_entity == "Faeroe Isl.(Denmark)"] <- "Faeroe Isl"
@@ -253,7 +253,7 @@ dall_FE_area <- data1 %>%
                   summarise(tonnesFEEZ = sum(tonnesFEsp, na.rm = T),
                             landed_valueFEEZ = sum(landedvalueFEsp, na.rm = T))
 
-rm(data1, path, l, l2, names)
+rm(data1, path, l, l2, names, Final_SAU_FE)
 #REVISIONS
 # rev <- data %>%
 #         group_by(fishing_entity, area_name) %>%
@@ -362,18 +362,12 @@ dev.off()
 
 
 #FIGURE4
-all <- d_plot %>%
-  group_by(fishing_entity) %>%
-  summarise(toneesFE = sum(tonnesFEEZ),
-            landedvalueFE = sum(landed_valueFEEZ))
-all2 <- left_join(d_plot, all, by = "fishing_entity")
-all2 <- all2 %>%
-  mutate(catchdepFEEZ = round((tonnesFEEZ/toneesFE)*100,4))
-
-df2 <- left_join(all2, d_area, by = c("fishing_entity", "area_name"))
+d_FE_subset <- d_FE[colnames(d_FE) %in% c ("fishing_entity", "tonnesFE", "landedvalueFE")] 
+df2 <- left_join(d_plot, d_FE_subset, by = "fishing_entity")
 
 #Same names in "fishing_entity" and "area_name"
 df2$area_name_simpl <- df2$area_name
+unique(df2$fishing_entity)[unique(df2$fishing_entity) %in% unique(df2$area_name_simpl) == F]
 df2$area_name_simpl[grep("USA", df2$area_name_simpl)] <- "USA"
 df2$area_name_simpl[grep("Denmark", df2$area_name_simpl)] <- "Denmark"
 df2$area_name_simpl[grep("Germany", df2$area_name_simpl)] <- "Germany"
@@ -388,7 +382,12 @@ df2$area_name_simpl[df2$area_name_simpl == "Azores Isl. (Portugal)"] <- "Portuga
 df2$area_name_simpl[grep("Portugal", df2$area_name_simpl)] <- "Portugal"
 df2$fishing_entity[df2$fishing_entity == "Azores Isl"] <- "Portugal"
 df2$fishing_entity[df2$fishing_entity == "Saint Pierre & Miquelon (France)"] <- "France"
-unique(df2$area_name_simpl) %in% unique(df2$fishing_entity)
+df2$area_name_simpl[grep("Russia", df2$area_name_simpl)] <- "Russian Federation"
+df2$area_name_simpl[grep("Faeroe", df2$area_name_simpl)]#Faroe
+df2$area_name_simpl[grep("Russia", df2$area_name_simpl)]
+unique(df2$fishing_entity) %in% unique(df2$area_name_simpl)
+unique(df2$fishing_entity)[unique(df2$fishing_entity) %in% unique(df2$area_name_simpl) == F]
+
 
 #add own/other EEZ var
 df2$in_out <- "Other EEZ"
@@ -402,21 +401,34 @@ for (i in 1:dim(df2)[1]) {
 dataa3 <- df2 %>%
             group_by(fishing_entity, in_out) %>%
             summarise(eez_number = n(),
-                      affected_catch = sum(affected_catch.x, na.rm = T),
-                      eez_total_catch = sum(tonnesFEEZ, na.rm = T))
+                      affected_catch = sum(affected_catch, na.rm = T),
+                      na_catch = sum(na_catch, na.rm = T))
 
-dataa3 <- melt(dataa3, id.vars = c("fishing_entity", "in_out", "eez_number"))
-dataa3 <- filter(dataa3, !fishing_entity == "St Pierre & Miquelon (Fr)")
+dataa3 <- left_join(dataa3, d_FE_subset, by = "fishing_entity") 
 
-ggplot(dataa3, aes(fct_rev(fishing_entity), value, fill = variable)) +
+dataa3 <- dataa3 %>%
+            mutate(affected_catch_prop = (affected_catch*100)/tonnesFE,
+                   na_catch_prop = (na_catch*100)/tonnesFE)
+
+verification <- dataa3 %>%
+                  group_by(fishing_entity) %>%
+                  summarise(total = sum(affected_catch_prop + na_catch_prop))
+#PORTUGAL!!!!!!!!!!!!!!!!!!
+d_plot5 <- melt(dataa3[,colnames(dataa3) %in% c ("fishing_entity", "in_out", "eez_number",
+                                                 "affected_catch_prop", "na_catch_prop")], 
+                id.vars = c("fishing_entity", "in_out", "eez_number"))
+
+d_plot5$in_out <- factor(d_plot5$in_out, levels = c("Own EEZ", "Other EEZ"))
+
+ggplot(d_plot5, aes(fct_rev(fishing_entity), value, fill = variable)) +
   geom_bar(stat = "identity") +
-  scale_fill_manual(values = c("black", "grey"), name = "Affected catch?",
+  scale_fill_manual(values = c("#045a8d", "grey"), name = "Affected catch?",
                     labels = c("Yes", "Non-assessed")) +
-  # geom_text(data = subset(dataa3, variable == "affected_catch"),
-  #           aes(fishing_entity, value, label = eez_number), size = 4, hjust = -0.2) +
+  # geom_text(data = subset(d_plot5, variable == "affected_catch_prop"),
+  #           aes(fishing_entity, value, label = eez_number), size = 4) +
   facet_grid(~ in_out, space = "free") + #scales="free", 
   coord_flip()+
-  labs(x = "Fishing entity", y = "Total catch (t)") +
+  labs(x = "Fishing entity", y = "% of catch") +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size = 16),
         axis.text.y = element_text(size = 16),
@@ -427,22 +439,6 @@ ggplot(dataa3, aes(fct_rev(fishing_entity), value, fill = variable)) +
         strip.text.x = element_text(size = 14)) 
 
                  
-####FINAL TABLE of most vulnerable countries
-
-##Latitude
-LatitudeTable <- subset(latitude, latitude$catchdepFE>0.05)
-colnames(LatitudeTable)
-LatitudeTable <- LatitudeTable[ , c(3, 2, 8, 1, 31)]
-
-write.csv(LatitudeTable, "paper_tables/latitudetable.csv")
-
-##Depth
-DepthTable <- subset(depth, depth$catchdepFE>0.04)
-colnames(DepthTable)
-DepthTable <- DepthTable[ , c(3, 2, 8, 1, 31)]
-
-write.csv(DepthTable, "paper_tables/depthtable.csv")
-
 
 
 
