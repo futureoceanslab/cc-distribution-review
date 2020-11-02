@@ -160,21 +160,11 @@ dev.off()
 rm(P3, P4, lat, dep, depth, latitude)
 
 #####3. FIGURE 4 ####
-gdp <- read.csv("data/gdp_country.csv")
-HDI <- read.csv("data/HDI.csv")
-dd <- full_join(gdp, HDI, by = "fishing_entity")
-dd <- dd[complete.cases(dd), ]
-
-country_code <- read.csv("data/country_code.csv")
-d_other_var <- left_join(dd, country_code, by = "fishing_entity")
-
 sdg <- read_xlsx("data/SDR2020Database.xlsx", sheet = 4)[,c(1:3,36,37)]
-colnames(sdg)[c(1,3,4,5)] <- c("fishing_entity", "sdg", "color_sdg14", "trend_sdg14")
-unique(d_other_var$fishing_entity)[unique(d_other_var$fishing_entity) %in% unique(sdg$fishing_entity) == F]
+colnames(sdg) <- c("fishing_entity", "country_code", "sdg", "color_sdg14", "trend_sdg14")
+unique(data$fishing_entity)[unique(data$fishing_entity) %in% unique(sdg$fishing_entity) == F]
 sdg$fishing_entity[sdg$fishing_entity == "United States"] <- "USA"
 sdg$fishing_entity[sdg$fishing_entity == "Korea, Rep."] <- "Korea (South)"
-d_other_var <- left_join(d_other_var, sdg, by = "fishing_entity")
-rm(country_code, HDI, gdp, dd, sdg)
 
 #VERIFICATIONS OK!
 # a <- data %>%
@@ -201,8 +191,7 @@ d_FE <- data %>% ###our data by FE
                     landedvalueFE = unique(landedvalueFE),
                     affected_catch_prop = round((affected_catch/tonnesFE)*100,2))
 
-d_other_var <- left_join(d_FE, d_other_var, by = "fishing_entity")
-d_other_var$affected_value_gdp <- (d_other_var$affected_value/d_other_var$gdp)*100
+d_other_var <- left_join(d_FE, sdg, by = "fishing_entity")
 
 #FIGURE5!!!!!!!!!!!!!!
 d_other_var$color_sdg14 <- factor(d_other_var$color_sdg14, levels = c("yellow", "orange", "red"))
@@ -215,7 +204,7 @@ ggplot(d_other_var[complete.cases(d_other_var), ],
              size = 8) +
   scale_color_manual(values = c("yellow", "orange", "red"), 
                      labels = c("Challenges remain", "Significant challenges", "Major challenges")) +
-  geom_text_repel(aes(label = Code),
+  geom_text_repel(aes(label = country_code),
                   hjust=0, vjust=0, size = 5) +
   ylab("Affected catch prop.") +
   xlab("SDG total score") +
@@ -436,10 +425,74 @@ ggplot(d_plot5c, aes(fct_rev(fishing_entity), value, fill = variable)) +
         plot.title = element_text(size = 20),
         strip.text.x = element_text(size = 14)) 
 
-                 
+write.csv(d_plot5c, "data.csv", row.names = F)      
+ggplot(d_plot5c, aes(x = fishing_entity, fill = variable)) + 
+  scale_fill_manual(values = c("#045a8d", "grey"), name = "Affected catch?",
+                    labels = c("Yes", "Non-assessed")) +
+  geom_bar(data = subset(d_plot5c, in_out == "Other EEZ"), 
+           aes(y = -value, label = eez_number),
+           position = position_stack(reverse = T), 
+           stat = "identity") +
+  geom_bar(data = subset(d_plot5c, in_out == "Own EEZ"),
+           aes(y = value, label = eez_number), 
+           position = position_stack(reverse = T), 
+           stat = "identity") +
+  coord_flip() +
+  xlab("Fishing entity") +
+  ylab("Catch %") +
+  theme_bw() +
+  theme(axis.text = element_text(size = 16, color = "black"),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size = 16),
+        axis.text.y = element_text(size = 16),
+        axis.title = element_text(size = 18),
+        legend.title = element_text(size = 18),
+        legend.text = element_text(size = 16),
+        plot.title = element_text(size = 18),
+        strip.text.x = element_text(size = 14)) +
+  geom_hline(yintercept= 0, color = "black") +
+  scale_y_continuous(labels = abs) 
 
+data <- d_plot5c
 
+data$eez_number[data$variable == "affected_catch_prop"] <- NA
 
+nudge_fun <- function(df){
+  ifelse(df$in_out == "Own EEZ", -102-df$value, 102-df$value)
+}
+
+ggplot(data, aes(x = fishing_entity, fill = variable)) + 
+  scale_fill_manual(values = c("#045a8d", "grey"), name = "Affected catch?",
+                    labels = c("Yes", "Non-assessed")) +
+  geom_bar(data = subset(data, in_out == "Own EEZ"),
+           aes(y = -value), 
+           position = position_stack(reverse = T), 
+           stat = "identity") +
+  geom_bar(data = subset(data, in_out == "Other EEZ"), 
+           aes(y = value),
+           position = position_stack(reverse = T), 
+           stat = "identity") +
+  # geom_text(aes(y = value, label = eez_number)) +
+  # geom_text(aes(y = -value -10, label = eez_number), size = 3.5, vjust = 0
+  # ) +
+  geom_text(aes(y = value, label = eez_number),
+            position = position_nudge(y = nudge_fun(data)),
+            size = 4
+  ) +
+  coord_flip() +
+  xlab("Fishing entity") +
+  ylab("Catch %") +
+  theme_bw() +
+  theme(axis.text = element_text(size = 16, color = "black"),
+        axis.text.x = element_text(size = 16),
+        axis.text.y = element_text(size = 16),
+        axis.title = element_text(size = 18),
+        legend.title = element_text(size = 18),
+        legend.text = element_text(size = 16),
+        plot.title = element_text(size = 18),
+        strip.text.x = element_text(size = 14)) +
+  geom_hline(yintercept= 0, color = "black") +
+  scale_y_continuous(labels = abs) +
+  ggtitle("                          Own EEZ                                                 Other EEZ")
 
 ##################################### SUPPLEMENTARY MATERIALS #############################################
 
