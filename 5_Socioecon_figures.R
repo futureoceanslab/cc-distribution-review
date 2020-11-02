@@ -355,7 +355,13 @@ d_plot5 <- left_join(d_plot, d_FE_subset, by = "fishing_entity")
 #Same names in "fishing_entity" and "area_name"
 d_plot5$area_name_simpl <- d_plot5$area_name
 unique(d_plot5$fishing_entity)[unique(d_plot5$fishing_entity) %in% unique(d_plot5$area_name_simpl) == F]
+d_plot5$area_name_simpl[grep("Faeroe", d_plot5$area_name_simpl)]#Faroe
+d_plot5$area_name_simpl[grep("Green", d_plot5$area_name_simpl)]#Greenland
+d_plot5$area_name_simpl[grep("Russia", d_plot5$area_name_simpl)]#Russia
+d_plot5$area_name_simpl[grep("Pierre", d_plot5$area_name_simpl)]#
 d_plot5$area_name_simpl[grep("USA", d_plot5$area_name_simpl)] <- "USA"
+d_plot5$area_name_simpl[d_plot5$area_name_simpl == "Greenland (Denmark)"] <- "Greenland"
+d_plot5$area_name_simpl[d_plot5$area_name_simpl == "Faeroe Isl. (Denmark)"] <- "Faeroe Isl"
 d_plot5$area_name_simpl[grep("Denmark", d_plot5$area_name_simpl)] <- "Denmark"
 d_plot5$area_name_simpl[grep("Germany", d_plot5$area_name_simpl)] <- "Germany"
 d_plot5$area_name_simpl[grep("Sweden", d_plot5$area_name_simpl)] <- "Sweden"
@@ -363,15 +369,13 @@ d_plot5$area_name_simpl[grep("UK", d_plot5$area_name_simpl)] <- "United Kingdom"
 d_plot5$area_name_simpl[grep("Japan", d_plot5$area_name_simpl)] <- "Japan"
 d_plot5$area_name_simpl[grep("Canada", d_plot5$area_name_simpl)] <- "Canada"
 d_plot5$area_name_simpl[grep("Spain", d_plot5$area_name_simpl)] <- "Spain"
+d_plot5$area_name_simpl[d_plot5$area_name_simpl == "Saint Pierre & Miquelon (France)"] <- "St Pierre & Miquelon (Fr)"
 d_plot5$area_name_simpl[grep("France", d_plot5$area_name_simpl)] <- "France"
 d_plot5$area_name_simpl[grep("Africa", d_plot5$area_name_simpl)] <- "South Africa"
-d_plot5$area_name_simpl[d_plot5$area_name_simpl == "Azores Isl. (Portugal)"] <- "Portugal"
+d_plot5$area_name_simpl[d_plot5$area_name_simpl == "Azores Isl. (Portugal)"] <- "Azores Isl"
 d_plot5$area_name_simpl[grep("Portugal", d_plot5$area_name_simpl)] <- "Portugal"
-d_plot5$fishing_entity[d_plot5$fishing_entity == "Azores Isl"] <- "Portugal"
-d_plot5$fishing_entity[d_plot5$fishing_entity == "Saint Pierre & Miquelon (France)"] <- "France"
+# d_plot5$fishing_entity[d_plot5$fishing_entity == "Azores Isl"] <- "Portugal"
 d_plot5$area_name_simpl[grep("Russia", d_plot5$area_name_simpl)] <- "Russian Federation"
-d_plot5$area_name_simpl[grep("Faeroe", d_plot5$area_name_simpl)]#Faroe
-d_plot5$area_name_simpl[grep("Russia", d_plot5$area_name_simpl)]
 unique(d_plot5$fishing_entity) %in% unique(d_plot5$area_name_simpl)
 unique(d_plot5$fishing_entity)[unique(d_plot5$fishing_entity) %in% unique(d_plot5$area_name_simpl) == F]
 
