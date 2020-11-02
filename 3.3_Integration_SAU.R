@@ -166,4 +166,4 @@ range(Biblio_data$catchdepFEEZ, na.rm = T)
 which(Biblio_data$catchdepFEEZ > 1)
 
 ##5. OUTPUT FILE####
-write.csv(Biblio_data, file = "data/biblio_database_full0.csv", row.names = F)
+write.csv(Biblio_data, file = "data/biblio_database_full.csv", row.names = F)
