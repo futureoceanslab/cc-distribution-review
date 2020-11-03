@@ -435,6 +435,10 @@ data <- d_plot5c
 
 data$eez_number[data$variable == "affected_catch_prop"] <- NA
 
+data[dim(data)[1]+1,] <- c("Azores Isl", "Other EEZ", 0, "na_catch_prop", 0)
+data$eez_number <- as.numeric(data$eez_number)
+data$value <- as.numeric(data$value)
+
 nudge_fun <- function(df){
   ifelse(df$in_out == "Own EEZ", -102-df$value, 102-df$value)
 }
