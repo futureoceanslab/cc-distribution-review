@@ -358,7 +358,7 @@ unique(d_plot5$fishing_entity)[unique(d_plot5$fishing_entity) %in% unique(d_plot
 d_plot5$area_name_simpl[grep("Faeroe", d_plot5$area_name_simpl)]#Faroe
 d_plot5$area_name_simpl[grep("Green", d_plot5$area_name_simpl)]#Greenland
 d_plot5$area_name_simpl[grep("Russia", d_plot5$area_name_simpl)]#Russia
-d_plot5$area_name_simpl[grep("Pierre", d_plot5$area_name_simpl)]#
+d_plot5$area_name_simpl[grep("France", d_plot5$area_name_simpl)]#
 d_plot5$area_name_simpl[grep("USA", d_plot5$area_name_simpl)] <- "USA"
 d_plot5$area_name_simpl[d_plot5$area_name_simpl == "Greenland (Denmark)"] <- "Greenland"
 d_plot5$area_name_simpl[d_plot5$area_name_simpl == "Faeroe Isl. (Denmark)"] <- "Faeroe Isl"
@@ -370,6 +370,7 @@ d_plot5$area_name_simpl[grep("Japan", d_plot5$area_name_simpl)] <- "Japan"
 d_plot5$area_name_simpl[grep("Canada", d_plot5$area_name_simpl)] <- "Canada"
 d_plot5$area_name_simpl[grep("Spain", d_plot5$area_name_simpl)] <- "Spain"
 d_plot5$area_name_simpl[d_plot5$area_name_simpl == "Saint Pierre & Miquelon (France)"] <- "St Pierre & Miquelon (Fr)"
+d_plot5$fishing_entity[d_plot5$fishing_entity == "Saint Pierre & Miquelon (France)"] <- "St Pierre & Miquelon (Fr)"
 d_plot5$area_name_simpl[grep("France", d_plot5$area_name_simpl)] <- "France"
 d_plot5$area_name_simpl[grep("Africa", d_plot5$area_name_simpl)] <- "South Africa"
 d_plot5$area_name_simpl[d_plot5$area_name_simpl == "Azores Isl. (Portugal)"] <- "Azores Isl"
@@ -430,32 +431,6 @@ ggplot(d_plot5c, aes(fct_rev(fishing_entity), value, fill = variable)) +
         strip.text.x = element_text(size = 14)) 
 
 write.csv(d_plot5c, "data.csv", row.names = F)      
-ggplot(d_plot5c, aes(x = fishing_entity, fill = variable)) + 
-  scale_fill_manual(values = c("#045a8d", "grey"), name = "Affected catch?",
-                    labels = c("Yes", "Non-assessed")) +
-  geom_bar(data = subset(d_plot5c, in_out == "Other EEZ"), 
-           aes(y = -value, label = eez_number),
-           position = position_stack(reverse = T), 
-           stat = "identity") +
-  geom_bar(data = subset(d_plot5c, in_out == "Own EEZ"),
-           aes(y = value, label = eez_number), 
-           position = position_stack(reverse = T), 
-           stat = "identity") +
-  coord_flip() +
-  xlab("Fishing entity") +
-  ylab("Catch %") +
-  theme_bw() +
-  theme(axis.text = element_text(size = 16, color = "black"),
-        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size = 16),
-        axis.text.y = element_text(size = 16),
-        axis.title = element_text(size = 18),
-        legend.title = element_text(size = 18),
-        legend.text = element_text(size = 16),
-        plot.title = element_text(size = 18),
-        strip.text.x = element_text(size = 14)) +
-  geom_hline(yintercept= 0, color = "black") +
-  scale_y_continuous(labels = abs) 
-
 data <- d_plot5c
 
 data$eez_number[data$variable == "affected_catch_prop"] <- NA
@@ -464,6 +439,8 @@ nudge_fun <- function(df){
   ifelse(df$in_out == "Own EEZ", -102-df$value, 102-df$value)
 }
 
+png(file = "paper_figures/figure4.png", 
+    width = 11, height = 7, units = 'in', res = 600)
 ggplot(data, aes(x = fishing_entity, fill = variable)) + 
   scale_fill_manual(values = c("#045a8d", "grey"), name = "Affected catch?",
                     labels = c("Yes", "Non-assessed")) +
@@ -475,9 +452,6 @@ ggplot(data, aes(x = fishing_entity, fill = variable)) +
            aes(y = value),
            position = position_stack(reverse = T), 
            stat = "identity") +
-  # geom_text(aes(y = value, label = eez_number)) +
-  # geom_text(aes(y = -value -10, label = eez_number), size = 3.5, vjust = 0
-  # ) +
   geom_text(aes(y = value, label = eez_number),
             position = position_nudge(y = nudge_fun(data)),
             size = 4
@@ -496,7 +470,8 @@ ggplot(data, aes(x = fishing_entity, fill = variable)) +
         strip.text.x = element_text(size = 14)) +
   geom_hline(yintercept= 0, color = "black") +
   scale_y_continuous(labels = abs) +
-  ggtitle("                          Own EEZ                                                 Other EEZ")
+  ggtitle("             Own EEZ                         Other EEZ")
+dev.off()
 
 ##################################### SUPPLEMENTARY MATERIALS #############################################
 
