@@ -100,51 +100,35 @@ P3 <- ggplot(lat, aes(catchdepFE*100, decadal_change,
         ggtitle("a)") 
 
 #DEPTH
-P4 <-  ggplot(dep, aes(catchdepFE*100, decadal_change, label = paste(scientific_name, ", ", area_name, sep =""))) +
-  geom_point(aes(color = (landedvalueFEsp/landedvalueFE)*100, alpha = 0.6), size = 5) +
-  scale_colour_gradientn(colours = myP, name = "Value dependency\non species (%)") +
-  theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 10),
-        axis.text.y = element_text(size = 10),
-        panel.background = element_rect(fill = "white"),
-        axis.line.x = element_line(colour = c("black")),
-        axis.line.y = element_line(colour = c("black")),
-        legend.key=element_blank(),
-        axis.title.y = element_text(size = 14),
-        axis.title.x = element_text(size = 14),
-        plot.title = element_text(size = 20)) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "grey") +
-  geom_text_repel(data = subset(dep, catchdepFE*100 > 6), 
-                  aes(color = (landedvalueFEsp/landedvalueFE)*100), size = 2.8,
-                  vjust = -2.5, hjust = "inward", force = 3) +
-  guides(size = F,
-         alpha = F) +
-  labs(x = "Catch dependency on species (%)",
-       y = "Depth shift (m/decade)") +
-  facet_wrap(~ fishing_entity, ncol = 3) +
-  ggtitle("b)") 
-  
-  # ggplot(dep, aes(catchdepFE*100, decadal_change, label = paste(scientific_name, ", ", area_name, sep =""))) +
-  #       geom_point(aes(color = (landedvalueFEsp/landedvalueFE)*100, alpha = 0.6), size = 5) +
-  #       scale_colour_gradientn(colours = myP, name = "Value dependency\non species (%)") +
-  #       theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 10),
-  #             axis.text.y = element_text(size = 10),
-  #             panel.background = element_rect(fill = "white"),
-  #             axis.line.x = element_line(colour = c("black")),
-  #             axis.line.y = element_line(colour = c("black")),
-  #             legend.key=element_blank(),
-  #             axis.title.y = element_text(size = 14),
-  #             axis.title.x = element_text(size = 14),
-  #             plot.title = element_text(size = 20)) +
-  #       geom_hline(yintercept = 0, linetype = "dashed", color = "grey") +
-  #       geom_text_repel(data = subset(dep, catchdepFE*100 > 6), 
-  #                       aes(color = (landedvalueFEsp/landedvalueFE)*100), size = 2.8,
-  #                       vjust = -2.5, hjust = "inward", force = 3) +
-  #       guides(size = F,
-  #              alpha = F) +
-  #       labs(x = "Catch dependency on species (%)",
-  #            y = "Depth shift (m/decade)") +
-  #       facet_wrap(~ fishing_entity, ncol = 3) +
-  #       ggtitle("b)") 
+max((dep$landedvalueFEsp/dep$landedvalueFE)*100)
+dep$brea <- cut((dep$landedvalueFEsp/dep$landedvalueFE)*100, 
+                breaks = unique(c(seq(0, 15, by = 2.5), seq(15, 35, by = 5), seq(35, 46, by = 11))))
+
+P4 <-  ggplot(dep, aes(catchdepFE*100, decadal_change, 
+                      label = paste(scientific_name, ", ", area_name, sep =""))) + #paste(scientific_name, ", ", area_name, sep ="" +
+        geom_point(aes(color = brea, alpha = 0.7), size = 3) +
+        scale_colour_manual("Value dependency\non species (%)", 
+                            values = rev(c("#a50026", "#d73027", "#f46d43", "#fdae61", 
+                                           "#fee090", "#abd9e9", "#74add1", "#4575b4", "#313695"))) +
+        theme(axis.text.x = element_text(angle = -45, hjust = 0.06, size = 10),
+              axis.text.y = element_text(size = 10),
+              panel.background = element_rect(fill = "white"),
+              axis.line.x = element_line(colour = c("black")),
+              axis.line.y = element_line(colour = c("black")),
+              legend.key=element_blank(),
+              axis.title.y = element_text(size = 14),
+              axis.title.x = element_text(size = 14),
+              plot.title = element_text(size = 20)) +
+        geom_hline(yintercept = 0, linetype = "dashed", color = "grey") +
+        geom_text_repel(data = subset(dep, catchdepFE*100 > 6), 
+                        aes(color = brea), size = 2.5,
+                        vjust = -2.5, hjust = "inward") +
+        guides(size = F,
+               alpha = F) +
+        labs(x = "Catch dependency on species (%)",
+             y = "Depth shift (m/decade)") +
+        facet_wrap(~ fishing_entity, ncol = 3) +
+        ggtitle("b)") 
 
 ##Paper Fig 3 IMpact and Catch dependency
 png(file = "paper_figures/figure_3a.png", 
@@ -211,6 +195,7 @@ ggplot(d_other_var[complete.cases(d_other_var), ],
   guides(color = guide_legend(title = "Status SDG 14", order = 1),
          shape = guide_legend(title = "Trend SDG 14", order = 2)) +
   theme_classic() +
+  geom_hline(yintercept = 25, linetype = "dashed", color = "black", size = 1) +
   theme(axis.text.x = element_text(size = 16, color = "black"),
         axis.text.y = element_text(size = 16, color = "black"),
         axis.title = element_text(size = 18),
@@ -287,9 +272,9 @@ pl$fishing_entity[pl$fishing_entity == "Saint Pierre & Miquelon (France)"] <- "S
 #FIGURE2b
 png(file = "paper_figures/figure_2b.png", 
     width = 11, height = 7, units = 'in', res = 600)
-ggplot(pl, aes(fishing_entity, value, fill = variable)) +
-  scale_fill_manual(values = c("#045a8d", "grey"), name = "Affected catch?",
-                    labels = c("Yes", "Non-assessed")) +
+ggplot(pl, aes(fishing_entity, value, fill = rev(variable))) +
+  scale_fill_manual(values = c("grey","#045a8d"), name = "Affected catch?",
+                    labels = c("Non-assessed","Yes"), guide = guide_legend(reverse = T)) +
   #coord_polar() +
   geom_bar(stat = "identity") +
   # geom_hline(yintercept = seq(0, 500, by = 100), color = "grey80", size = 0.3) +
@@ -302,7 +287,8 @@ ggplot(pl, aes(fishing_entity, value, fill = variable)) +
         legend.title = element_text(size = 18),
         legend.text = element_text(size = 16),
         plot.title = element_text(size = 20))+
-  ggtitle("b)") 
+  ggtitle("b)") #+
+  #geom_hline(yintercept = 25, linetype = "dashed", color = "black", size = 1) 
 dev.off()
 
 
