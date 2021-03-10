@@ -452,6 +452,30 @@ ggplot(data, aes(x = fishing_entity, fill = variable)) +
   ggtitle("a)               Own EEZ                         Other EEZ")
 dev.off()
 
+
+
+#REPENSAR FIGURA!!!!!!!!!!!!!!!
+ggplot(data, aes(x = fishing_entity, y = value, fill = variable)) + 
+  scale_fill_manual(values = c("#045a8d", "grey"), 
+                    labels = c("Vulnerable catch", "Non-assessed")) +
+  geom_bar(stat = "identity") +
+  # xlab("Fishing country") +
+  # ylab("Catch (%)") +
+  theme_bw() +
+  theme(axis.text = element_text(size = 16, color = "black"),
+        axis.text.x = element_text(size = 16),
+        axis.text.y = element_text(size = 16),
+        axis.title = element_text(size = 18),
+        legend.title = element_blank(),
+        legend.text = element_text(size = 16),
+        legend.position = "bottom",
+        plot.title = element_text(size = 18),
+        strip.text.x = element_text(size = 14)) +
+  facet_grid(in_out ~ fishing_entity, scales = "free_x") +
+  coord_flip()
+
+
+
 EEZ <- na.omit(data[c("fishing_entity","in_out","eez_number")])
 EEZ <- spread(EEZ, "in_out", "eez_number")
 colnames(EEZ) <- c("country", "own", "other")
