@@ -103,15 +103,16 @@ ggplot(d_other_var[complete.cases(d_other_var), ],
                  size = 4) +
   xlab("Vulnerable catch (%)") +
   ylab("SDG total score") +
-  guides(color = guide_legend(title = "Continent", order = 1),
-         shape = guide_legend(title = "SDG trend", order = 2)) +
+  # guides(color = guide_legend(title = "Continent", order = 1),
+  #        shape = guide_legend(title = "SDG trend", order = 2)) +
   theme_bw() +
   geom_vline(xintercept = 25, linetype = "dashed", color = "black", size = 1) +
   theme(axis.text.x = element_text(size = 16, color = "black"),
         axis.text.y = element_text(size = 16, color = "black"),
         axis.title = element_text(size = 18),
-        legend.title = element_text(size = 18),
-        legend.text = element_text(size = 16),
+        # legend.title = element_text(size = 18),
+        # legend.text = element_text(size = 16),
+        legend.position = "none",
         strip.text = element_text(size = 16),
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
@@ -134,10 +135,6 @@ pl <- gather(pl, key = "var", value = "measure",
              vulnerable_catch_prop, non_vulnerable_catch_prop)
 pl$fishing_entity <- as.factor(pl$fishing_entity)
 
-#FIGURE3a
-png(file = "paper_figures/figure_2bb.png", 
-    width = 11, height = 7, units = 'in', res = 600)
-
 names <- pl %>%
           arrange(measure)
 names <- names["fishing_entity"]
@@ -146,27 +143,54 @@ names <- names[-16,]
 names[27,] <- "Namibia"
 names2 <- rev(names[["fishing_entity"]])
 
-pl %>%
+d_FE$non_vulnerable_catch <- NA
+d_FE$non_vulnerable_catch <- d_FE$tonnesFE - d_FE$vulnerable_catch
+pl2 <- d_FE[c("fishing_entity", "vulnerable_catch", "non_vulnerable_catch")]
+pl2 <- gather(pl2, key = "var", value = "measure",
+             vulnerable_catch, non_vulnerable_catch)
+pl2$fishing_entity <- as.factor(pl$fishing_entity)
+
+pl$facet <- 1
+pl2$facet <- 2
+
+pl3 <- rbind(pl, pl2)
+pl3$name <- pl3$var
+pl3$name[pl3$name == "vulnerable_catch_prop"] <- "vulnerable_catch"   
+pl3$name[pl3$name == "non_vulnerable_catch_prop"] <- "Unknown" 
+pl3$name[pl3$name == "non_vulnerable_catch"] <- "Unknown" 
+
+
+#Figure 3
+png(file = "paper_figures/figure_2bb.png",
+    width = 9, height = 7, units = 'in', res = 600)
+
+pl3 %>%
   mutate(fishing_entity = fct_relevel(fishing_entity, 
-                            paste(names2))) %>%
-ggplot(aes(fishing_entity, measure, fill = var)) +
-    scale_fill_manual(values = c("grey","#045a8d"),
-                      labels = c("Unknown","Vulnerable catch"), guide = guide_legend(reverse = T)) +
-    geom_bar(stat = "identity") +
-    labs(x = "Fishing country", y = "Proportion of total catch") +
-    theme_bw() +
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size = 16),
-          axis.text.y = element_text(size = 16),
-          axis.title = element_text(size = 18),
-          legend.title = element_blank(),
-          legend.text = element_text(size = 16),
-          plot.title = element_text(size = 20))+
-    ggtitle("a)") #+
+                                      paste(names2))) %>%
+  ggplot(aes(fishing_entity, measure)) +
+  geom_bar(aes(fill = name), stat = "identity") +
+  scale_fill_manual(values = c("grey","#045a8d"),
+                    labels = c("Unknown", "Vulnerable"),
+                    guide = guide_legend(reverse = T)) +
+  labs(x = "Fishing country", y = "") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size = 16),
+    axis.text.y = element_text(size = 16),
+    axis.title = element_text(size = 18),
+    legend.title = element_blank(),
+    legend.text = element_text(size = 16),
+    plot.title = element_text(size = 20),
+    # strip.text.x = element_blank(),
+    # strip.text.y = element_blank(),
+    strip.text = element_text(size = 16),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor.y = element_blank()) +
+  facet_wrap(~facet, scales = "free_y", nrow = 2, 
+             labeller = as_labeller(c(`1` = "Catch proportion (%)", 
+                                      `2` = "Catch (t)")))
 
 dev.off()
-
-rm(names, names2, pl)
-
 
 
 #Read data for all fishing countries

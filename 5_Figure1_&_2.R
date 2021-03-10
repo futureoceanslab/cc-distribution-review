@@ -89,7 +89,7 @@ png(file = "paper_figures/figure_2a.png",
 ggplot(eez[1:239,]) +
   geom_sf(aes(fill = n)) +
   scale_fill_gradientn("Number of\nshifting species", 
-                       colours = c("darkgreen", "yellow", "purple"), na.value = "white") +
+                       colours = c("darkgreen", "yellow", "purple"), na.value = "white") + #"lightsteelblue1", "lightskyblue", "#045a8d"
   geom_polygon(data = map, aes(long, lat, group = group), fill = "grey") +
   labs(x = "", y = "") +
   scale_x_continuous(limits = c(), expand = c(0, 0)) + #remove space between graph and axis
