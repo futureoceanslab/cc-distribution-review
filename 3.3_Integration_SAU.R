@@ -77,7 +77,6 @@ rm(l1, l, func, path)
 
 ##FILTER SAU DATASETS: 5 last years, landings, NAs
 Final_SAU_FE <- filter(Final_SAU_FE, year > 2009, catch_type == "Landings")
-Final_SAU_FE <- filter(Final_SAU_FE, !area_name == "All")
 
 #dataframe sp - EEZ catch
 counts <- Final_SAU_FE %>%
@@ -89,7 +88,7 @@ rm(counts)
 #add fishing entities landings and catches per species to ReviewDat 
 Final_SAU_FE$area_name <- as.character(Final_SAU_FE$area_name)
 Final_SAU_FE$scientific_name <- as.character(Final_SAU_FE$scientific_name)
-write.csv(Final_SAU_FE, "SAU_all.csv", row.names = F)
+#write.csv(Final_SAU_FE, "data/SAU_all.csv", row.names = F)
 
 #Catches and Landings per fishing entity, EEZ and species (mean across years)
 tonlandFEspyear <- Final_SAU_FE %>%
@@ -103,7 +102,6 @@ tonlandFEsp <- tonlandFEspyear %>% #borrar bis
                           landedvalueFEsp = mean(landedvalueFEspyear, na.rm = T))
 
 ReviewDatFB_SAU1  <- left_join(ReviewDatFB, tonlandFEsp, by = c("area_name","scientific_name"))
-#new lines because for 1 EEZ many FEs
 
 #Verification of EEZ names and species
 a<-unique(ReviewDatFB_SAU1$area_name)
@@ -115,55 +113,30 @@ spmiss<-b[which(!b %in% d)]   ## list of unmatching(lost) species, 43 spp no mac
 spmiss0[which(spmiss0 %in% spmiss == F)]#three species that were not in EEZ SAU but are in FE SAU
 rm(a, b, c, d, spmiss, spmiss0)
 
-#total catch per species for Fishing entities (sum across species and FEs)
-tonlandFEspT<- tonlandFEsp %>%
-                group_by(fishing_entity, scientific_name) %>%
-                summarise(tonnesFEspT=sum(tonnesFEsp, na.rm = T),
-                          landedvalueFEspT=sum(landedvalueFEsp, na.rm = T))
-
-ReviewDatFB_SAU2 <- left_join(ReviewDatFB_SAU1, tonlandFEspT, by = c("fishing_entity", "scientific_name"))
-
 
 #Total catch per fishing entity (sum across fishing entities)
-tonlandFE<- tonlandFEspT %>%
+#GENERAL DATABASE
+tonlandFE <- tonlandFEsp %>%
               group_by(fishing_entity) %>%
-              summarise(tonnesFE = sum(tonnesFEspT, na.rm = T),
-                        landedvalueFE = sum(landedvalueFEspT, na.rm = T))
+              summarise(tonnesFE = sum(tonnesFEsp, na.rm = T),
+                        landedvalueFE = sum(landedvalueFEsp, na.rm = T))
 
-ReviewDatFB_SAU3 <- left_join(ReviewDatFB_SAU2, tonlandFE, by = c("fishing_entity"))
-
-#Total catch per fishing entity in EEZ (sum across FE and EEZs)
-tonlandFEEZ <- tonlandFEsp %>% 
-                   group_by(fishing_entity, area_name) %>%
-                   summarise(tonnesFEEZ = sum(tonnesFEsp, na.rm = T),
-                             landedvalueFEEZ = sum(landedvalueFEsp, na.rm = T))
-  
-
-
-Biblio_data <- left_join(ReviewDatFB_SAU3, tonlandFEEZ, by=c("fishing_entity", "area_name"))
+Biblio_data <- left_join(ReviewDatFB_SAU1, tonlandFE, by = c("fishing_entity"))
 
 
 #CATCH DEPENDENCY OF FISHING ENTITIES
 ##CREATION OF VARIABLES for DEPEDENCE
 
-# A) CATCH DEPENDENCY AND VALUE OF FISHING ENTITIES
+# CATCH DEPENDENCY AND VALUE OF FISHING ENTITIES
 # Country dependency on the species in the area
 #CATCH
-Biblio_data$catchdepFE <- Biblio_data$tonnesFEsp/Biblio_data$tonnesFE #the dependence of the country species catches on the EEZ species catches
+Biblio_data$catchdepFE <- Biblio_data$tonnesFEsp/Biblio_data$tonnesFE #the dependence of the country catches on the EEZ species catches
 range(Biblio_data$catchdepFE, na.rm = T)
 #VALUE
-Biblio_data$valuedepFE <- Biblio_data$landedvalueFEsp/Biblio_data$landedvalueFE #the dependence of the country species catches on the EEZ species catches
+Biblio_data$valuedepFE <- Biblio_data$landedvalueFEsp/Biblio_data$landedvalueFE #the dependence of the country catches on the EEZ species catches
 range(Biblio_data$valuedepFE, na.rm = T)
 
-# B) Country dependency on the area
-#CATCH
-Biblio_data$catchdepFEEZ <- Biblio_data$tonnesFEEZ/Biblio_data$tonnesFE 
-range(Biblio_data$catchdepFEEZ, na.rm = T)
-which(Biblio_data$catchdepFEEZ > 1)
-#VALUE
-Biblio_data$valuedepFEEZ <- Biblio_data$landedvalueFEEZ/Biblio_data$landedvalueFE
-range(Biblio_data$catchdepFEEZ, na.rm = T)
-which(Biblio_data$catchdepFEEZ > 1)
 
-##5. OUTPUT FILE####
+##5. OUTPUT FILES####
 write.csv(Biblio_data, file = "data/biblio_database_full.csv", row.names = F)
+write.csv(tonlandFEsp, file = "data/dall_FE_area.csv", row.names = F)
