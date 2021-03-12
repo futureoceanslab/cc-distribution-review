@@ -193,36 +193,80 @@ pl3 %>%
 dev.off()
 
 
-#Read data for all fishing countries
-path <- "data/data_FE_SAU/" #Final_SAU_FE, script integration SAU
-l <- list.files(path, pattern = ".csv")
-l2 <- str_sub(l, end = -5) 
-names <- unique(data_original$fishing_entity)[-c(11,24)] 
-names %in% l2
-Final_SAU_FE <- read.csv("data/SAU_all.csv") #FINAL SAU FE l. 90
-Final_SAU_FE$fishing_entity[Final_SAU_FE$fishing_entity == "Faeroe Isl.(Denmark)"] <- "Faeroe Isl"
-Final_SAU_FE$fishing_entity[Final_SAU_FE$fishing_entity == "Azores Isl. (Portugal)"] <- "Azores Isl"
-names %in% unique(Final_SAU_FE$fishing_entity)
-data1 <- filter(Final_SAU_FE, fishing_entity %in% names)#all our fishing entities
-dall_FE_area <- data1 %>% #all SAU data of our FEs by FE
-                  group_by(fishing_entity, area_name, year, scientific_name) %>%
-                  summarise(tonnesFEspyear = sum(tonnes, na.rm = T),
-                            landedvalueFEspyear = sum(landed_value, na.rm = T)) %>%
-                  group_by(fishing_entity, area_name, scientific_name) %>%
-                  summarise(tonnesFEsp = mean(tonnesFEspyear, na.rm = T),
-                            landedvalueFEsp = mean(landedvalueFEspyear, na.rm = T)) %>%
-                  group_by(fishing_entity, area_name) %>%
-                  summarise(tonnesFEEZ = sum(tonnesFEsp, na.rm = T),
-                            landed_valueFEEZ = sum(landedvalueFEsp, na.rm = T))
+#LAT-depth
+data2 <- data %>% 
+  group_by(fishing_entity) %>%
+  summarise(response = paste(unique(response), collapse = "-"))
 
-rm(data1, path, l, l2, names, Final_SAU_FE)
-#REVISIONS
-# rev <- data %>%
-#         group_by(fishing_entity, area_name) %>%
-#         summarise(tonnesFEEZ = unique(tonnesFEEZ))
-# rev[1,3]
-# dall_FE_area[1,3]
-# rev2 <- left_join(rev, dall_FE_area, by = c("fishing_entity", "area_name"))
+data2$response[data2$response == "depth-latitude"] <- "latitude-depth"
+
+d_FE <- left_join(data2, d_FE, by = "fishing_entity")
+
+pl4 <- d_FE[c("fishing_entity", "response", "vulnerable_catch_prop")]
+colnames(pl4)[3] <- "measure"
+pl5 <- d_FE[c("fishing_entity", "response", "non_vulnerable_catch_prop")]
+colnames(pl5)[3] <- "measure"
+pl5$response <- "unknown"
+pl4 <- rbind(pl4, pl5)
+pl4$facet <- 1
+pl4$name <- "catch_prop"
+rm(pl5)
+pl5 <- d_FE[c("fishing_entity", "response", "vulnerable_catch")]
+colnames(pl5)[3] <- "measure"
+pl6 <- d_FE[c("fishing_entity", "response", "non_vulnerable_catch")]
+colnames(pl6)[3] <- "measure"
+pl6$response <- "unknown"
+pl5 <- rbind(pl5, pl6)
+pl5$facet <- 2
+pl5$name <- "catch"
+pl4 <- rbind(pl4, pl5)
+rm(pl5,pl6)
+
+png(file = "paper_figures/figure_2bbb.png",
+    width = 9, height = 7, units = 'in', res = 600)
+
+pl4 %>%
+  mutate(fishing_entity = fct_relevel(fishing_entity, 
+                                      paste(names2))) %>%
+  ggplot(aes(fishing_entity, measure)) +
+  geom_bar(aes(fill = fct_rev(response)), stat = "identity") +
+  scale_fill_manual(values = c("grey", "#045a8d", "darkturquoise"), 
+                    name = "Vulnerable?",
+                    labels = c("Unknown", "Latitude & Depth", "Latitude"),
+                    guide = guide_legend(reverse = T)) +
+  labs(x = "Fishing country", y = "") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size = 16),
+        axis.text.y = element_text(size = 16),
+        axis.title = element_text(size = 18),
+        legend.title = element_text(size = 16),
+        legend.text = element_text(size = 16),
+        plot.title = element_text(size = 20),
+        # strip.text.x = element_blank(),
+        # strip.text.y = element_blank(),
+        strip.text = element_text(size = 16),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank()) +
+  facet_wrap(~facet, scales = "free_y", nrow = 2, 
+             labeller = as_labeller(c(`1` = "Catch proportion (%)", 
+                                      `2` = "Catch (t)")))
+dev.off()
+
+
+
+#######
+dall_FE_area <- read.csv("data/dall_FE_area.csv")
+dall_FE_area <- dall_FE_area %>%
+            group_by(fishing_entity, area_name) %>%
+            summarise(tonnesFEEZ = sum(tonnesFEsp, na.rm = T),
+                      landed_valueFEEZ = sum(landedvalueFEsp, na.rm = T))
+
+unique(data$fishing_entity)[which(unique(data$fishing_entity) %in% unique(dall_FE_area$fishing_entity) == F)] 
+dall_FE_area$fishing_entity[grep("Pierre", dall_FE_area$fishing_entity)] <- "St Pierre & Miquelon (Fr)"
+
+dall_FE_area <- filter(dall_FE_area, fishing_entity %in% unique(data$fishing_entity))#all our fishing entities
+
 
 d_area <- data %>% #our data by FE and EEZ
             group_by(fishing_entity, area_name, scientific_name) %>%
@@ -236,94 +280,10 @@ d_plot[is.na(d_plot)] <- 0
 d_plot$na_catch <- d_plot$tonnesFEEZ - d_plot$vulnerable_catch
 d_plot$na_value <- d_plot$landed_valueFEEZ - d_plot$vulnerable_value
 
-d_plot$catch_na_prop <- round((d_plot$na_catch*100)/d_plot$tonnesFEEZ,2)
-d_plot$value_na_prop <- round((d_plot$na_value*100)/d_plot$landed_valueFEEZ,2)
-d_plot$catch_affect_prop <- round((d_plot$vulnerable_catch*100)/d_plot$tonnesFEEZ,2)
-d_plot$value_affect_prop <- round((d_plot$vulnerable_value*100)/d_plot$landed_valueFEEZ,2)
-d_plot$tot_catch <- d_plot$catch_na_prop + d_plot$catch_affect_prop
-d_plot$tot_value <- d_plot$value_na_prop + d_plot$value_affect_prop  
-
-
-d_plot2 <- d_plot %>%
-  group_by(fishing_entity) %>%
-  summarise(assessed_catch = (sum(vulnerable_catch)*100)/sum(tonnesFEEZ),
-            unassessed_catch = ((sum(tonnesFEEZ)-sum(vulnerable_catch))*100)/sum(tonnesFEEZ))#,
-
-#REVISIONS
-# d_plot[1,3] + d_plot[2,3]
-# filter(data, fishing_entity == "Angola")[1,20]
-
-#prop_na_value = ((sum(landed_valueFEEZ)-sum(vulnerable_value))*100)/sum(landed_valueFEEZ))
-pl <- melt(d_plot2) 
-
-pl$fishing_entity[pl$fishing_entity == "Saint Pierre & Miquelon (France)"] <- "St P. & Miquelon (France)"
-#FIGURE2b
-png(file = "paper_figures/figure_2b.png", 
-    width = 11, height = 7, units = 'in', res = 600)
-ggplot(pl, aes(fishing_entity, value, fill = rev(variable))) +
-  scale_fill_manual(values = c("grey","#045a8d"),
-                    labels = c("Unknown","Vulnerable catch"), guide = guide_legend(reverse = T)) +
-  #coord_polar() +
-  geom_bar(stat = "identity") +
-  # geom_hline(yintercept = seq(0, 500, by = 100), color = "grey80", size = 0.3) +
-  # scale_x_continuous(breaks = 0:24, expand = c(.002,0)) +
-  labs(x = "Fishing country", y = "Proportion of total catch") +
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size = 16),
-        axis.text.y = element_text(size = 16),
-        axis.title = element_text(size = 18),
-        legend.title = element_blank(),
-        legend.text = element_text(size = 16),
-        plot.title = element_text(size = 20))+
-  ggtitle("a)") #+
-  #geom_hline(yintercept = 25, linetype = "dashed", color = "black", size = 1) 
-dev.off()
-
-
-
-#Figure 2c 
-data2 <- data %>% 
-  group_by(fishing_entity) %>%
-  summarise(response = paste(unique(response), collapse = "-"))
-
-data2$response[data2$response == "depth-latitude"] <- "latitude-depth"
-
-d_plot3 <- d_plot %>%
-  group_by(fishing_entity) %>%
-  summarise(assessed_catch = sum(vulnerable_catch),
-            unassessed_catch = sum(na_catch))
-
-d_plot3$fishing_entity[d_plot3$fishing_entity == "Saint Pierre & Miquelon (France)"] <- "St Pierre & Miquelon (Fr)"
-int <- left_join(data2, d_plot3[,1:2], by = "fishing_entity")
-d_plot3[,2] <- "Non-assessed"
-colnames(d_plot3)[c(2,3)] <- c("response", "assessed_catch") #we change the name of column 2 fo binding in the next line
-
-d_plot4 <- rbind(d_plot3, int)
-rm(int)
-
-png(file = "paper_figures/figure_2c.png", 
-    width = 11, height = 7, units = 'in', res = 600)
-ggplot(d_plot4, aes(fishing_entity, assessed_catch, fill = response)) +
-  geom_bar(stat = "identity") +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
-  
-  scale_fill_manual(values = c("darkturquoise", "#2b8cbe", "grey"), name = "Vulnerable catch?",
-                    labels = c("Latitude", "Latitude & Depth","Non-assessed")) +
-  labs(x = "Fishing country", y = "Total catch (t)") +
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size = 16),
-        axis.text.y = element_text(size = 16),
-        axis.title = element_text(size = 18),
-        legend.title = element_text(size = 18),
-        legend.text = element_text(size = 16),
-        plot.title = element_text(size = 20)) +
-  ggtitle("b)") 
-
-dev.off()
 
 
 #FIGURE4
-d_FE_subset <- d_FE[colnames(d_FE) %in% c ("fishing_entity", "tonnesFE", "landedvalueFE")] 
+d_FE_subset <- d_FE[c ("fishing_entity", "tonnesFE", "landedvalueFE")] 
 d_plot5 <- left_join(d_plot, d_FE_subset, by = "fishing_entity")
 
 #Same names in "fishing_entity" and "area_name"
@@ -386,25 +346,8 @@ d_plot5c <- melt(d_plot5b[,colnames(d_plot5b) %in% c ("fishing_entity", "in_out"
 
 d_plot5c$in_out <- factor(d_plot5c$in_out, levels = c("Own EEZ", "Other EEZ"))
 
-ggplot(d_plot5c, aes(fct_rev(fishing_entity), value, fill = variable)) +
-  geom_bar(stat = "identity") +
-  scale_fill_manual(values = c("#045a8d", "grey"), name = "vulnerable catch?",
-                    labels = c("Yes", "Non-assessed")) +
-  # geom_text(data = subset(d_plot5c, variable == "vulnerable_catch_prop"),
-  #           aes(fishing_entity, value, label = eez_number), size = 4) +
-  facet_grid(~ in_out, space = "free") + #scales="free", 
-  coord_flip()+
-  labs(x = "Fishing country", y = "% of catch") +
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size = 16),
-        axis.text.y = element_text(size = 16),
-        axis.title = element_text(size = 18),
-        legend.title = element_text(size = 18),
-        legend.text = element_text(size = 16),
-        plot.title = element_text(size = 20),
-        strip.text.x = element_text(size = 14)) 
 
-write.csv(d_plot5c, "data.csv", row.names = F)      
+#write.csv(d_plot5c, "data.csv", row.names = F)      
 data <- d_plot5c
 
 data$eez_number[data$variable == "vulnerable_catch_prop"] <- NA
@@ -412,6 +355,40 @@ data$eez_number[data$variable == "vulnerable_catch_prop"] <- NA
 data[dim(data)[1]+1,] <- c("Azores Isl", "Other EEZ", 0, "na_catch_prop", 0)
 data$eez_number <- as.numeric(data$eez_number)
 data$value <- as.numeric(data$value)
+
+png(file = "paper_figures/figure_5_alt.png",
+    width = 11, height = 7, units = 'in', res = 600)
+
+data %>%
+mutate(fishing_entity = fct_relevel(fishing_entity, 
+                                    paste(names2))) %>%
+ggplot(aes(value, in_out)) +
+  geom_bar(aes(fill = variable), stat = "identity") +
+  scale_fill_manual(values = c("#045a8d","grey"), 
+                    name = "",
+                    labels = c("Vulnerable","Unknown")) +
+  # geom_text(aes(y = in_out, label = eez_number),
+  #           #position = position_nudge(y = nudge_fun(data)),
+  #           size = 4
+  # ) +
+  facet_wrap(~fishing_entity, ncol = 5) +
+  theme_bw() +
+  theme(axis.text.x = element_text(size = 11),
+        axis.text.y = element_text(size = 11),
+        axis.title = element_text(size = 13),
+        legend.title = element_text(size = 11),
+        legend.text = element_text(size = 11),
+        plot.title = element_text(size = 15),
+        # strip.text.x = element_blank(),
+        # strip.text.y = element_blank(),
+        strip.text = element_text(size = 10),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank()) +
+  labs(x = "Catch proportion (%)", y = "")
+
+dev.off()
 
 nudge_fun <- function(df){
   ifelse(df$in_out == "Own EEZ", -102-df$value, 102-df$value)
@@ -451,28 +428,6 @@ ggplot(data, aes(x = fishing_entity, fill = variable)) +
   scale_y_continuous(labels = abs) +
   ggtitle("a)               Own EEZ                         Other EEZ")
 dev.off()
-
-
-
-#REPENSAR FIGURA!!!!!!!!!!!!!!!
-ggplot(data, aes(x = fishing_entity, y = value, fill = variable)) + 
-  scale_fill_manual(values = c("#045a8d", "grey"), 
-                    labels = c("Vulnerable catch", "Non-assessed")) +
-  geom_bar(stat = "identity") +
-  # xlab("Fishing country") +
-  # ylab("Catch (%)") +
-  theme_bw() +
-  theme(axis.text = element_text(size = 16, color = "black"),
-        axis.text.x = element_text(size = 16),
-        axis.text.y = element_text(size = 16),
-        axis.title = element_text(size = 18),
-        legend.title = element_blank(),
-        legend.text = element_text(size = 16),
-        legend.position = "bottom",
-        plot.title = element_text(size = 18),
-        strip.text.x = element_text(size = 14)) +
-  facet_grid(in_out ~ fishing_entity, scales = "free_x") +
-  coord_flip()
 
 
 
