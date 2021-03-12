@@ -356,19 +356,22 @@ data[dim(data)[1]+1,] <- c("Azores Isl", "Other EEZ", 0, "na_catch_prop", 0)
 data$eez_number <- as.numeric(data$eez_number)
 data$value <- as.numeric(data$value)
 
+
+
 png(file = "paper_figures/figure_5_alt.png",
-    width = 11, height = 7, units = 'in', res = 600)
+    width = 8, height = 6, units = 'in', res = 600)
 
 data %>%
 mutate(fishing_entity = fct_relevel(fishing_entity, 
                                     paste(names2))) %>%
 ggplot(aes(value, in_out)) +
-  geom_bar(aes(fill = variable), stat = "identity") +
-  scale_fill_manual(values = c("#045a8d","grey"), 
+  geom_bar(aes(fill = fct_rev(variable)), stat = "identity") +
+  scale_fill_manual(values = c("grey","#045a8d"), 
                     name = "",
-                    labels = c("Vulnerable","Unknown")) +
+                    labels = c("Unknown","Vulnerable"),
+                    guide = guide_legend(reverse = T)) +
   # geom_text(aes(y = in_out, label = eez_number),
-  #           #position = position_nudge(y = nudge_fun(data)),
+  #           position = position_nudge(x = 101),
   #           size = 4
   # ) +
   facet_wrap(~fishing_entity, ncol = 5) +
